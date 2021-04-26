@@ -1,0 +1,116 @@
+<template>
+  <div class="card" :class="[type && `card-${type}`]">
+    <div class="card-image" v-if="$slots.image">
+      <slot name="image"></slot>
+    </div>
+    <div class="card-header" v-if="$slots.header || title" :class="headerClasses">
+      <slot name="header">
+        <h4 class="card-title">{{title}}</h4>
+        <p class="card-category" v-if="subTitle">{{subTitle}}</p>
+      </slot>
+    </div>
+    <div class="card-body">
+      <l-map
+      :zoom="zoom"
+      :center="center"
+      
+      style="height:400px"
+    >
+      <l-tile-layer
+        :url="url"
+        :attribution="attribution"
+      />
+
+    </l-map>
+    </div>
+    <slot name="raw-content"></slot>
+    <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
+      <slot name="footer"></slot>
+    </div>
+  </div>
+</template>
+
+<script>
+import { latLng } from "leaflet";
+import { LMap, LTileLayer, LControl } from "vue2-leaflet";
+
+export default {
+  name: "map-card",
+  components: {
+    LMap,
+    LTileLayer,
+    LControl
+  },
+  data() {
+    return {
+      zoom: 13,
+      center: latLng(47.41322, -1.219482),
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution:
+        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      markers: [],
+    };
+  },
+  methods: {
+    alert(item) {
+      alert('this is ' + JSON.stringify(item));
+    },
+    addMarker: function(latitude, longitude) {
+      const newMarker = {
+        position: { lat: latitude, lng: longitude},
+        draggable: true,
+        visible: true,
+      };
+      this.markers.push(newMarker);
+    },
+    removeMarker: function(index) {
+      this.markers.splice(index, 1);
+    },
+    fitPolyline: function() {
+      const bounds = latLngBounds(markers1.map(o => o.position));
+      this.bounds = bounds;
+    },
+  },
+  props: {
+    title: {
+        type: String,
+        description: "Card title"
+      },
+      subTitle: {
+        type: String,
+        description: "Card subtitle"
+      },
+      type: {
+        type: String,
+        description: "Card type (e.g primary/danger etc)"
+      },
+      headerClasses: {
+        type: [String, Object, Array],
+        description: "Card header css classes"
+      },
+      bodyClasses: {
+        type: [String, Object, Array],
+        description: "Card body css classes"
+      },
+      footerClasses: {
+        type: [String, Object, Array],
+        description: "Card footer css classes"
+      }
+  }
+};
+</script>
+
+<style>
+.example-custom-control {
+  background: #fff;
+  padding: 0 0.5em;
+  border: 1px solid #aaa;
+  border-radius: 0.1em;
+}
+.custom-control-watermark {
+  font-size: 200%;
+  font-weight: bolder;
+  color: #aaa;
+  text-shadow: #555;
+}
+</style>

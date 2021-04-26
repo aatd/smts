@@ -11,6 +11,10 @@ import StatsCard from './Cards/StatsCard.vue'
 
 import SidebarPlugin from './SidebarPlugin'
 
+import MapCard from './Maps/MapCard.vue'
+
+import MapCardTest from './Maps/MapCardTest.vue'
+
 let components = {
   BaseCheckbox,
   Radio,
@@ -20,7 +24,11 @@ let components = {
   StatsCard,
   Table,
   BaseDropdown,
-  SidebarPlugin
+  SidebarPlugin,
+  MapCard,
+  MapCardTest,
 }
+
+
 
 export default components

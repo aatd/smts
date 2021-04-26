@@ -1,33 +1,90 @@
 <template>
   <div class="content">
     <div class="container-fluid">
+
+      <!-- Generic Map with lots of Functions! -->
       <div class="row">
-        <div class="col-xl-3 col-md-6">
-          <stats-card>
-            <div slot="header" class="icon-warning">
-              <i class="nc-icon nc-chart text-warning"></i>
-            </div>
-            <div slot="content">
-              <p class="card-category">Capacity2</p>
-              <h4 class="card-title">105GB</h4>
-            </div>
-            <div slot="footer"><i class="fa fa-refresh"></i>Updated now</div>
-          </stats-card>
+        <div class="col-md-12">
+          <map-card-test>
+            <template slot="header">
+              <h4 class="card-title">Test Map Card with multiple Options</h4>
+              <p class="card-category">
+                Handcrafted by our friends from
+                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
+                  >NucleoApp</a
+                >
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+                <i class="fa fa-circle text-info"></i> Tesla Model S
+                <i class="fa fa-circle text-danger"></i> BMW 5 Series
+              </div>
+              <hr />
+              <div class="stats">
+                <i class="fa fa-check"></i> Data information certified
+              </div>
+            </template>
+          </map-card-test>
         </div>
-        <div class="col-xl-3 col-md-6">
+      </div>
+
+      <!--Simple Map-->
+      <div class="row">
+        <div class="col-md-12">
+          <map-card>
+            <template slot="header">
+              <h4 class="card-title">Test Map Card</h4>
+              <p class="card-category">
+                Handcrafted by our friends from
+                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
+                  >NucleoApp</a
+                >
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+                <i class="fa fa-circle text-info"></i> Tesla Model S
+                <i class="fa fa-circle text-danger"></i> BMW 5 Series
+              </div>
+              <hr />
+              <div class="stats">
+                <i class="fa fa-check"></i> Data information certified
+              </div>
+            </template>
+          </map-card>
+        </div>
+      </div>
+
+      <!--Some Stats Cards-->
+      <div class="row">
+        <div class="col-xl-4 col-md-6">
           <stats-card>
             <div slot="header" class="icon-warning">
-              <i class="nc-icon nc-chart text-warning"></i>
+              <i class="fa fa-bicycle text-warning"></i>
             </div>
             <div slot="content">
-              <p class="card-category">Capacity2</p>
-              <h4 class="card-title">105GB</h4>
+              <p class="card-category">Your Thief's</p>
+              <h4 class="card-title">GETCOUNTOFMYTHIEFS</h4>
             </div>
-            <div slot="footer"><i class="fa fa-refresh"></i>Updated now</div>
+            <div slot="footer"><i class="fa fa-plus"></i>Add new "Thief"</div>
           </stats-card>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6">
+          <stats-card>
+            <div slot="header" class="icon-warning">
+              <i class="fa fa-cogs text-warning"></i>
+            </div>
+            <div slot="content">
+              <p class="card-category">Setup your Thief</p>
+              <h4 class="card-title">GETCOUNTOFMYTHIEFS</h4>
+            </div>
+            <div slot="footer"><i class="fa fa-cogs"></i>Add new "Thief"</div>
+          </stats-card>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
           <stats-card>
             <div slot="header" class="icon-success">
               <i class="nc-icon nc-light-3 text-success"></i>
@@ -40,7 +97,7 @@
           </stats-card>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6">
           <stats-card>
             <div slot="header" class="icon-danger">
               <i class="nc-icon nc-vector text-danger"></i>
@@ -53,7 +110,7 @@
           </stats-card>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6">
           <stats-card>
             <div slot="header" class="icon-info">
               <i class="nc-icon nc-favourite-28 text-primary"></i>
@@ -66,8 +123,10 @@
           </stats-card>
         </div>
       </div>
+
+      <!--Some Line-Pie-Charts-->
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
           <chart-card
             :chart-data="lineChart.data"
             :chart-options="lineChart.options"
@@ -90,8 +149,7 @@
             </template>
           </chart-card>
         </div>
-
-        <div class="col-md-4">
+        <div class="col-md-6">
           <chart-card :chart-data="pieChart.data" chart-type="Pie">
             <template slot="header">
               <h4 class="card-title">Email Statistics</h4>
@@ -111,65 +169,8 @@
           </chart-card>
         </div>
       </div>
-
       <div class="row">
-        <div class="col-md-6">
-          <div style="height: 500px; width: 100%">
-            <div style="height: 200px; overflow: auto">
-              <p>
-                First marker is placed at {{ withPopup.lat }},
-                {{ withPopup.lng }}
-              </p>
-              <p>
-                Center is at {{ currentCenter }} and the zoom is:
-                {{ currentZoom }}
-              </p>
-              <button @click="showLongText">Toggle long popup</button>
-              <button @click="showMap = !showMap">Toggle map</button>
-            </div>
-            <l-map
-              v-if="showMap"
-              :zoom="zoom"
-              :center="center"
-              :options="mapOptions"
-              style="height: 80%"
-              @update:center="centerUpdate"
-              @update:zoom="zoomUpdate"
-            >
-              <l-tile-layer :url="url" :attribution="attribution" />
-              <l-marker :lat-lng="withPopup">
-                <l-popup>
-                  <div @click="innerClick">
-                    I am a popup
-                    <p v-show="showParagraph">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Quisque sed pretium nisl, ut sagittis sapien. Sed vel
-                      sollicitudin nisi. Donec finibus semper metus id
-                      malesuada.
-                    </p>
-                  </div>
-                </l-popup>
-              </l-marker>
-              <l-marker :lat-lng="withTooltip">
-                <l-tooltip :options="{ permanent: true, interactive: true }">
-                  <div @click="innerClick">
-                    I am a tooltip
-                    <p v-show="showParagraph">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Quisque sed pretium nisl, ut sagittis sapien. Sed vel
-                      sollicitudin nisi. Donec finibus semper metus id
-                      malesuada.
-                    </p>
-                  </div>
-                </l-tooltip>
-              </l-marker>
-            </l-map>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <chart-card
             :chart-data="barChart.data"
             :chart-options="barChart.options"
@@ -192,7 +193,10 @@
             </template>
           </chart-card>
         </div>
+      </div>
 
+      <!--Tasksheets-->
+      <div class="row">
         <div class="col-md-6">
           <card>
             <template slot="header">
@@ -234,6 +238,7 @@
           </card>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -241,19 +246,16 @@
 import ChartCard from "src/components/Cards/ChartCard.vue";
 import StatsCard from "src/components/Cards/StatsCard.vue";
 import LTable from "src/components/Table.vue";
-import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
+import MapCard from "src/components/Maps/MapCard.vue";
+import MapCardTest from "../components/Maps/MapCardTest.vue";
 
 export default {
   components: {
     LTable,
     ChartCard,
     StatsCard,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
-    LTooltip
+    MapCard,
+    MapCardTest,
   },
   data() {
     return {
@@ -379,36 +381,8 @@ export default {
           { title: "Unfollow 5 enemies from twitter", checked: false },
         ],
       },
-      zoom: 13,
-      center: latLng(47.41322, -1.219482),
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      withPopup: latLng(47.41322, -1.219482),
-      withTooltip: latLng(47.41422, -1.250482),
-      currentZoom: 11.5,
-      currentCenter: latLng(47.41322, -1.219482),
-      showParagraph: false,
-      mapOptions: {
-        zoomSnap: 0.5
-      },
-      showMap: true
     };
   },
-  methods: {
-    zoomUpdate(zoom) {
-      this.currentZoom = zoom;
-    },
-    centerUpdate(center) {
-      this.currentCenter = center;
-    },
-    showLongText() {
-      this.showParagraph = !this.showParagraph;
-    },
-    innerClick() {
-      alert("Click!");
-    }
-  }
 };
 </script>
 <style>
