@@ -24,15 +24,21 @@ const routes = [
     component: DashboardLayout,
     redirect: '/admin/overview',
     children: [
-      {
-        path: 'overview',
-        name: 'Overview',
-        component: Overview
-      },
+
+      // Where's My Thief-Pages
       {
         path: 'debug',
         name: 'Debug',
         component: Debug
+      },
+
+
+
+      //Delete Later
+      {
+        path: 'overview',
+        name: 'Overview',
+        component: Overview
       },
       {
         path: 'user',

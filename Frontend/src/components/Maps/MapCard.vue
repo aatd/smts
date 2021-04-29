@@ -8,10 +8,7 @@
       v-if="$slots.header || title"
       :class="headerClasses"
     >
-      <button
-        v-on:click="callPolice"
-        class="btn btn-warning btn-fill float-right"
-      >
+      <button class="btn btn-danger btn-fill float-right" v-b-modal.modal-call-police-guide>
         Call Police
       </button>
 
@@ -42,12 +39,18 @@
     <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
       <slot name="footer"></slot>
     </div>
+    <b-modal id="modal-call-police-guide" title="BootstrapVue"
+      @ok="callPolice"
+    >
+      <p class="my-4">Hello from modal!</p>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import { latLng } from "leaflet";
 import { LMap, LTileLayer, LControl } from "vue2-leaflet";
+import { BModal } from "bootstrap-vue";
 
 export default {
   name: "map-card",
@@ -55,6 +58,7 @@ export default {
     LMap,
     LTileLayer,
     LControl,
+    BModal,
   },
   data() {
     return {
