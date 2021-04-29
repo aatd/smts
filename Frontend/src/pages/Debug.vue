@@ -1,6 +1,32 @@
 <template>
   <div class="content">
     <div class="container-fluid">
+      <!--Simple Map-->
+      <div class="row">
+        <div class="col-md-12">
+          <map-card>
+            <template slot="header">
+              <h4 class="card-title">Test Map Card</h4>
+              <p class="card-category">
+                Handcrafted by our friends from
+                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
+                  >NucleoApp</a
+                >
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+                <i class="fa fa-circle text-info"></i> Tesla Model S
+                <i class="fa fa-circle text-danger"></i> BMW 5 Series
+              </div>
+              <hr />
+              <div class="stats">
+                <i class="fa fa-check"></i> Data information certified
+              </div>
+            </template>
+          </map-card>
+        </div>
+      </div>
 
       <!-- Generic Map with lots of Functions! -->
       <div class="row">
@@ -26,33 +52,6 @@
               </div>
             </template>
           </map-card-test>
-        </div>
-      </div>
-
-      <!--Simple Map-->
-      <div class="row">
-        <div class="col-md-12">
-          <map-card>
-            <template slot="header">
-              <h4 class="card-title">Test Map Card</h4>
-              <p class="card-category">
-                Handcrafted by our friends from
-                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
-                  >NucleoApp</a
-                >
-              </p>
-            </template>
-            <template slot="footer">
-              <div class="legend">
-                <i class="fa fa-circle text-info"></i> Tesla Model S
-                <i class="fa fa-circle text-danger"></i> BMW 5 Series
-              </div>
-              <hr />
-              <div class="stats">
-                <i class="fa fa-check"></i> Data information certified
-              </div>
-            </template>
-          </map-card>
         </div>
       </div>
 
@@ -238,7 +237,6 @@
           </card>
         </div>
       </div>
-
     </div>
   </div>
 </template>

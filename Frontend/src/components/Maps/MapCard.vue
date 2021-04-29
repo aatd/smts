@@ -8,10 +8,17 @@
       v-if="$slots.header || title"
       :class="headerClasses"
     >
+      <button
+        v-on:click="callPolice"
+        class="btn btn-warning btn-fill float-right"
+      >
+        Call Police
+      </button>
+
       <slot name="header">
         <h4 class="card-title">{{ title }}</h4>
-        <p class="card-category" v-if="subTitle">{{ subTitle }}</p>
       </slot>
+      <p class="card-category" v-if="subTitle">{{ subTitle }}</p>
     </div>
     <div class="card-body">
       <l-map :zoom="zoom" :center="center" style="height: 400px">
@@ -51,36 +58,18 @@ export default {
   },
   data() {
     return {
-      zoom: 13,
+      zoom: 17,
       center: latLng(47.41322, -1.219482),
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      markers: [
-        {
-          id: "m1",
-          position: { lat: 51.505, lng: -0.09 },
-          tooltip: "tooltip for marker1",
-          draggable: true,
-          visible: true,
-        },
-        {
-          id: "m2",
-          position: { lat: 51.8905, lng: -0.09 },
-          tooltip: "tooltip for marker2",
-          draggable: true,
-          visible: false,
-        },
-        {
-          id: "m3",
-          position: { lat: 51.005, lng: -0.09 },
-          tooltip: "tooltip for marker3",
-          draggable: true,
-          visible: true,
-        },
-      ],
+      attribution:
+        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      markers: [],
     };
   },
   methods: {
+    callPolice: function () {
+      window.location.href = "tel:110";
+    },
     alert(item) {
       alert("this is " + JSON.stringify(item));
     },
@@ -91,7 +80,7 @@ export default {
         visible: true,
       };
       this.markers.push(newMarker);
-      this.center = latLng(newMarker.position.lat, newMarker.position.lng)
+      this.center = latLng(newMarker.position.lat, newMarker.position.lng);
     },
     removeMarker: function (index) {
       this.markers.splice(index, 1);
@@ -99,18 +88,12 @@ export default {
     fitPolyline: function () {
       const bounds = latLngBounds(markers1.map((o) => o.position));
       this.bounds = bounds;
-    }
+    },
   },
-  mounted: function(){
+  mounted: function () {
     const self = this;
-       window.setInterval(function(){
-        const newMarker = {
-          position: { lat: Math.random(), lng: Math.random() },
-          draggable: true,
-          visible: true,
-        };
-      self.markers.push(newMarker);
-      self.center = latLng(newMarker.position.lat, newMarker.position.lng)
+    window.setInterval(function () {
+      self.addMarker(0.001 * Math.random() + 45.0, 0.001 * Math.random());
     }, 2000);
   },
   props: {
