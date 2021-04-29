@@ -388,11 +388,13 @@ export default {
     },
     addMarker: function () {
       const newMarker = {
-        position: { lat: 50.5505, lng: -0.09 },
+        position: { lat: 51.440312757160115, lng: -2.5817871093750004 },
         draggable: true,
         visible: true,
       };
       this.markers.push(newMarker);
+      this.center = [newMarker.position.lat, newMarker.position.lng]
+      this.zoom = 13
     },
     removeMarker: function (index) {
       this.markers.splice(index, 1);
@@ -427,6 +429,6 @@ export default {
       type: [String, Object, Array],
       description: "Card footer css classes",
     },
-  },
+  }
 };
 </script>

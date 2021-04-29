@@ -19,7 +19,8 @@ module.exports = {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 6
       })
-    ]
+    ],
+    devtool:'source-map',
   },
   pwa: {
     name: `Where's my thief?`,
