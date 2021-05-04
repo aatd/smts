@@ -2,6 +2,6 @@
 TODO
 
 * Setup venv with flask
-* Setup mongoDB
-* connect backend with mongoDB
+* Setup mongoDB -> Tom
+* connect backend with mongoDB 
 * implement API functions
