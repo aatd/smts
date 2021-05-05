@@ -12,8 +12,11 @@ import StatsCard from './Cards/StatsCard.vue'
 import SidebarPlugin from './SidebarPlugin'
 
 import MapCard from './Maps/MapCard.vue'
-
 import MapCardTest from './Maps/MapCardTest.vue'
+import Login from './Forms/Login.vue'
+import Register from "./Forms/Register.vue";
+import RegisterDevice from "./Forms/RegisterDevice.vue";
+import Settings from "./Forms/Settings.vue";
 
 let components = {
   BaseCheckbox,
@@ -27,6 +30,10 @@ let components = {
   SidebarPlugin,
   MapCard,
   MapCardTest,
+  Login,
+  Register,
+  RegisterDevice,
+  Settings,
 }
 
 

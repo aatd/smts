@@ -1,17 +1,98 @@
 <template>
   <div class="content">
-    <div class="container-fluid">
+    <div class="container-fluid">    
+    
+      <!--Login Card-->
+      <div class="row">
+        <div class="col-md-12">
+          <Login>
+            <template slot="header">
+              <h4 class="card-title">Login</h4>
+              <p class="card-category">
+                Login to your Bikes
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+              </div>
+              <hr />
+              <div class="stats">
+              </div>
+            </template>
+          </Login>
+        </div>
+      </div>
+
+      <!--Register Card-->
+      <div class="row">
+        <div class="col-md-12">
+          <Register>
+            <template slot="header">
+              <h4 class="card-title">Register your Account for "Where's my Thief?"</h4>
+              <p class="card-category">
+                Some information about you so you can set up your Bikes in the next step!
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+              </div>
+              <hr />
+              <div class="stats">
+              </div>
+            </template>
+          </Register>
+        </div>
+      </div>
+
+      <!--Register Device Card-->
+      <div class="row">
+        <div class="col-md-12">
+          <RegisterDevice>
+            <template slot="header">
+              <h4 class="card-title">Register new "My Thief" - Device</h4>
+              <p class="card-category">
+                This Form will create a inital Config-File to setup your "My-Thief"-Device
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+              </div>
+              <hr />
+              <div class="stats">
+              </div>
+            </template>
+          </RegisterDevice>
+        </div>
+      </div>  
+
+      <!--Settings Card-->
+      <div class="row">
+        <div class="col-md-12">
+          <Settings>
+            <template slot="header">
+              <h4 class="card-title">Your Settings</h4>
+              <p class="card-category">
+                Here you see all your Settings and devices!
+              </p>
+            </template>
+            <template slot="footer">
+              <div class="legend">
+              </div>
+              <hr />
+              <div class="stats">
+              </div>
+            </template>
+          </Settings>
+        </div>
+      </div>
+
       <!--Simple Map-->
       <div class="row">
         <div class="col-md-12">
-          <map-card>
+          <MapCard>
             <template slot="header">
               <h4 class="card-title">Test Map Card</h4>
               <p class="card-category">
-                Handcrafted by our friends from
-                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
-                  >NucleoApp</a
-                >
               </p>
             </template>
             <template slot="footer">
@@ -24,7 +105,7 @@
                 <i class="fa fa-check"></i> Data information certified
               </div>
             </template>
-          </map-card>
+          </MapCard>
         </div>
       </div>
 
@@ -34,21 +115,12 @@
           <map-card-test>
             <template slot="header">
               <h4 class="card-title">Test Map Card with multiple Options</h4>
-              <p class="card-category">
-                Handcrafted by our friends from
-                <a target="_blank" href="https://nucleoapp.com/?ref=1712"
-                  >NucleoApp</a
-                >
-              </p>
             </template>
             <template slot="footer">
               <div class="legend">
-                <i class="fa fa-circle text-info"></i> Tesla Model S
-                <i class="fa fa-circle text-danger"></i> BMW 5 Series
               </div>
               <hr />
               <div class="stats">
-                <i class="fa fa-check"></i> Data information certified
               </div>
             </template>
           </map-card-test>
@@ -246,6 +318,10 @@ import StatsCard from "src/components/Cards/StatsCard.vue";
 import LTable from "src/components/Table.vue";
 import MapCard from "src/components/Maps/MapCard.vue";
 import MapCardTest from "../components/Maps/MapCardTest.vue";
+import Login from "../components/Forms/Login.vue";
+import Register from "../components/Forms/Register.vue";
+import RegisterDevice from "../components/Forms/RegisterDevice.vue";
+import Settings from "../components/Forms/Settings.vue";
 
 export default {
   components: {
@@ -254,6 +330,10 @@ export default {
     StatsCard,
     MapCard,
     MapCardTest,
+    Login,
+    Register,
+    RegisterDevice,
+    Settings,
   },
   data() {
     return {
