@@ -10,7 +10,7 @@ try:
     mongo = pymongo.MongoClient("localhost:27017", serverSelectionTimeoutMS=1000)
 
     db = mongo.smts
-    mongo.server_info()
+   # mongo.server_info()
 
 except pymongo.errors.ConnectionFailure:
     print("Cannot connect to database")
