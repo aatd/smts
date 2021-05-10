@@ -1,7 +1,7 @@
 <template>
   <div class="content">
-    <div class="container-fluid">    
-    
+    <div class="container-fluid">
+
       <!--Login Card-->
       <div class="row">
         <div class="col-md-12">
@@ -63,12 +63,12 @@
             </template>
           </RegisterDevice>
         </div>
-      </div>  
+      </div>
 
-      <!--Settings Card-->
+      <!--Device Settings Card-->
       <div class="row">
         <div class="col-md-12">
-          <Settings>
+          <DeviceSettings>
             <template slot="header">
               <h4 class="card-title">Your Settings</h4>
               <p class="card-category">
@@ -82,7 +82,7 @@
               <div class="stats">
               </div>
             </template>
-          </Settings>
+          </DeviceSettings>
         </div>
       </div>
 
@@ -91,7 +91,7 @@
         <div class="col-md-12">
           <MapCard>
             <template slot="header">
-              <h4 class="card-title">Test Map Card</h4>
+              <h4 class="card-title">Bike Live Tracker</h4>
               <p class="card-category">
               </p>
             </template>
@@ -109,7 +109,7 @@
         </div>
       </div>
 
-      <!-- Generic Map with lots of Functions! -->
+      <!--Generic Map with lots of Functions! -->
       <div class="row">
         <div class="col-md-12">
           <map-card-test>
@@ -312,6 +312,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import ChartCard from "src/components/Cards/ChartCard.vue";
 import StatsCard from "src/components/Cards/StatsCard.vue";
@@ -321,7 +322,7 @@ import MapCardTest from "../components/Maps/MapCardTest.vue";
 import Login from "../components/Forms/Login.vue";
 import Register from "../components/Forms/Register.vue";
 import RegisterDevice from "../components/Forms/RegisterDevice.vue";
-import Settings from "../components/Forms/Settings.vue";
+import DeviceSettings from "../components/Forms/DeviceSettings.vue";
 
 export default {
   components: {
@@ -333,7 +334,7 @@ export default {
     Login,
     Register,
     RegisterDevice,
-    Settings,
+    DeviceSettings,
   },
   data() {
     return {
@@ -459,9 +460,22 @@ export default {
           { title: "Unfollow 5 enemies from twitter", checked: false },
         ],
       },
+      user: {
+        username: "Asef",
+        email: "max.mustermann@max.de",
+        firstName: "Max",
+        lastName: "Mustermann",
+      },
     };
   },
+  methods: {
+    isDebugMode() {
+      const x = webpackHotUpdate;
+      return x
+    },
+  }
 };
 </script>
+
 <style>
 </style>

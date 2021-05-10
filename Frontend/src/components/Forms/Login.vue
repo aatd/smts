@@ -15,11 +15,11 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-        
+
         <!--Email or Name-->
         <b-form-group
           id="input-group-1"
-          label="Email address:"
+          label="Email address or Username:"
           label-for="input-1"
           description="We'll never share your email with anyone else."
         >
@@ -75,7 +75,7 @@ export default {
   data() {
     return {
       form: {
-        email: "",
+        emailOrName: "",
         pwd: "",
         checked: [],
       },
@@ -89,14 +89,18 @@ export default {
     },
     onReset(event) {
       event.preventDefault();
+
       // Reset our form values
       this.form.emailOrName = "";
+      this.form.pwd = "";
       this.form.checked = [];
+
       // Trick to reset/clear native browser form validation state
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
       });
+
     },
   },
   props: {

@@ -16,7 +16,7 @@ import MapCardTest from './Maps/MapCardTest.vue'
 import Login from './Forms/Login.vue'
 import Register from "./Forms/Register.vue";
 import RegisterDevice from "./Forms/RegisterDevice.vue";
-import Settings from "./Forms/Settings.vue";
+import DeviceSettings from "./Forms/DeviceSettings.vue";
 
 let components = {
   BaseCheckbox,
@@ -33,7 +33,7 @@ let components = {
   Login,
   Register,
   RegisterDevice,
-  Settings,
+  DeviceSettings,
 }
 
 

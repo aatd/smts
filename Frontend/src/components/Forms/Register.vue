@@ -15,14 +15,28 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+        <!--Username-->
         <b-form-group
           id="input-group-1"
-          label="Email address:"
+          label="Create a username:"
           label-for="input-1"
-          description="We'll never share your email with anyone else."
         >
           <b-form-input
             id="input-1"
+            v-model="form.username"
+            placeholder="Enter your Personal Username"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <!--Email-->
+        <b-form-group
+          id="input-group-2"
+          label="Email address:"
+          label-for="input-2"
+        >
+          <b-form-input
+            id="input-2"
             v-model="form.email"
             type="email"
             placeholder="Enter email"
@@ -30,37 +44,40 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
+        <!--Password-->
+        <b-form-group
+          id="input-group-3"
+          label="Your Password:"
+          label-for="input-3"
+        >
           <b-form-input
-            id="input-2"
-            v-model="form.name"
-            placeholder="Enter name"
+            id="input-3"
+            v-model="form.pwd"
+            type="password"
+            placeholder="Enter a Password"
             required
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-          <b-form-select
-            id="input-3"
-            v-model="form.food"
-            :options="foods"
+        <!--Password Check-->
+        <b-form-group
+          id="input-group-4"
+          label="Your Password again:"
+          label-for="input-4"
+        >
+          <b-form-input
+            id="input-4"
+            v-model="form.pwdCheck"
+            type="password"
+            placeholder="Re-enter Password"
             required
-          ></b-form-select>
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
-          <b-form-checkbox-group
-            v-model="form.checked"
-            id="checkboxes-4"
-            :aria-describedby="ariaDescribedby"
-          >
-            <b-form-checkbox value="me">Check me out</b-form-checkbox>
-            <b-form-checkbox value="that">Check that out</b-form-checkbox>
-          </b-form-checkbox-group>
-        </b-form-group>
-
+        <!--Submit Button-->
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
+
       </b-form>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
@@ -80,22 +97,34 @@ export default {
   data() {
     return {
       form: {
+        username: "",
         email: "",
-        name: "",
-        food: null,
-        checked: [],
+        pwd: "",
+        pwdCheck: "",
       },
-      foods: [
-        { text: "Select One", value: null },
-        "Carrots",
-        "Beans",
-        "Tomatoes",
-        "Corn",
-      ],
       show: true,
     };
   },
-  methods: {},
+  methods: {
+    onSubmit(event) {
+      event.preventDefault();
+      alert(JSON.stringify(this.form));
+    },
+    onReset(event) {
+      event.preventDefault();
+
+      // Reset our form values
+      this.form.email    = "";
+      this.form.username = "";
+      this.form.pwd      = "";
+      this.form.pwdCheck = "";
+
+      // Trick to reset/clear native browser form validation state
+      this.show = false;
+      this.$nextTick( () => {this.show = true;} );
+
+    },
+  },
   props: {
     title: {
       type: String,
