@@ -2,6 +2,13 @@
   <div class="content">
     <div class="container-fluid">
 
+      <!--User Profile Card-->
+      <div class="row">
+        <div class="col-md-12">
+          <user-profile></user-profile>
+        </div>
+      </div>
+
       <!--Login Card-->
       <div class="row">
         <div class="col-md-12">
@@ -110,7 +117,7 @@
       </div>
 
       <!--Generic Map with lots of Functions! -->
-      <div class="row">
+      <div class="row" v-if="isDebugMode">
         <div class="col-md-12">
           <map-card-test>
             <template slot="header">
@@ -309,20 +316,22 @@
           </card>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script>
-import ChartCard from "src/components/Cards/ChartCard.vue";
-import StatsCard from "src/components/Cards/StatsCard.vue";
-import LTable from "src/components/Table.vue";
-import MapCard from "src/components/Maps/MapCard.vue";
-import MapCardTest from "../components/Maps/MapCardTest.vue";
-import Login from "../components/Forms/Login.vue";
-import Register from "../components/Forms/Register.vue";
-import RegisterDevice from "../components/Forms/RegisterDevice.vue";
-import DeviceSettings from "../components/Forms/DeviceSettings.vue";
+import ChartCard      from "src/components/Cards/ChartCard.vue";
+import StatsCard      from "src/components/Cards/StatsCard.vue";
+import LTable         from "src/components/Table.vue";
+import MapCard        from "src/components/Maps/MapCard.vue";
+import MapCardTest    from "src/components/Maps/MapCardTest.vue";
+import Login          from "src/components/Forms/Login.vue";
+import Register       from "src/components/Forms/Register.vue";
+import RegisterDevice from "src/components/Forms/RegisterDevice.vue";
+import DeviceSettings from "src/components/Forms/DeviceSettings.vue";
+import UserProfile    from "src/components/Forms/UserProfile.vue";
 
 export default {
   components: {
@@ -335,6 +344,7 @@ export default {
     Register,
     RegisterDevice,
     DeviceSettings,
+    UserProfile,
   },
   data() {
     return {
@@ -466,6 +476,7 @@ export default {
         firstName: "Max",
         lastName: "Mustermann",
       },
+      isDebugMode: false,
     };
   },
   methods: {
@@ -475,6 +486,7 @@ export default {
     },
   }
 };
+
 </script>
 
 <style>

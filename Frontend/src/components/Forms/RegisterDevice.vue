@@ -15,6 +15,7 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+
         <!--DeviceName-->
         <b-form-group
           id="input-group-1"
@@ -41,6 +42,7 @@
             id="input-2"
             v-model="form.imei"
             placeholder="Enter IMEI..."
+            type="tel"
             required
           ></b-form-input>
         </b-form-group>
@@ -50,13 +52,14 @@
           id="input-group-3"
           label="Your Telephonenumber:"
           label-for="input-3"
-          description="Wihtour your number, My Thive cannot send you SMS- in case when it cannot send data to Server!"
+          description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
         >
           <b-form-input
             id="input-3"
             v-model="form.userTel"
             placeholder="Enter Your Telephonebumer: +49..."
             type="tel"
+            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
             required
           ></b-form-input>
         </b-form-group>
@@ -88,7 +91,9 @@
             id="input-5"
             v-model="form.pin"
             placeholder="XXXX"
-            type="number"
+            type="tel"
+            size="4"
+            maxlength="4"
             required
           ></b-form-input>
         </b-form-group>
@@ -96,6 +101,7 @@
         <!--Submit Button-->
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
+        
       </b-form>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
