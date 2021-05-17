@@ -480,7 +480,7 @@ export default {
     };
   },
   methods: {
-    isDebugMode() {
+    isDebugModeMethod() {
       const x = webpackHotUpdate;
       return x
     },

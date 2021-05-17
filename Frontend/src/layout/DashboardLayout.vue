@@ -33,6 +33,7 @@
           <p>Notifications</p>
         </sidebar-link>
       </template>
+      
     </side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
@@ -43,8 +44,10 @@
     </div>
   </div>
 </template>
+
 <style lang="scss">
 </style>
+
 <script>
 import TopNavbar from "./TopNavbar.vue";
 import ContentFooter from "./ContentFooter.vue";
