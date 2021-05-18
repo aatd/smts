@@ -13,24 +13,19 @@
 
     <!--User Information-->
     <card class="card-user" v-bind="mythieve">
+      <!--Background Picture-->
+      <img slot="image" :src="mythieve.bycyleImageUrl" alt="..." />
+
       <!--Device Information-->
       <div class="author">
-        <!--Device Image-->
-        <b-avatar
-          badge-variant="light"
-          size="7rem"
-          :src="mythieve.bycyleImageUrl"
-        >
-        </b-avatar>
-
-        <!--Device Image-->
-        <b-avatar
-          badge-variant="light"
-          size="7rem"
-          :src="mythieve.bycyleImageUrl"
-        >
+        <b-avatar badge-variant="light" size="7rem">
           <div class="battery">
-            <div class="battery-level" style="height: 50%">50%</div>
+            <div
+              id="battery-indicator"
+              class="battery-level"
+              style="z-index: -1"
+            ></div>
+            <small id="battery-label">90%</small>
           </div>
         </b-avatar>
 
@@ -136,6 +131,27 @@ export default {
     goToDeviceSettings() {
       this.setQuoteOfTheUpdate();
     },
+    setBatteryIndicator(value) {
+      //get relevant HTMLElements and resets it's states
+      var batteryElement = document.getElementById("battery-indicator");
+      var batteryLabel = document.getElementById("battery-label");
+      batteryElement.classList.remove("alert-level");
+      batteryElement.classList.remove("warn-level");
+
+      //make Number between [0.0,1.0]
+      if (value > 1.0) value = 1.0;
+      if (value < 0.0) value = 0.0;
+
+      //Set indicatorlight
+      if (value <= 0.5 && value > 0.2)
+        batteryElement.classList.add("warn-level");
+      if (value <= 0.2 && value >= 0.0)
+        batteryElement.classList.add("alert-level");
+
+      //Set Value
+      batteryElement.style.height = `${100 * value}%`;
+      batteryLabel.innerText = `${Math.floor(100 * value)}%`;
+    },
 
     //Fun-Stuff fetching fun things like quates
     setQuoteOfTheUpdate() {
@@ -146,7 +162,16 @@ export default {
     },
   },
   mounted: function () {
+    //Tests
     this.setQuoteOfTheUpdate();
+
+    self = this;
+    self.bvalue = 1;
+
+    window.setInterval(function () {
+      self.bvalue -= 0.01;
+      self.setBatteryIndicator(self.bvalue);
+    }, 50);
   },
 };
 </script>
@@ -156,16 +181,17 @@ $lightning-size: 18px;
 
 .battery {
   border: 3px solid #333;
-  width: 18px;
-  height: 28px;
+  width: 30px;
+  height: 50px;
   padding: 2px;
   border-radius: 4px;
+  position: relative;
   margin: 15px 0;
 
   &:before {
     content: "";
     height: 3px;
-    width: 18px;
+    width: 20px;
     background: #333;
     display: block;
     position: absolute;
@@ -193,11 +219,11 @@ $lightning-size: 18px;
   left: 0;
   right: 0;
 
-  &.warn {
+  &.warn-level {
     background-color: #efaf13;
   }
 
-  &.alert {
+  &.alert-level {
     background-color: #e81309;
 
     &:before {
@@ -206,7 +232,7 @@ $lightning-size: 18px;
       background-size: $lightning-size;
       height: $lightning-size;
       width: $lightning-size;
-      margin: -25px 0 0 2px;
+      margin: -25px 0 0 -10px;
       content: "";
       display: inline-block;
       position: absolute;

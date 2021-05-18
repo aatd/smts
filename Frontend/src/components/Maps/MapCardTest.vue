@@ -185,10 +185,6 @@
         </l-layer-group>
       </l-map>
     </div>
-    <slot name="raw-content"></slot>
-    <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
-      <slot name="footer"></slot>
-    </div>
   </div>
 </template>
 
@@ -393,8 +389,8 @@ export default {
         visible: true,
       };
       this.markers.push(newMarker);
-      this.center = [newMarker.position.lat, newMarker.position.lng]
-      this.zoom = 13
+      this.center = [newMarker.position.lat, newMarker.position.lng];
+      this.zoom = 13;
     },
     removeMarker: function (index) {
       this.markers.splice(index, 1);
@@ -429,6 +425,6 @@ export default {
       type: [String, Object, Array],
       description: "Card footer css classes",
     },
-  }
+  },
 };
 </script>

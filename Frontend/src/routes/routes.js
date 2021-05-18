@@ -12,8 +12,13 @@ import Typography from 'src/pages/Typography.vue'
 import Icons from 'src/pages/Icons.vue'
 import Notifications from 'src/pages/Notifications.vue'
 import Upgrade from 'src/pages/Upgrade.vue'
+
+
+//Where's my Thieve Pages
 import Debug from 'src/pages/Debug.vue'
 import Login from 'src/components/Forms/Login.vue'
+import UserOverview from 'src/components/Forms/UserOverview.vue'
+import Device from 'src/components/Forms/Device.vue'
 
 const routes = [
 
@@ -23,7 +28,6 @@ const routes = [
     component: DashboardLayout,
     redirect: '/users'
   },
-
   {
     path: '/',
     component: DashboardLayout,
@@ -32,6 +36,16 @@ const routes = [
         path: '/users',
         name: 'LoginPage',
         component: Login,
+      },
+      {
+        path: '/users/:id',
+        name: 'User-Overview',
+        component: UserOverview,
+      },
+      {
+        path: '/devices/:id',
+        name: 'Device-Overview',
+        component: Device
       }
     ]
   },

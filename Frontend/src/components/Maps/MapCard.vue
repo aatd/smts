@@ -22,25 +22,24 @@
     </div>
     <div class="card-body">
       <l-map :zoom="zoom" :center="center" style="height: 300px">
-        <l-marker
-          v-for="marker in markers"
-          :key="marker.id"
-          :visible="marker.visible"
-          :draggable="marker.draggable"
-          :lat-lng.sync="marker.position"
-          :icon="marker.icon"
-          @click="alert(marker)"
-        >
-          <l-popup :content="marker.tooltip" />
-          <l-tooltip :content="marker.tooltip" />
-        </l-marker>
-
+        <l-layer-group>
+          <l-marker
+            v-for="marker in markers.positions"
+            :key="marker.id"
+            :visible="marker.visible"
+            :draggable="marker.draggable"
+            :lat-lng.sync="marker.position"
+            :icon="marker.icon"
+            @click="alert(marker)"
+            ref="marker"
+          >
+            <l-popup ref="popup" :content="marker.tooltip" />
+            <l-tooltip :content="marker.tooltip" />
+          </l-marker>
+          <l-polyline :lat-lngs="markers.points" />
+        </l-layer-group>
         <l-tile-layer :url="url" :attribution="attribution" />
       </l-map>
-    </div>
-    <slot name="raw-content"></slot>
-    <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
-      <slot name="footer"></slot>
     </div>
     <b-modal id="modal-call-police-guide" title="BootstrapVue" @ok="callPolice">
       <p class="my-4">Hello from modal!</p>
@@ -50,7 +49,13 @@
 
 <script>
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LControl } from "vue2-leaflet";
+import {
+  LMap,
+  LTileLayer,
+  LControl,
+  LPolyline,
+  LLayerGroup,
+} from "vue2-leaflet";
 import { BModal } from "bootstrap-vue";
 
 export default {
@@ -60,6 +65,8 @@ export default {
     LTileLayer,
     LControl,
     BModal,
+    LPolyline,
+    LLayerGroup,
   },
   data() {
     return {
@@ -68,7 +75,10 @@ export default {
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      markers: [],
+      markers: {
+        positions: [],
+        points: [],
+      },
     };
   },
   methods: {
@@ -79,27 +89,28 @@ export default {
       alert("this is " + JSON.stringify(item));
     },
     addMarker: function (latitude, longitude) {
+      //Create new Marker object
       const newMarker = {
         position: { lat: latitude, lng: longitude },
-        draggable: true,
+        draggable: false,
         visible: true,
+        tooltip: "Hello",
       };
-      this.markers.push(newMarker);
+
+      //Push to all marker positons object
+      this.markers.positions.push(newMarker);
+      this.markers.points.push(newMarker.position);
       this.center = latLng(newMarker.position.lat, newMarker.position.lng);
-    },
-    removeMarker: function (index) {
-      this.markers.splice(index, 1);
-    },
-    fitPolyline: function () {
-      const bounds = latLngBounds(markers1.map((o) => o.position));
-      this.bounds = bounds;
+      this.$nextTick(() => {
+        this.$refs.marker[this.$refs.marker.length - 1].mapObject.openPopup();
+      });
     },
   },
   mounted: function () {
     const self = this;
     window.setInterval(function () {
       self.addMarker(0.001 * Math.random() + 45.0, 0.001 * Math.random());
-    }, 2000);
+    }, 3000);
   },
   props: {
     title: {
