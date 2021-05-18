@@ -1,4 +1,5 @@
 import DashboardLayout from '../layout/DashboardLayout.vue'
+import Content from 'src/layout/Content.vue'
 
 // GeneralViews
 import NotFound from '../pages/NotFoundPage.vue'
@@ -12,12 +13,27 @@ import Icons from 'src/pages/Icons.vue'
 import Notifications from 'src/pages/Notifications.vue'
 import Upgrade from 'src/pages/Upgrade.vue'
 import Debug from 'src/pages/Debug.vue'
+import Login from 'src/components/Forms/Login.vue'
 
 const routes = [
+
+  //Entry is LoginPage
   {
     path: '/',
     component: DashboardLayout,
-    redirect: '/admin/overview'
+    redirect: '/users'
+  },
+
+  {
+    path: '/',
+    component: DashboardLayout,
+    children: [
+      {
+        path: '/users',
+        name: 'LoginPage',
+        component: Login,
+      }
+    ]
   },
   {
     path: '/admin',
@@ -72,6 +88,22 @@ const routes = [
       }
     ]
   },
+
+  //My Thieve Devices
+  {
+    path: '/mythieves',
+    component: DashboardLayout,
+    children: [
+      {
+        path: ':id',
+        name: 'DevicePage',
+        component: UserProfile,
+      },
+
+    ]
+
+  },
+
   { path: '*', component: NotFound }
 ]
 

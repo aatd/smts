@@ -1,103 +1,83 @@
 <template>
-  <card class="card-user" v-bind="user">
-
-    <!--Background Picture-->
-    <img slot="image" :src="user.bgImg" alt="..." v-on:click="invokeBGImageFileSelection" />
-
+  <div class="container-fluid">
     <!--User Information-->
-    <div class="author">
-      <b-avatar badge-variant="info" size="150" :src="user.image">
-        <template #badge size="50"
-          ><b-icon v-on:click="invokeImageFileSelection" icon="pencil"></b-icon
-        ></template>
-      </b-avatar>
+    <card class="card-user" v-bind="user">
+      <!--Background Picture-->
+      <img slot="image" :src="user.bgImg" alt="..." />
 
-      <!-- Accept specific image formats by IANA type -->
-      <b-form-file
-        v-show="false"
-        id="imgFile"
-        accept="image/jpeg, image/png"
-        @change="onchangeProfileImage"
-      ></b-form-file>
+      <!--User Information-->
+      <div class="author">
+        <b-avatar badge-variant="light" size="7rem" :src="user.image">
+        </b-avatar>
 
-      <!-- Accept specific image formats by IANA type -->
-      <b-form-file
-        v-show="false"
-        id="bgImgFile"
-        accept="image/jpeg, image/png"
-        @change="onChangeBGImage"
-      ></b-form-file>
+        <h4 class="title">
+          {{ user.name }}<br />
+          <small>{{ user.email }}</small>
+        </h4>
+      </div>
 
-      <h4 class="title">
-        {{ user.name }}<br />
-        <small>{{ user.email }}</small>
-      </h4>
-    </div>
+      <!--Quote of the Day-->
+      <p class="description text-center">
+        {{ user.qod }}
+      </p>
 
-    <!--Quote of the Day-->
-    <p class="description text-center">
-      {{ user.qod }}
-    </p>
+      <div class="row justify-content-center">
+        <b-button pill><b-icon icon="pencil"></b-icon></b-button>
+      </div>
+    </card>
 
-    <!--Some Stats Cards-->
+    <!--Cards for each Device-->
     <div class="row">
       <div
-        class="col-xl-4 col-md-6"
+        class="col-xl-6 col-md-8"
         v-for="mythieve in mythieves"
         :key="mythieve.id"
       >
         <stats-card>
           <div slot="header">
-            <img
-              class="avatar border-gray"
-              :src="mythieve.bycyleImageUrl"
-              alt="..."
-            />
+            <b-avatar size="100" :src="mythieve.bycyleImageUrl"> </b-avatar>
           </div>
           <div slot="content">
             <p class="card-category">Name:</p>
-            <h4 class="card-title">{{ mythieve.name }}</h4>
+            <h4 class="card-title">
+              {{ mythieve.name }}
+            </h4>
             <p class="card-category">Bikes number:</p>
-            <h4 class="card-title">{{ mythieve.deviceTel }}</h4>
-            <p class="card-category">Bikes IMEI:</p>
-            <h4 class="card-title">{{ mythieve.imei }}</h4>
+            <h4 class="card-title">
+              <small>{{ mythieve.deviceTel }}</small>
+            </h4>
           </div>
           <div slot="footer">
-            <b-button
-              ><i class="fa fa-cogs text-warning"></i> {{ mythieve.name }}'s
-              Settings</b-button
-            >
+            <div @click="setQuoteOfTheUpdate">
+              <router-link :to="'/mythieves/123'">
+                Settings<i class="fa fa-cogs text-warning"></i>
+              </router-link>
+            </div>
           </div>
         </stats-card>
       </div>
     </div>
-
-    <div slot="footer" class="text-center d-flex justify-content-center">
-      <button href="#" class="btn btn-simple">
-        <i class="fa fa-facebook-square"></i>
-      </button>
-      <button href="#" class="btn btn-simple">
-        <i class="fa fa-twitter"></i>
-      </button>
-      <button href="#" class="btn btn-simple">
-        <i class="fa fa-google-plus-square"></i>
-      </button>
-    </div>
-  </card>
+  </div>
 </template>
 
 <script>
-import Card from "src/components/Cards/Card.vue";
 import StatsCard from "src/components/Cards/StatsCard.vue";
 
 export default {
-  name: "user-profile",
+  name: "user-overview",
   components: {
-    Card,
     StatsCard,
   },
   data() {
     return {
+      user: {
+        name: "Asef Alper Tunga Dündar",
+        email: "asaf93@hotmail.de",
+        tel: "+490123456789",
+        image: "img/faces/face-2.jpg",
+        bgImg: "img/bicycles/b-7.jpg",
+        qod: "Test an api for Fun-Attribute",
+      },
       mythieves: [
         {
           name: "Bike #1",
@@ -124,18 +104,9 @@ export default {
           bycyleImageUrl: "img/bicycles/b-4.jpg",
         },
       ],
-      user: {
-        name: "Asef Alper Tunga Dündar",
-        email: "asaf93@hotmail.de",
-        tel: "+490123456789",
-        image: "img/faces/face-2.jpg",
-        bgImg: "img/bicycles/b-7.jpg",
-        qod: "Test an api for Fun-Attribute",
-      },
     };
   },
   methods: {
-
     //Design Stuff
     getClasses(index) {
       var remainder = index % 3;
@@ -153,7 +124,7 @@ export default {
       console.log("Not Implemented");
     },
     updateBGImage() {
-      console.log("Not Implemented")
+      console.log("Not Implemented");
     },
     updateProfileSettings() {
       console.log("Not Implemented");
@@ -176,7 +147,7 @@ export default {
         self.user.image = e.target.result;
       };
     },
-    onChangeBGImage(e){
+    onChangeBGImage(e) {
       self = this;
       const image = e.target.files[0];
       const reader = new FileReader();
@@ -187,12 +158,17 @@ export default {
       };
     },
 
+    //UI-Stuff
+    goToDeviceSettings() {
+      this.setQuoteOfTheUpdate();
+    },
+
     //Fun-Stuff fetching fun things like quates
     setQuoteOfTheUpdate() {
       const self = this;
       fetch("https://api.quotable.io/random")
         .then((response) => response.json())
-        .then((data) => (self.user.qod = data.content))
+        .then((data) => (self.user.qod = data.content));
     },
   },
   mounted: function () {
@@ -202,12 +178,4 @@ export default {
 </script>
 
 <style>
-.content {
-  max-height: 100px;
-  min-height: 100px;
-}
-
-.card-body {
-  min-height: 100px;
-}
 </style>

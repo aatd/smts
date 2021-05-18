@@ -15,52 +15,93 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+
+        <!--DeviceName-->
         <b-form-group
           id="input-group-1"
-          label="Email address:"
+          label="Device Name:"
           label-for="input-1"
-          description="We'll never share your email with anyone else."
+          description='Choose a Name of your "My Thief"-Device!'
         >
           <b-form-input
             id="input-1"
-            v-model="form.email"
-            type="email"
-            placeholder="Enter email"
+            v-model="form.name"
+            placeholder="Enter a cool Name..."
             required
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
+        <!--IMEI-->
+        <b-form-group
+          id="input-group-2"
+          label="IMEI:"
+          label-for="input-2"
+          description='On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!'
+        >
           <b-form-input
             id="input-2"
-            v-model="form.name"
-            placeholder="Enter name"
+            v-model="form.imei"
+            placeholder="Enter IMEI..."
+            type="tel"
             required
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-          <b-form-select
+        <!--Tel-->
+        <b-form-group
+          id="input-group-3"
+          label="Your Telephonenumber:"
+          label-for="input-3"
+          description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
+        >
+          <b-form-input
             id="input-3"
-            v-model="form.food"
-            :options="foods"
+            v-model="form.userTel"
+            placeholder="Enter Your Telephonebumer: +49..."
+            type="tel"
+            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
             required
-          ></b-form-select>
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
-          <b-form-checkbox-group
-            v-model="form.checked"
-            id="checkboxes-4"
-            :aria-describedby="ariaDescribedby"
-          >
-            <b-form-checkbox value="me">Check me out</b-form-checkbox>
-            <b-form-checkbox value="that">Check that out</b-form-checkbox>
-          </b-form-checkbox-group>
+        <!--Device-Tel-->
+        <b-form-group
+          id="input-group-3"
+          label="My-Thieves Telephonenumber:"
+          label-for="input-4"
+          description="The number of your My-Thieves SIM-Card. If you want to send SMS's to configure your My-Thieve"
+        >
+          <b-form-input
+            id="input-4"
+            v-model="form.deviceTel"
+            placeholder="Enter Telnnumber: +49..."
+            type="tel"
+            required
+          ></b-form-input>
         </b-form-group>
 
+        <!--SIM-PIN-->
+        <b-form-group
+          id="input-group-4"
+          label="My-Thieves SIM-PIN:"
+          label-for="input-5"
+          description="To activate your SIM-Card we need it's PIN in it's Configuration."
+        >
+          <b-form-input
+            id="input-5"
+            v-model="form.pin"
+            placeholder="XXXX"
+            type="tel"
+            size="4"
+            maxlength="4"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <!--Submit Button-->
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
+
       </b-form>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
@@ -75,23 +116,17 @@
 
 <script>
 export default {
-  name: "settings-card",
+  name: "register-device-card",
   components: {},
   data() {
     return {
       form: {
-        email: "",
         name: "",
-        food: null,
-        checked: [],
+        imei: "",
+        userTel: "",
+        deviceTel: "",
+        pin: "",
       },
-      foods: [
-        { text: "Select One", value: null },
-        "Carrots",
-        "Beans",
-        "Tomatoes",
-        "Corn",
-      ],
       show: true,
     };
   },
@@ -102,11 +137,14 @@ export default {
     },
     onReset(event) {
       event.preventDefault();
+
       // Reset our form values
-      this.form.email = "";
       this.form.name = "";
-      this.form.food = null;
-      this.form.checked = [];
+      this.form.imei = "";
+      this.form.pin = "";
+      this.form.userTel = "";
+      this.form.deviceTel = "";
+
       // Trick to reset/clear native browser form validation state
       this.show = false;
       this.$nextTick(() => {
@@ -117,15 +155,16 @@ export default {
   props: {
     title: {
       type: String,
-      description: "Your Settings",
+      description: 'Register new "My Thief" - Device',
     },
     subTitle: {
       type: String,
-      description: "Here you see all your Settings and devices!",
+      description:
+        'This Form will create a inital Config-File to setup your "My-Thief"-Device',
     },
     type: {
       type: String,
-      description: "warning",
+      description: "primary",
     },
     headerClasses: {
       type: [String, Object, Array],

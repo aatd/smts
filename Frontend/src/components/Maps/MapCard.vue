@@ -8,7 +8,10 @@
       v-if="$slots.header || title"
       :class="headerClasses"
     >
-      <button class="btn btn-danger btn-fill float-right" v-b-modal.modal-call-police-guide>
+      <button
+        class="btn btn-danger btn-fill float-right"
+        v-b-modal.modal-call-police-guide
+      >
         Call Police
       </button>
 
@@ -18,7 +21,7 @@
       <p class="card-category" v-if="subTitle">{{ subTitle }}</p>
     </div>
     <div class="card-body">
-      <l-map :zoom="zoom" :center="center" style="height: 400px">
+      <l-map :zoom="zoom" :center="center" style="height: 300px">
         <l-marker
           v-for="marker in markers"
           :key="marker.id"
@@ -39,9 +42,7 @@
     <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
       <slot name="footer"></slot>
     </div>
-    <b-modal id="modal-call-police-guide" title="BootstrapVue"
-      @ok="callPolice"
-    >
+    <b-modal id="modal-call-police-guide" title="BootstrapVue" @ok="callPolice">
       <p class="my-4">Hello from modal!</p>
     </b-modal>
   </div>
