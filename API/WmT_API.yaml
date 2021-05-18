@@ -1,0 +1,183 @@
+swagger: "2.0"
+info:
+    version: "1.0"
+    title: "Where's my Thief? - API"
+    description: " API zur Webanwendung"
+host: "wheresMythief.swagger.io"
+basePath: "/v1"
+schemes: 
+- "http"
+- "https"
+tags:
+- name: "User"
+  description: "Benutzerverwaltung"
+- name: "Device"
+  description: "devices"
+  
+paths:
+  
+  /user/all:
+    get:
+      tags:
+      - "User"
+      summary: "alle Benutzer"
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "400":
+          description: "not found"
+   
+  /user/register:
+    post:
+      tags:
+      - "User"
+      summary: "create new User"
+      description: "check if Username is available"
+      operationId: "createUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+     
+      - name: "username"
+        in: "query"
+        description: "username for new account"
+        required: true
+        type: "string"
+      
+      - name: "password"
+        in: "query"
+        description: "choose a password for login"
+        required: true
+        type: "string"
+      - name: "repeat password"
+        in: "query"
+        description: "repeat the password"
+        required: true
+        type: "string" 
+      - in: "body"
+        name: "body"
+        schema: 
+          $ref: "#/definitions/User"
+      
+        
+      responses:
+       200:
+          description: OK
+       401:
+        description: wrong username/ password 
+      
+          
+  /user/login:
+    get:
+      tags:
+      - "User"
+      summary: "login User"
+      description: "check if Username & password are correct  "
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+        
+      - name: "password"
+        in: "query"
+        description: "The password for login"
+        required: true
+        type: "string"
+        
+      responses:
+        200:
+          description: OK
+        401:
+          description: wrong username/ password
+  
+  /user/logout:
+    get:
+      tags:
+      - "User"
+      summary: "logout user"
+      responses:
+        200:
+          description: OK
+          
+  /user/addDevice:
+    post:
+    
+          
+  
+          
+  /device/findByUser:
+    get:
+      tags:
+      - "Device"
+      summary: "find all Devices of User"
+      operationId: "findDevicesByUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user"
+        in: "query"
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
+              
+  /device/addPhoto
+    post:
+
+
+
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      password:
+        type: "string"
+      devices:
+        type: "array"
+        items: 
+          type: "integer"
+          format: "int64"
+  
+  Device:
+   type: "object"
+   properties:
+    id:
+      type: "integer"
+      format: "int64"
+    owner:
+      type: "integer"
+      format: "int64"
+    locations:
+      type: "array"
+      items:
+        $ref: "#/definitions/Coordinate"
+  
+  Coordinate:
+    type: "object"
+    properties:
+      latitude:
+        type: "integer"
+        format: "int64"
+      longitude:
+        type: "integer"
+        format: "int64"
+       
+
