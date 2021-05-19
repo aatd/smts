@@ -14,3 +14,11 @@ def create_user_server(request):
     name = request.form["name"]
     surname = request.form["surname"]
     return models.create_user_models(name, surname)
+
+def input_from_device(request):
+    print(request.args)
+    return Response(
+        response=str(request.args),
+        status=200,
+        mimetype="text/html"
+    )

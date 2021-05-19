@@ -16,6 +16,9 @@ def get_user(username):
 def create_user_run():
     return server.create_user_server(request)
 
+@app.route("/input",methods=["GET"])
+def input_from_device():
+    return server.input_from_device(request)
 
 ##############################################
 
