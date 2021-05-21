@@ -3,10 +3,10 @@ info:
     version: "1.0"
     title: "Where's my Thief? - API"
     description: " API zur Webanwendung"
-host: "wheresMythief.swagger.io"
+
 basePath: "/v1"
 schemes: 
-- "http"
+
 - "https"
 tags:
 - name: "User"
@@ -16,58 +16,41 @@ tags:
   
 paths:
   
-  /user/all:
-    get:
-      tags:
-      - "User"
-      summary: "alle Benutzer"
-      responses:
-        "200":
-          description: "success"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
-        "400":
-          description: "not found"
    
-  /user/register:
+  /user:
     post:
       tags:
       - "User"
       summary: "create new User"
       description: "check if Username is available"
       operationId: "createUser"
+      consumes:
+      - "application/json"
       produces:
-      - "application/xml"
+      
       - "application/json"
       parameters:
-     
-      - name: "username"
+      - name: "name"
         in: "query"
-        description: "username for new account"
-        required: true
         type: "string"
-      
+        
       - name: "password"
         in: "query"
-        description: "choose a password for login"
-        required: true
         type: "string"
-      - name: "repeat password"
+        
+      - name: "repeatPassword"
         in: "query"
-        description: "repeat the password"
-        required: true
-        type: "string" 
+        type: "string"
+        
       - in: "body"
-        name: "body"
+        name: "user"
         schema: 
           $ref: "#/definitions/User"
+        required: true  
       
         
       responses:
-       200:
-          description: OK
+       
        401:
         description: wrong username/ password 
       
@@ -106,8 +89,30 @@ paths:
         200:
           description: OK
           
-  /user/addDevice:
-    post:
+  /user/{userId}:
+    get:
+      tags:
+      - "User"
+      summary: "get User by ID"
+      operationId: "getUserbyId"
+      produces: 
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "integer"  
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+  
+  
+    
+    
+      
+ 
     
           
   
@@ -133,9 +138,87 @@ paths:
             items:
               $ref: "#/definitions/Device"
               
-  /device/addPhoto
+  /device/addDevice:
     post:
-
+      tags:
+      - "Device"
+      summary: "add Device"
+      operationId: "addDevice"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+       - in: "body"
+  
+         required: true
+         name: "device"
+         schema:
+            $ref: "#/definitions/Device"
+     
+      responses:
+           200: 
+            description: "ok"
+              
+  /device/{IMEI}:
+    get:
+      tags:
+      - "Device"
+      summary: "get Device by ID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "IMEI"
+        in: "path"
+        required: true
+        type: "string"
+        
+      responses: 
+        200:
+          description: "ok"
+          schema:
+            $ref: "#/definitions/Device"
+            
+  /device/{IMEI}/locations:        
+    post:
+      tags:
+      - "Device"
+      summary: "add GPS-Position to Device"
+      
+      produces:
+      - "application/json"
+      
+      consumes:
+      - "application/json"
+      
+      parameters:
+      - name: "IMEI"
+        in: "path"
+        required: true
+        type: "string"
+      
+      responses:
+        200:
+          description: "Ok"
+    
+    get:
+      tags:
+      - "Device"
+      summary: "Get Locations of device"
+      parameters:
+      - name: "IMEI"
+        in: "path"
+        required: true
+        type: "integer"
+        
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/gpsPosition"
+            
 
 
 
@@ -150,6 +233,9 @@ definitions:
         type: "string"
       password:
         type: "string"
+      phoneNumber:
+        type: "integer"
+        format: "int64"
       devices:
         type: "array"
         items: 
@@ -159,18 +245,28 @@ definitions:
   Device:
    type: "object"
    properties:
-    id:
+    Name:
+      type: "string"
+      
+    IMEI:
       type: "integer"
       format: "int64"
+      
     owner:
+      type: "integer"
+      format: "int64"
+    devicePhoneNumber:
+       type: "integer"
+       format: "int64"
+      
+    ownerPhoneNumber:
       type: "integer"
       format: "int64"
     locations:
       type: "array"
       items:
-        $ref: "#/definitions/Coordinate"
-  
-  Coordinate:
+        $ref: "#/definitions/gpsPosition"
+  gpsPosition:
     type: "object"
     properties:
       latitude:
@@ -179,5 +275,18 @@ definitions:
       longitude:
         type: "integer"
         format: "int64"
+      height:
+        type: "integer"
+        format: "int64"
+      time: 
+        type: "integer"
+        format: "int64"
+      velocity:
+        type: "integer"
+        format: "int64"
+          
+        
+      
+      
        
 
