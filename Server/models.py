@@ -28,21 +28,80 @@ class user:
             "id": self.id,
             "name": self.name,
             "surname": self.surname,
-            "devices": []
+            "devices": self.devices
         }
         return userd
 
 ####################### device class ########################
+###################### device class #######################
+
+
 class device:
-    id = ""
-    
+    imei = ""
+    coords = []
 
-####################### user class ########################
+    def get_device_as_dict(self):
+        return {
+
+            "imei": self.imei,
+            "coords": self.coords
+        }
+
+    def add_coordinate(self, coordinate):
+        self.coords.append(coordinate)
+        try:
+            myquery = {"imei": self.imei}
+            newvalues = {"$push": {"coords": json_util.dumps(coordinate.get_coord_as_dict())}}
+            result = db.devices.update_one(myquery, newvalues)
+            return result.acknowledged
+
+        except Exception as e:
+            raise
 
 
+def add_device_to_db(imei):
+    try:
+        tmpDevice = device()
+        tmpDevice.imei = imei
+        db.devices.insert_one(tmpDevice.get_device_as_dict())
+
+    except Exception as e:
+        raise
+
+    return tmpDevice
 
 
+def get_device_by_imei(imei):
+    try:
+        data = list(db.devices.find({"imei": imei}))
+        tmpDevice = device()
+        if(len(data) > 0):
 
+            tmpDevice.id = data[0]["_id"]
+            tmpDevice.imei = data[0]["imei"]
+            tmpDevice.coords = data[0]["coords"]
+            return tmpDevice
+    except Exception as e:
+        raise
+
+    return tmpDevice
+
+####################### coordinate class ########################
+
+
+class coordinate:
+    lat = ""
+    lon = ""
+    speed = ""
+    time = ""
+
+    def get_coord_as_dict(self):
+        return {
+            "lat": self.lat,
+            "long": self.lon,
+            "speed": self.speed,
+            "time": self.time
+        }
 
 
 def create_user_models(name, surname):
@@ -78,12 +137,3 @@ def get_user_by_name(username):
             status=500,
             mimetype="application/json"
         )
-
-
-###################### device class #######################
-class device:
-    id = ""
-    coords = []
-
-    def add_coordinate(self, coordinate):
-        self.coords.append(coordinate)

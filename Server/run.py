@@ -16,7 +16,8 @@ def get_user(username):
 def create_user_run():
     return server.create_user_server(request)
 
-@app.route("/input",methods=["GET"])
+
+@app.route("/input", methods=["GET"])
 def input_from_device():
     return server.input_from_device(request)
 
@@ -24,4 +25,4 @@ def input_from_device():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=8008, debug=True)
