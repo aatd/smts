@@ -32,6 +32,18 @@ class user:
         }
         return userd
 
+####################### device class ########################
+class device:
+    id = ""
+    
+
+####################### user class ########################
+
+
+
+
+
+
 
 def create_user_models(name, surname):
     try:
