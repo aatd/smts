@@ -97,10 +97,21 @@ export default {
         tooltip: "Hello",
       };
 
-      //Push to all marker positons object
-      this.markers.positions.push(newMarker);
-      this.markers.points.push(newMarker.position);
-      this.center = latLng(newMarker.position.lat, newMarker.position.lng);
+      var obj;
+      var self = this;
+
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+      )
+        .then((res) => res.json())
+        .then((data) => (obj = data))
+        .then(() => {
+          console.log(obj);
+          newMarker.tooltip = `${obj.address.road} \n ${obj.address.county} \n ${obj.address.municipality} \n ${obj.address.postcode} \n ${obj.address.country_code}`;
+          self.markers.positions.push(newMarker);
+          self.markers.points.push(newMarker.position);
+          self.center = latLng(newMarker.position.lat, newMarker.position.lng);
+        });
       this.$nextTick(() => {
         this.$refs.marker[this.$refs.marker.length - 1].mapObject.openPopup();
       });
@@ -109,8 +120,8 @@ export default {
   mounted: function () {
     const self = this;
     window.setInterval(function () {
-      self.addMarker(0.001 * Math.random() + 45.0, 0.001 * Math.random());
-    }, 3000);
+      self.addMarker(0.001 * Math.random() + 45.0, 0.01 * Math.random());
+    }, 4000);
   },
   props: {
     title: {

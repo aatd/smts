@@ -30,7 +30,7 @@ const routes = [
   },
   {
     path: '/',
-    component: DashboardLayout,
+    component: Content,
     children: [
       {
         path: '/users',
