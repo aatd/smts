@@ -60,6 +60,9 @@ paths:
       tags:
       - "User"
       summary: "login User"
+      operationId: "loginUser"
+      consumes:
+      - "application/json"
       description: "check if Username & password are correct  "
       parameters:
       - name: "username"
@@ -107,7 +110,20 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/User"
+            
   
+  /user/delete:
+    delete:
+      tags:
+      - "User"
+      parameters:
+      - name: "name"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "ok"
   
     
     
@@ -149,11 +165,25 @@ paths:
       produces:
       - "application/json"
       parameters:
-       - in: "body"
+      
+      - name: "name"
+        in: "query"
+        type: "string"
+      
+      - name: "IMEI"
+        in: "query"
+        type: "integer"
+        
+      - name: "devicePhoneNumber"
+        in: "query"
+        type: "integer"
+        
+      
+      - in: "body"
   
-         required: true
-         name: "device"
-         schema:
+        required: true
+        name: "device"
+        schema:
             $ref: "#/definitions/Device"
      
       responses:
@@ -196,10 +226,16 @@ paths:
         in: "path"
         required: true
         type: "string"
+      - in: "body"
+        name: "gpsPosition"
+        required: true
+        schema:
+          $ref: "#/definitions/gpsPosition"
       
       responses:
         200:
           description: "Ok"
+          
     
     get:
       tags:
@@ -218,6 +254,19 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/gpsPosition"
+  /device/delete:
+    delete:
+      tags:
+      - "Device"
+      parameters:
+      - name: "name"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "ok"
+          
             
 
 
