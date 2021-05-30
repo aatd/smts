@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="[type && `card-${type}`]">
+  <div class="card login" :class="[type && `card-${type}`]">
     <div class="card-image" v-if="$slots.image">
       <slot name="image"></slot>
     </div>
@@ -15,7 +15,6 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-
         <!--Email or Name-->
         <b-form-group
           id="input-group-1"
@@ -33,7 +32,11 @@
         </b-form-group>
 
         <!--Password-->
-        <b-form-group id="input-group-2" label="Your Password:" label-for="input-2">
+        <b-form-group
+          id="input-group-2"
+          label="Your Password:"
+          label-for="input-2"
+        >
           <b-form-input
             id="input-2"
             type="password"
@@ -100,7 +103,6 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
-
     },
   },
   props: {
@@ -133,4 +135,12 @@ export default {
 </script>
 
 <style>
+.login {
+  display: flex;
+  align-items: center;
+  max-width: 300px;
+  max-height: 600px;
+  margin: 25% auto;
+  float: none;
+}
 </style>
