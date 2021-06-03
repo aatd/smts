@@ -17,7 +17,7 @@ except pymongo.errors.ConnectionFailure:
 
 
 ####################### user class ########################
-class user:
+class User:
     id = ""
     name = ""
     surname = ""
