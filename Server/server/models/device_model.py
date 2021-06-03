@@ -1,3 +1,4 @@
+from datetime import date, datetime
 import json
 from typing import List
 
@@ -6,7 +7,7 @@ from bson import ObjectId, json_util
 from flask import Flask, Response, request
 from geojson import Point
 
-from gpsposition import gpsPosition
+from gpsposition_model import gpsPosition
 
 ############### Establish connection to database ###########
 try:
@@ -38,24 +39,36 @@ class Device:
         self.ownerPhoneNumber = ownerPhoneNumber
         self.locations = []
 
-    def get_device_as_dict(self):
+    def as_dict(self):
+        locs = []
+        
+        for loc in self.locations:
+            locs.append(loc.as_dict())
+        
         return {
-            ""
-            "imei": self.imei,
-            "coords": self.coords
+            "Name": self.name,
+            "IMEI": self.imei,
+            "owner": self.owner,
+            "devicePhoneNumber": self.devicePhoneNumber,
+            "ownerPhoneNumber" : self.ownerPhoneNumber,
+            "locations": locs
         }
 
-    def add_coordinate(self, coordinate):
-        self.coords.append(coordinate)
-        try:
-            myquery = {"imei": self.imei}
-            newvalues = {
-                "$push": {
-                    "coords": json_util.dumps(
-                        coordinate.get_coord_as_dict())}}
-            result = db.devices.update_one(myquery, newvalues)
-            return result.acknowledged
 
-        except Exception as e:
-            raise
+    def add_location(self, location):
+        self.locations.append(location)
+        
+
+def add_device_to_db(device:Device):
+    try:
+        coll = db['devices']
+        dict_device = device.as_dict()
+        json_as = json.dumps(dict_device)
+        result = coll.insert_one(dict_device).inserted_id
+        
+        return result
+    except Exception as e:
+        print("error")
+        raise
+
 

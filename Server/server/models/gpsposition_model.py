@@ -19,10 +19,12 @@ class gpsPosition:
         self.velocity = velocity
 
     def as_dict(self):
-        return {
+        result = {
             "latitude": self.latitude,
             "longitude": self.longitude,
             "height": self.height,
             "time": self.time.strftime("%m/%d/%Y %H:%M:%S"),
             "velocity": self.velocity
         }
+        
+        return result
