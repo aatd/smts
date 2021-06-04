@@ -1,9 +1,9 @@
-from geojson import Point
-from flask import Flask, Response, request
-import pymongo
 import json
-from bson import ObjectId, json_util
 
+import pymongo
+from bson import ObjectId, json_util
+from flask import Flask, Response, request
+from geojson import Point
 
 ############### Establish connection to database ###########
 try:
@@ -18,16 +18,36 @@ except pymongo.errors.ConnectionFailure:
 
 ####################### user class ########################
 class User:
-    id = ""
-    name = ""
-    surname = ""
-    devices = []
+    id = int
+    name = str
+    password = str
+    phoneNumber = int
+    devices = [int] # Listenelemente festlegen?
+    
+
+    def __init__(self, id=0, name="", password="",phoneNumber=0 ):
+        self.id = id
+        self.name = name
+        self.password = password
+        self.phoneNumber = phoneNumber
+        self.devices = []
 
     def get_user_as_dict(self):
-        userd = {
+        return {
             "id": self.id,
             "name": self.name,
-            "surname": self.surname,
+            "password": self.surname,
+            "phoneNumber": self.phoneNumber,
             "devices": self.devices
         }
-        return userd
+def add_user_to_db(user:User):
+    try:
+        coll = db['users']
+        dict_user = user.get_user_as_dict()
+        json_as = json.dumps(dict_user)
+        result = coll.insert_one(dict_user).inserted_id
+
+        reutn result
+    except Exception as e:
+        print ("error")
+        raise         
