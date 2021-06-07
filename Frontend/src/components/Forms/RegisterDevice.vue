@@ -15,7 +15,6 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-
         <!--DeviceName-->
         <b-form-group
           id="input-group-1"
@@ -36,7 +35,7 @@
           id="input-group-2"
           label="IMEI:"
           label-for="input-2"
-          description='On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!'
+          description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
         >
           <b-form-input
             id="input-2"
@@ -59,7 +58,6 @@
             v-model="form.userTel"
             placeholder="Enter Your Telephonebumer: +49..."
             type="tel"
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
             required
           ></b-form-input>
         </b-form-group>
@@ -101,7 +99,6 @@
         <!--Submit Button-->
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
-        
       </b-form>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
@@ -115,6 +112,8 @@
 </template>
 
 <script>
+import { saveAs } from "file-saver";
+
 export default {
   name: "register-device-card",
   components: {},
@@ -126,6 +125,7 @@ export default {
         userTel: "",
         deviceTel: "",
         pin: "",
+        apn: "",
       },
       show: true,
     };
@@ -133,7 +133,8 @@ export default {
   methods: {
     onSubmit(event) {
       event.preventDefault();
-      alert(JSON.stringify(this.form));
+      //alert(JSON.stringify(this.form));
+      this.createConfigFile();
     },
     onReset(event) {
       event.preventDefault();
@@ -150,6 +151,24 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
+    },
+    createConfigFile() {
+      var data = `
+      #define APN      "${this.form.name}"
+      #define IMEI     "${this.form.imei}"
+      #define PIN      {'${this.form.pin[0]}','${this.form.pin[1]}','${this.form.pin[2]}','${this.form.pin[3]}'}
+      #define PHONE    ${this.form.userTel}"
+      #define MYPHONE  ${this.form.deviceTel}"
+      #define URL      "TODO"
+      #define PASSWORD "TODO"
+      #define USER     "TODO"
+      `;
+
+      var file = new File([data], "config.h", {
+        type: "text/plain;charset=utf-8",
+      });
+
+      saveAs(file);
     },
   },
   props: {
