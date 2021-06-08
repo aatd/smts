@@ -54,6 +54,8 @@ paths:
        401:
         description: wrong username/ password 
       
+    
+  
           
   /user/login:
     get:
@@ -111,20 +113,38 @@ paths:
           schema:
             $ref: "#/definitions/User"
             
-  
-  /user/delete:
     delete:
       tags:
-      - "User"
+       - "User"
       parameters:
-      - name: "name"
-        in: "query"
+      - name: "userId"
+        in: "path"
         required: true
         type: "string"
       responses:
         "200":
           description: "ok"
   
+  /user/{userId}/devices:
+    get:
+      tags:
+      - "User"
+      summary: "get Devices from User"
+      operationId: "find all Devices"
+      produces:
+      - "application/xml"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
     
     
       
@@ -155,7 +175,7 @@ paths:
               $ref: "#/definitions/Device"
               
   /device/addDevice:
-    post:
+    get:
       tags:
       - "Device"
       summary: "add Device"
@@ -307,10 +327,15 @@ definitions:
     devicePhoneNumber:
        type: "integer"
        format: "int64"
+       
+    
       
     ownerPhoneNumber:
       type: "integer"
       format: "int64"
+    battery:
+      type: "integer"
+      format: "int64"  
     locations:
       type: "array"
       items:
@@ -319,20 +344,21 @@ definitions:
     type: "object"
     properties:
       latitude:
-        type: "integer"
-        format: "int64"
+        type: "number"
+        format: "float"
+       
       longitude:
-        type: "integer"
-        format: "int64"
+         type: "number"
+         format: "float"
       height:
-        type: "integer"
-        format: "int64"
+         type: "number"
+         format: "float"
       time: 
-        type: "integer"
-        format: "int64"
+         type: "object"
+         format: "datetime"
       velocity:
-        type: "integer"
-        format: "int64"
+        type: "number"
+        format: "float"
           
         
       
