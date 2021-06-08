@@ -103,6 +103,30 @@ export default {
           imei: "492178492440648",
           bycyleImageUrl: "img/bicycles/b-4.jpg",
         },
+        {
+          name: "Bike #5",
+          deviceTel: "+49123123123123",
+          imei: "492178492440648",
+          bycyleImageUrl: "img/bicycles/b-4.jpg",
+        },
+        {
+          name: "Bike #6",
+          deviceTel: "+49123123123123",
+          imei: "492178492440648",
+          bycyleImageUrl: "img/bicycles/b-4.jpg",
+        },
+        {
+          name: "Bike #7",
+          deviceTel: "+49123123123123",
+          imei: "492178492440648",
+          bycyleImageUrl: "img/bicycles/b-4.jpg",
+        },
+        {
+          name: "Bike #8",
+          deviceTel: "+49123123123123",
+          imei: "492178492440648",
+          bycyleImageUrl: "img/bicycles/b-4.jpg",
+        },
       ],
     };
   },

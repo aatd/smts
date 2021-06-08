@@ -1,8 +1,8 @@
 import DashboardLayout from '../layout/DashboardLayout.vue'
-import Content from 'src/layout/Content.vue'
+import CenteredContent from 'src/layout/CenteredContent.vue'
 
 // GeneralViews
-import NotFound from '../pages/NotFoundPage.vue'
+import NotFound from 'src/pages/NotFoundPage.vue'
 
 // Admin pages
 import Overview from 'src/pages/Overview.vue'
@@ -17,38 +17,15 @@ import Upgrade from 'src/pages/Upgrade.vue'
 //Where's my Thieve Pages
 import Debug from 'src/pages/Debug.vue'
 import Login from 'src/components/Forms/Login.vue'
+import Register from 'src/components/Forms/Register.vue'
 import UserOverview from 'src/components/Forms/UserOverview.vue'
-import Device from 'src/components/Forms/Device.vue'
+import DeviceOverview from 'src/components/Forms/DeviceOverview.vue'
+import RegisterDevice from 'src/components/Forms/RegisterDevice.vue'
+import DeviceSettings from 'src/components/Forms/DeviceSettings.vue'
+import UserSettings from 'src/components/Forms/UserSettings.vue'
 
-const routes = [
+const routes2 = [
 
-  //Entry is LoginPage
-  {
-    path: '/',
-    component: DashboardLayout,
-    redirect: '/users'
-  },
-  {
-    path: '/',
-    component: Content,
-    children: [
-      {
-        path: '/users',
-        name: 'LoginPage',
-        component: Login,
-      },
-      {
-        path: '/users/:id',
-        name: 'User-Overview',
-        component: UserOverview,
-      },
-      {
-        path: '/devices/:id',
-        name: 'Device-Overview',
-        component: Device
-      }
-    ]
-  },
   {
     path: '/admin',
     component: DashboardLayout,
@@ -119,6 +96,66 @@ const routes = [
   },
 
   { path: '*', component: NotFound }
+]
+
+
+const routes = [
+  {
+    path: '/',
+    component: CenteredContent,
+    redirect: '/users/login',
+    children: [
+      {
+        path: '/users/login',
+        name: 'Login',
+        component: Login,
+      },
+      {
+        path: '/users/register',
+        name: 'Register',
+        component: Register,
+      },
+    ]
+  },
+  {
+    path: '/users',
+    component: DashboardLayout,
+    children: [
+      {
+        path: '/users/:id',
+        name: 'UserOverview',
+        component: UserOverview,
+      },
+      {
+        path: '/users/:id/settings',
+        name: 'UserSettings',
+        component: UserSettings,
+      },
+    ]
+  },
+  {
+    path: '/devices',
+    component: DashboardLayout,
+    children: [
+      {
+        path: '/devices/register',
+        name: 'RegisterDevice',
+        component: RegisterDevice,
+      },
+      {
+        path: '/devices/:id',
+        name: 'DeviceOverview',
+        component: DeviceOverview,
+      },
+      {
+        path: '/devices/:id/settings',
+        name: 'DeviceSettings',
+        component: DeviceSettings,
+      },
+
+    ]
+  },
+  { path: '*', redirect: '/users/login' }
 ]
 
 /**

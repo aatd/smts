@@ -1,8 +1,12 @@
 <template>
   <card class="card-user" v-bind="user">
-
     <!--Background Picture-->
-    <img slot="image" :src="user.bgImg" alt="..." v-on:click="invokeBGImageFileSelection" />
+    <img
+      slot="image"
+      :src="user.bgImg"
+      alt="..."
+      v-on:click="invokeBGImageFileSelection"
+    />
 
     <!--User Information-->
     <div class="author">
@@ -88,13 +92,11 @@
 
 <script>
 import Card from "src/components/Cards/Card.vue";
-import StatsCard from "src/components/Cards/StatsCard.vue";
 
 export default {
   name: "user-profile",
   components: {
     Card,
-    StatsCard,
   },
   data() {
     return {
@@ -135,7 +137,6 @@ export default {
     };
   },
   methods: {
-
     //Design Stuff
     getClasses(index) {
       var remainder = index % 3;
@@ -153,7 +154,7 @@ export default {
       console.log("Not Implemented");
     },
     updateBGImage() {
-      console.log("Not Implemented")
+      console.log("Not Implemented");
     },
     updateProfileSettings() {
       console.log("Not Implemented");
@@ -176,7 +177,7 @@ export default {
         self.user.image = e.target.result;
       };
     },
-    onChangeBGImage(e){
+    onChangeBGImage(e) {
       self = this;
       const image = e.target.files[0];
       const reader = new FileReader();
@@ -192,7 +193,7 @@ export default {
       const self = this;
       fetch("https://api.quotable.io/random")
         .then((response) => response.json())
-        .then((data) => (self.user.qod = data.content))
+        .then((data) => (self.user.qod = data.content));
     },
   },
   mounted: function () {

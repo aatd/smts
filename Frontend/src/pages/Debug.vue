@@ -216,9 +216,9 @@ import Login from "src/components/Forms/Login.vue";
 import Register from "src/components/Forms/Register.vue";
 import RegisterDevice from "src/components/Forms/RegisterDevice.vue";
 import DeviceSettings from "src/components/Forms/DeviceSettings.vue";
-import UserProfile from "src/components/Forms/UserProfile.vue";
+import UserProfile from "@/components/Forms/UserSettings.vue";
 import UserOverview from "src/components/Forms/UserOverview.vue";
-import Device from "src/components/Forms/Device.vue";
+import DeviceOverview from "@/components/Forms/DeviceOverview.vue";
 
 export default {
   components: {
@@ -231,7 +231,7 @@ export default {
     DeviceSettings,
     UserProfile,
     UserOverview,
-    Device,
+    DeviceOverview,
   },
   data() {
     return {

@@ -1,6 +1,6 @@
 <template>
   <!--User Information-->
-  <card class="card-user login">
+  <card class="card-user login-container">
     <!--Background Picture-->
     <img
       slot="image"
@@ -48,6 +48,7 @@
         >
           <b-form-checkbox value="rememberMe">Remeber me</b-form-checkbox>
         </b-form-checkbox-group>
+        <router-link to="/users/register">Not registered yet?</router-link>
       </b-form-group>
 
       <b-button type="submit" variant="primary">Submit</b-button>
@@ -56,8 +57,6 @@
     <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
-    <!--Device Information-->
-    <div class="author"></div>
   </card>
 </template>
 
@@ -129,13 +128,9 @@ export default {
 </script>
 
 <style>
-.login {
+.login-container {
   display: flex;
-  align-items: center;
-  max-width: 300px;
-  height: 60vh;
-  margin: auto;
-  padding-top: 5%;
-  float: none;
+  justify-content: center;
+  max-width: 400px;
 }
 </style>

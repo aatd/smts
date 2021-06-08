@@ -97,31 +97,43 @@ export default {
         tooltip: "Hello",
       };
 
-      var obj;
       var self = this;
 
       fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
       )
         .then((res) => res.json())
-        .then((data) => (obj = data))
-        .then(() => {
+        .then((obj) => {
           console.log(obj);
-          newMarker.tooltip = `${obj.address.road} \n ${obj.address.county} \n ${obj.address.municipality} \n ${obj.address.postcode} \n ${obj.address.country_code}`;
+          newMarker.tooltip = `<b>Road: </b>${obj.address.road} <br /> <b>County: </b>${obj.address.county} <br /> <b>Municipality: </b>${obj.address.municipality} <br /> <b>Postal: </b>${obj.address.postcode} <br /> <b>Country: </b>${obj.address.country_code}`;
           self.markers.positions.push(newMarker);
           self.markers.points.push(newMarker.position);
           self.center = latLng(newMarker.position.lat, newMarker.position.lng);
+
+          if (self.markers.positions.length > 1) {
+            this.$nextTick(() => {
+              //Current Marker
+              this.$refs.marker[
+                this.$refs.marker.length - 1
+              ].mapObject.openTooltip();
+
+              //Last Marker
+              this.$refs.marker[
+                this.$refs.marker.length - 2
+              ].mapObject.closeTooltip();
+            });
+          }
         });
-      this.$nextTick(() => {
-        this.$refs.marker[this.$refs.marker.length - 1].mapObject.openPopup();
-      });
     },
   },
   mounted: function () {
     const self = this;
-    window.setInterval(function () {
+    self.addRandomMarker = window.setInterval(function () {
       self.addMarker(0.001 * Math.random() + 45.0, 0.01 * Math.random());
     }, 4000);
+  },
+  beforeDestroy() {
+    clearInterval(this.addRandomMarker);
   },
   props: {
     title: {
@@ -164,5 +176,10 @@ export default {
   font-weight: bolder;
   color: #aaa;
   text-shadow: #555;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  max-width: 800px;
 }
 </style>

@@ -1,18 +1,14 @@
 <template>
   <div class="container-fluid">
     <!--Simple Map-->
-    <div class="row">
-      <div class="col-md-12">
-        <MapCard>
-          <template slot="header">
-            <h4 class="card-title">Bike Live Tracker</h4>
-          </template>
-        </MapCard>
-      </div>
-    </div>
+    <MapCard class="container">
+      <template slot="header">
+        <h4 class="card-title">Bike Live Tracker</h4>
+      </template>
+    </MapCard>
 
     <!--User Information-->
-    <card class="card-user" v-bind="mythieve">
+    <card class="card-user container" v-bind="mythieve">
       <!--Background Picture-->
       <img slot="image" :src="mythieve.bycyleImageUrl" alt="..." />
 
@@ -168,10 +164,13 @@ export default {
     self = this;
     self.bvalue = 1;
 
-    window.setInterval(function () {
+    self.batterIndicatorCallback = window.setInterval(function () {
       self.bvalue -= 0.01;
       self.setBatteryIndicator(self.bvalue);
     }, 50);
+  },
+  beforeDestroy() {
+    clearInterval(this.batterIndicatorCallback);
   },
 };
 </script>
@@ -238,5 +237,11 @@ $lightning-size: 18px;
       position: absolute;
     }
   }
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  max-width: 800px;
 }
 </style>

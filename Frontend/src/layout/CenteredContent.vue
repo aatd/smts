@@ -1,7 +1,7 @@
 <template>
-  <transition class="centered" name="fade" mode="out-in">
+  <div class="centered" name="fade" mode="out-in">
     <router-view></router-view>
-  </transition>
+  </div>
 </template>
 
 <script>
@@ -15,12 +15,13 @@ export default {};
 }
 
 .fade-enter,
-  .fade-leave-to
-    /* .fade-leave-active in <2.1.8 */ {
+.fade-leave-to {
   opacity: 0;
 }
 .centered {
   display: flex;
-  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 </style>
