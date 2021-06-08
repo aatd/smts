@@ -2,7 +2,7 @@ import datetime
 import json
 
 
-class gpsPosition:
+class GpsPosition:
 
     latitude: float
     longitude: float
