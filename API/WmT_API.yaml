@@ -9,18 +9,18 @@ schemes:
 
 - "https"
 tags:
-- name: "User"
+- name: "Users"
   description: "Benutzerverwaltung"
-- name: "Device"
+- name: "Devices"
   description: "devices"
   
 paths:
   
    
-  /user:
+  /users:
     post:
       tags:
-      - "User"
+      - "Users"
       summary: "create new User"
       description: "check if Username is available"
       operationId: "createUser"
@@ -30,18 +30,7 @@ paths:
       
       - "application/json"
       parameters:
-      - name: "name"
-        in: "query"
-        type: "string"
-        
-      - name: "password"
-        in: "query"
-        type: "string"
-        
-      - name: "repeatPassword"
-        in: "query"
-        type: "string"
-        
+      
       - in: "body"
         name: "user"
         schema: 
@@ -50,17 +39,23 @@ paths:
       
         
       responses:
+        201:
+         description: User created
+         schema: 
+          $ref: "#/definitions/UserData"
        
-       401:
-        description: wrong username/ password 
+        409:
+           description: wrong username/ password 
+        
+           
       
     
   
           
-  /user/login:
+  /users/login:
     get:
       tags:
-      - "User"
+      - "Users"
       summary: "login User"
       operationId: "loginUser"
       consumes:
@@ -82,22 +77,49 @@ paths:
       responses:
         200:
           description: OK
+          schema: 
+            $ref: "#/definitions/UserData"
         401:
           description: wrong username/ password
   
-  /user/logout:
+  /users/logout:
     get:
       tags:
-      - "User"
+      - "Users"
       summary: "logout user"
       responses:
         200:
           description: OK
           
-  /user/{userId}:
+  /users/{userId}:
+  
+    put:
+      tags:
+      - "Users"
+      summary: "Update User"
+      operationId: "updateUser"
+      produces: 
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string" 
+      - in: "body"
+        name: "User"
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/UserData"
+    
     get:
       tags:
-      - "User"
+      - "Users"
       summary: "get User by ID"
       operationId: "getUserbyId"
       produces: 
@@ -106,16 +128,16 @@ paths:
       - name: "userId"
         in: "path"
         required: true
-        type: "integer"  
+        type: "string"  
       responses:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/UserData"
             
     delete:
       tags:
-       - "User"
+       - "Users"
       parameters:
       - name: "userId"
         in: "path"
@@ -125,14 +147,14 @@ paths:
         "200":
           description: "ok"
   
-  /user/{userId}/devices:
+  /users/{userId}/devices:
     get:
       tags:
-      - "User"
+      - "Users"
       summary: "get Devices from User"
       operationId: "find all Devices"
       produces:
-      - "application/xml"
+      - "application/json"
       parameters:
       - name: "userId"
         in: "path"
@@ -148,36 +170,12 @@ paths:
     
     
       
- 
-    
-          
-  
-          
-  /device/findByUser:
-    get:
-      tags:
-      - "Device"
-      summary: "find all Devices of User"
-      operationId: "findDevicesByUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "user"
-        in: "query"
-        required: true
-        type: string
-      responses:
-        200:
-          description: OK
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Device"
+
               
-  /device/addDevice:
-    get:
+  /devices:
+    post:
       tags:
-      - "Device"
+      - "Devices"
       summary: "add Device"
       operationId: "addDevice"
       consumes:
@@ -186,17 +184,7 @@ paths:
       - "application/json"
       parameters:
       
-      - name: "name"
-        in: "query"
-        type: "string"
       
-      - name: "IMEI"
-        in: "query"
-        type: "integer"
-        
-      - name: "devicePhoneNumber"
-        in: "query"
-        type: "integer"
         
       
       - in: "body"
@@ -207,13 +195,13 @@ paths:
             $ref: "#/definitions/Device"
      
       responses:
-           200: 
-            description: "ok"
+           201: 
+            description: "Device created"
               
-  /device/{IMEI}:
+  /devices/{IMEI}:
     get:
       tags:
-      - "Device"
+      - "Devices"
       summary: "get Device by ID"
       produces:
       - "application/json"
@@ -223,16 +211,31 @@ paths:
         required: true
         type: "string"
         
+    
+        
       responses: 
         200:
           description: "ok"
           schema:
             $ref: "#/definitions/Device"
             
-  /device/{IMEI}/locations:        
+    delete:
+      
+        tags:
+        - "Devices"
+        parameters:
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
+        responses:
+          "200":
+            description: "ok"        
+            
+  /devices/{IMEI}/locations:        
     post:
       tags:
-      - "Device"
+      - "Devices"
       summary: "add GPS-Position to Device"
       
       produces:
@@ -250,7 +253,9 @@ paths:
         name: "gpsPosition"
         required: true
         schema:
-          $ref: "#/definitions/gpsPosition"
+            type: "array"
+            items:
+              $ref: "#/definitions/gpsPosition"
       
       responses:
         200:
@@ -259,13 +264,13 @@ paths:
     
     get:
       tags:
-      - "Device"
+      - "Devices"
       summary: "Get Locations of device"
       parameters:
       - name: "IMEI"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
         
       responses:
         200:
@@ -274,18 +279,22 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/gpsPosition"
-  /device/delete:
+              
+  
     delete:
       tags:
-      - "Device"
+      - "Devices"
       parameters:
-      - name: "name"
-        in: "query"
+      - name: "IMEI"
+        in: "path"
         required: true
         type: "string"
       responses:
-        "200":
+        200:
           description: "ok"
+    
+    
+  
           
             
 
@@ -310,6 +319,25 @@ definitions:
         items: 
           type: "integer"
           format: "int64"
+          
+  UserData:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        
+      name:
+        type: "string"
+      
+      phoneNumber:
+        type: "string"
+        
+      devices:
+        type: "array"
+        items: 
+          type: "integer"
+          format: "int64"
+  
   
   Device:
    type: "object"
@@ -333,7 +361,8 @@ definitions:
       type: "string"
       
     battery:
-      type: "string"
+      type: "number"
+      format: "float"
       
     locations:
       type: "array"
@@ -353,8 +382,8 @@ definitions:
          type: "number"
          format: "float"
       time: 
-         type: "object"
-         format: "datetime"
+         type: "string"
+         format: "ISO8601(datetime)"
       velocity:
         type: "number"
         format: "float"
