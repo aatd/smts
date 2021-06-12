@@ -1,7 +1,9 @@
+from urllib.parse import unquote_plus
 from flask import json, request, jsonify, session, redirect
 from passlib.hash import pbkdf2_sha256
 import uuid
 import pymongo
+
 ############### Establish connection to database ###########
 try:
     mongo = pymongo.MongoClient(
@@ -9,7 +11,7 @@ try:
         serverSelectionTimeoutMS=1000)
 
     db = mongo.smts
-   # mongo.server_info()
+
 
 except pymongo.errors.ConnectionFailure:
     print("Cannot connect to database")
@@ -19,18 +21,6 @@ except pymongo.errors.ConnectionFailure:
 
 
 class User:
-    # id = int
-    # name = str
-    # password = str
-    # phoneNumber = int
-    # devices = [int]  # Listenelemente festlegen?
-
-    # def __init__(self, id=0, name="", password="", phoneNumber=0):
-    #     self.id = id
-    #     self.name = name
-    #     self.password = password
-    #     self.phoneNumber = phoneNumber
-    #     self.devices = []
 
     def start_session(self, user):
         del user['password']
@@ -89,11 +79,58 @@ class User:
         session.clear()
         return jsonify({"message": "logged out"}), 200
 
+    def user_update(self):
+        coll = db["users"]
+        jsonny = request.json
+
+        if session["user"]["_id"] == request.view_args["userID"]:
+
+            # check if password is in request.json -> hash it
+
+            if jsonny.get("password") != -1:
+                jsonny["password"] = pbkdf2_sha256.encrypt(jsonny["password"])
+
+            coll.update_one({"_id": session["user"]["_id"]}, {"$set": jsonny})
+
+            updated_user = coll.find_one({"_id": session["user"]["_id"]})
+            del updated_user["password"]
+            session["user"] = updated_user
+
+            return jsonify(session["user"]), 200
+
+        return jsonify({"error": "could not update user"}), 400
+
     def delete_user(self):
         coll = db["users"]
+
+        # user can only delete his/her account
         if session["user"]["name"] == request.json["name"]:
             result = coll.delete_one({"name": request.json["name"]})
             if result.acknowledged:
                 return jsonify({"message": "user deleted"}), 200
 
         return jsonify({"message": "could not delete user"}), 400
+
+    def get_user(self):
+        coll = db["users"]
+
+        if session["user"]["_id"] == request.view_args["userID"]:
+            #user = coll.find_one({"_id":request.view_args["userID"]})
+            return jsonify(session["user"]), 200
+
+        return jsonify({"error": "not allowed"}), 400
+
+    def get_devices(self):
+        coll = db["devices"]
+
+        #check if user and id in path match
+        if session["user"]["_id"] == request.view_args["userID"]:
+            device_ids = session["user"]["devices"]
+            result = coll.find({"owner":session["user"]["_id"]})
+            devices = []
+            for el in result:
+                devices.append(el)
+            return jsonify(devices), 200
+        
+
+        return jsonify({"error":"could not get devices"}), 400

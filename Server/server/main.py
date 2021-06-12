@@ -28,28 +28,45 @@ def login_required(f):
 # routes
 
 
-@app.route("/user", methods=["POST"])
+@app.route("/users/", methods=["POST"])
 def create_user():
     return User().add_user_to_db()
 
 
-@app.route("/user/login", methods=["GET"])
+@app.route("/users/login/", methods=["GET"])
 def user_login():
     return User().user_login()
 
 
-@app.route("/user/logout", methods=["GET"])
+@app.route("/users/logout/", methods=["GET"])
 def user_logout():
     return User().user_logout()
 
 
-@app.route("/user/delete", methods=["DELETE"])
+@app.route("/users/<userID>/", methods=["PUT"])
+@login_required
+def update_user(userID):
+    return User().user_update()
+
+@app.route("/users/<userID>/", methods=["GET"])
+@login_required
+def get_user(userID):
+    return User().get_user()
+
+
+@app.route("/users/<userID>/", methods=["DELETE"])
 @login_required
 def delete_user():
     return User().delete_user()
 
 
-@ app.route("/input", methods=["GET"])
+@app.route("/users/<userID>/devices/", methods=["GET"])
+@login_required
+def get_devices_from_user(userID):
+    return User().get_devices()
+
+
+@ app.route("/input/", methods=["GET"])
 def input_from_device():
     return server.input_from_device(request)
 
