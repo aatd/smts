@@ -53,7 +53,7 @@ paths:
   
           
   /users/login:
-    get:
+    post:
       tags:
       - "Users"
       summary: "login User"
@@ -62,17 +62,10 @@ paths:
       - "application/json"
       description: "check if Username & password are correct  "
       parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-        
-      - name: "password"
-        in: "query"
-        description: "The password for login"
-        required: true
-        type: "string"
+      - in: "body"
+        name: "User"
+        schema:
+          $ref: "#/definitions/User"
         
       responses:
         200:
@@ -83,10 +76,11 @@ paths:
           description: wrong username/ password
   
   /users/logout:
-    get:
+    post:
       tags:
       - "Users"
       summary: "logout user"
+     
       responses:
         200:
           description: OK
