@@ -80,7 +80,8 @@ class Device:
              "_id": uuid.uuid4().hex,
              "name": json["name"],  
              "imei": json["imei"],
-             "owner": json["owner"],# Sesssion Daten abrufbar?: session["user"]
+             #"owner": json["owner"],# Sesssion Daten abrufbar?: session["user"]
+             "owner": session["user"]["name"],
              "devicePhoneNumber": json["devicePhoneNumber"],
              "ownerPhoneNumber": json["ownerPhoneNumber"],
              "battery" : "0",

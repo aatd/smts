@@ -77,6 +77,7 @@ def input_from_device():
 # devices
 
 @app.route("/devices/", methods=["POST"])
+@login_required
 def create_device():
     return Device().add_device_to_db()
 
