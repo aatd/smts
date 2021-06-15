@@ -1,5 +1,4 @@
-
-from flask import Flask, request, redirect, session
+from flask import Flask, request, session
 from functools import wraps
 
 from flask.json import jsonify
@@ -46,7 +45,7 @@ def user_logout():
     return User().user_logout()
 
 
-@app.route("/users/<userID>/", methods=["PUT"])
+@app.route("/users/<userID>", methods=["PUT"])
 @login_required
 def update_user(userID):
     return User().user_update()
@@ -90,4 +89,4 @@ def delete_device(imei):
     return Device().delete_device_from_db(imei)    
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8008, debug=True)
+    app.run(host="0.0.0.0", port=8008, debug=False)
