@@ -4,6 +4,7 @@ from functools import wraps
 
 from flask.json import jsonify
 from models.user_model import User
+from models.device_model import Device
 
 
 app = Flask(__name__)
@@ -27,10 +28,12 @@ def login_required(f):
 ##############################################
 # routes
 
-
+# Users
 @app.route("/users/", methods=["POST"])
 def create_user():
     return User().add_user_to_db()
+
+
 
 
 @app.route("/users/login/", methods=["GET"])
@@ -71,7 +74,19 @@ def input_from_device():
     return server.input_from_device(request)
 
 ##############################################
+# devices
 
+@app.route("/devices/", methods=["POST"])
+def create_device():
+    return Device().add_device_to_db()
+
+@app.route("/devices/<imei>", methods= ["GET"])
+def get_device(imei):
+    return Device().get_device_from_db(imei) 
+
+@app.route("/devices/<imei>", methods=["DELETE"])
+def delete_device(imei):
+    return Device().delete_device_from_db(imei)    
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8008, debug=True)
