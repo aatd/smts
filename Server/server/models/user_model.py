@@ -75,8 +75,12 @@ class User:
         return jsonify({"error": "wrong username/password"}), 401
 
     def user_logout(self):
+        
+        message = "No one was logged in"
+        if 'logged_in' in session:
+            message = "logged out "+session["user"]["name"]
         session.clear()
-        return jsonify({"message": "logged out"}), 200
+        return jsonify({"message": message}), 200
 
     def user_update(self):
         coll = db["users"]
