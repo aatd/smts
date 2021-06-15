@@ -1,50 +1,25 @@
 <template>
-  <div class="card" :class="[type && `card-${type}`]">
-    <div class="card-image" v-if="$slots.image">
-      <slot name="image"></slot>
-    </div>
-    <div
-      class="card-header"
-      v-if="$slots.header || title"
-      :class="headerClasses"
-    >
-      <button
-        class="btn btn-danger btn-fill float-right"
-        v-b-modal.modal-call-police-guide
-      >
-        Call Police
-      </button>
-
-      <slot name="header">
-        <h4 class="card-title">{{ title }}</h4>
-      </slot>
-      <p class="card-category" v-if="subTitle">{{ subTitle }}</p>
-    </div>
-    <div class="card-body">
-      <l-map :zoom="zoom" :center="center" style="height: 300px">
-        <l-layer-group>
-          <l-marker
-            v-for="marker in markers.positions"
-            :key="marker.id"
-            :visible="marker.visible"
-            :draggable="marker.draggable"
-            :lat-lng.sync="marker.position"
-            :icon="marker.icon"
-            @click="alert(marker)"
-            ref="marker"
-          >
-            <l-popup ref="popup" :content="marker.tooltip" />
-            <l-tooltip :content="marker.tooltip" />
-          </l-marker>
-          <l-polyline :lat-lngs="markers.points" />
-        </l-layer-group>
-        <l-tile-layer :url="url" :attribution="attribution" />
-      </l-map>
-    </div>
-    <b-modal id="modal-call-police-guide" title="BootstrapVue" @ok="callPolice">
-      <p class="my-4">Hello from modal!</p>
-    </b-modal>
-  </div>
+  <card class="card-user register-container">
+    <l-map :zoom="zoom" :center="center" style="height: 300px">
+      <l-layer-group>
+        <l-marker
+          v-for="marker in markers.positions"
+          :key="marker.id"
+          :visible="marker.visible"
+          :draggable="marker.draggable"
+          :lat-lng.sync="marker.position"
+          :icon="marker.icon"
+          @click="alert(marker)"
+          ref="marker"
+        >
+          <l-popup ref="popup" :content="marker.tooltip" />
+          <l-tooltip :content="marker.tooltip" />
+        </l-marker>
+        <l-polyline :lat-lngs="markers.points" />
+      </l-layer-group>
+      <l-tile-layer :url="url" :attribution="attribution" />
+    </l-map>
+  </card>
 </template>
 
 <script>
@@ -105,7 +80,12 @@ export default {
         .then((res) => res.json())
         .then((obj) => {
           console.log(obj);
-          newMarker.tooltip = `<b>Road: </b>${obj.address.road} <br /> <b>County: </b>${obj.address.county} <br /> <b>Municipality: </b>${obj.address.municipality} <br /> <b>Postal: </b>${obj.address.postcode} <br /> <b>Country: </b>${obj.address.country_code}`;
+          newMarker.tooltip = `
+            <b>Road: </b>${obj.address.road} <br />
+            <b>County: </b>${obj.address.county} <br /> 
+            <b>Municipality: </b>${obj.address.municipality} <br /> 
+            <b>Postal: </b>${obj.address.postcode} <br /> 
+            <b>Country: </b>${obj.address.country_code}`;
           self.markers.positions.push(newMarker);
           self.markers.points.push(newMarker.position);
           self.center = latLng(newMarker.position.lat, newMarker.position.lng);
@@ -134,32 +114,6 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.addRandomMarker);
-  },
-  props: {
-    title: {
-      type: String,
-      description: "Card title",
-    },
-    subTitle: {
-      type: String,
-      description: "Card subtitle",
-    },
-    type: {
-      type: String,
-      description: "Card type (e.g primary/danger etc)",
-    },
-    headerClasses: {
-      type: [String, Object, Array],
-      description: "Card header css classes",
-    },
-    bodyClasses: {
-      type: [String, Object, Array],
-      description: "Card body css classes",
-    },
-    footerClasses: {
-      type: [String, Object, Array],
-      description: "Card footer css classes",
-    },
   },
 };
 </script>

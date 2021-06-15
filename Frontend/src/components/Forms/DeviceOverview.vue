@@ -1,12 +1,5 @@
 <template>
   <div class="container-fluid">
-    <!--Simple Map-->
-    <MapCard class="container">
-      <template slot="header">
-        <h4 class="card-title">Bike Live Tracker</h4>
-      </template>
-    </MapCard>
-
     <!--User Information-->
     <card class="card-user container" v-bind="mythieve">
       <!--Background Picture-->
@@ -33,15 +26,13 @@
           ><br />
         </h4>
       </div>
-
-      <!--Quote of the Day-->
-      <p class="description text-center">
-        {{ mythieve.qod }}
-      </p>
+      <h4 class="title">Live tracker of {{ mythieve.name }}</h4>
+      <!--Simple Map-->
+      <MapCard></MapCard>
 
       <div class="row">
         <div class="col-md-4">
-          <router-link :to="'/mythieves/123'">
+          <router-link :to="`/devices/${$route.params.id}/settings`">
             Settings<i class="fa fa-cogs text-warning"></i>
           </router-link>
         </div>

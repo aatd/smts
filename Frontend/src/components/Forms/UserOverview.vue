@@ -22,41 +22,40 @@
       </p>
 
       <div class="row justify-content-center">
-        <b-button pill><b-icon icon="pencil"></b-icon></b-button>
+        <router-link :to="`/users/${$route.params.id}/settings`">
+          <b-button pill><b-icon icon="pencil"></b-icon></b-button>
+        </router-link>
       </div>
     </card>
 
     <!--Cards for each Device-->
-    <div class="row">
-      <div
-        class="col-xl-6 col-md-8"
-        v-for="mythieve in mythieves"
-        :key="mythieve.id"
-      >
-        <stats-card>
-          <div slot="header">
-            <b-avatar size="100" :src="mythieve.bycyleImageUrl"> </b-avatar>
-          </div>
-          <div slot="content">
-            <p class="card-category">Name:</p>
-            <h4 class="card-title">
-              {{ mythieve.name }}
-            </h4>
-            <p class="card-category">Bikes number:</p>
-            <h4 class="card-title">
-              <small>{{ mythieve.deviceTel }}</small>
-            </h4>
-          </div>
-          <div slot="footer">
-            <div @click="setQuoteOfTheUpdate">
-              <router-link :to="'/mythieves/123'">
-                Settings<i class="fa fa-cogs text-warning"></i>
-              </router-link>
-            </div>
-          </div>
-        </stats-card>
+    <card class="devices-container" v-bind="user">
+      <div class="row device-card-list">
+        <div
+          class="col-xl-6 col-md-8"
+          v-for="mythieve in mythieves"
+          :key="mythieve.id"
+        >
+          <router-link :to="`/devices/${mythieve.imei}`">
+            <stats-card>
+              <div slot="header">
+                <b-avatar size="100" :src="mythieve.bycyleImageUrl"></b-avatar>
+              </div>
+              <div slot="content">
+                <p class="card-category">Name:</p>
+                <h4 class="card-title">
+                  {{ mythieve.name }}
+                </h4>
+                <p class="card-category">Bikes number:</p>
+                <h4 class="card-title">
+                  <small>{{ mythieve.deviceTel }}</small>
+                </h4>
+              </div>
+            </stats-card>
+          </router-link>
+        </div>
       </div>
-    </div>
+    </card>
   </div>
 </template>
 
@@ -202,4 +201,12 @@ export default {
 </script>
 
 <style>
+.device-card-list {
+  justify-content: center;
+}
+
+.devices-container {
+  max-width: 600px;
+  margin: auto;
+}
 </style>

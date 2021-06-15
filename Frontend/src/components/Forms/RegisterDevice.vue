@@ -90,11 +90,12 @@
       </b-form-group>
 
       <!--Submit Button-->
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button block type="submit" variant="primary">RegisterDevice</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
       <pre class="m-0">{{ form }}</pre>
+      <b-button type="submit" variant="primary">Submit</b-button>
+      <b-button type="reset" variant="danger">Reset</b-button>
     </b-card>
   </card>
 </template>
@@ -194,5 +195,6 @@ export default {
   display: flex;
   justify-content: center;
   max-width: 400px;
+  margin: auto;
 }
 </style>

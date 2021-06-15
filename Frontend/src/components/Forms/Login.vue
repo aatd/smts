@@ -51,11 +51,13 @@
         <router-link to="/users/register">Not registered yet?</router-link>
       </b-form-group>
 
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <!--Submission Button-->
+      <b-button block type="submit" variant="primary">Login</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
       <pre class="m-0">{{ form }}</pre>
+      <b-button type="submit" variant="primary">Submit</b-button>
+      <b-button type="reset" variant="danger">Reset</b-button>
     </b-card>
   </card>
 </template>
@@ -98,39 +100,11 @@ export default {
       });
     },
   },
-  props: {
-    title: {
-      type: String,
-      description: "Login",
-    },
-    subTitle: {
-      type: String,
-      description: "Login to your Bikes",
-    },
-    type: {
-      type: String,
-      description: "primary",
-    },
-    headerClasses: {
-      type: [String, Object, Array],
-      description: "Card header css classes",
-    },
-    bodyClasses: {
-      type: [String, Object, Array],
-      description: "Card body css classes",
-    },
-    footerClasses: {
-      type: [String, Object, Array],
-      description: "Card footer css classes",
-    },
-  },
 };
 </script>
 
 <style>
 .login-container {
-  display: flex;
-  justify-content: center;
   max-width: 400px;
 }
 </style>
