@@ -36,6 +36,21 @@
         ></b-form-input>
       </b-form-group>
 
+      <!--Telephone-->
+      <b-form-group
+        id="input-group-2"
+        label="Telephone Number:"
+        label-for="input-2"
+      >
+        <b-form-input
+          id="input-2"
+          v-model="form.tel"
+          type="tel"
+          placeholder="Enter your Mobilephone Number"
+          required
+        ></b-form-input>
+      </b-form-group>
+
       <!--Password-->
       <b-form-group
         id="input-group-3"
@@ -67,11 +82,12 @@
       </b-form-group>
 
       <!--Submit Button-->
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button block type="submit" variant="primary">Register</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
       <pre class="m-0">{{ form }}</pre>
+      <b-button type="submit" variant="primary">Submit</b-button>
+      <b-button type="reset" variant="danger">Reset</b-button>
     </b-card>
   </card>
 </template>
@@ -85,6 +101,7 @@ export default {
       form: {
         username: "",
         email: "",
+        tel: "",
         pwd: "",
         pwdCheck: "",
       },
@@ -110,33 +127,6 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
-    },
-  },
-  props: {
-    title: {
-      type: String,
-      description: "Register",
-    },
-    subTitle: {
-      type: String,
-      description:
-        "Some information about you so you can set up your Bikes in the next step!",
-    },
-    type: {
-      type: String,
-      description: "primary",
-    },
-    headerClasses: {
-      type: [String, Object, Array],
-      description: "Card header css classes",
-    },
-    bodyClasses: {
-      type: [String, Object, Array],
-      description: "Card body css classes",
-    },
-    footerClasses: {
-      type: [String, Object, Array],
-      description: "Card footer css classes",
     },
   },
 };

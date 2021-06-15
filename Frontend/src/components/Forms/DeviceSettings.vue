@@ -15,7 +15,6 @@
     </div>
     <div class="card-body">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-
         <!--DeviceName-->
         <b-form-group
           id="input-group-1"
@@ -36,7 +35,7 @@
           id="input-group-2"
           label="IMEI:"
           label-for="input-2"
-          description='On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!'
+          description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
         >
           <b-form-input
             id="input-2"
@@ -101,7 +100,6 @@
         <!--Submit Button-->
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
-
       </b-form>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>

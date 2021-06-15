@@ -23,15 +23,8 @@
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <router-link class="nav-link" to="/users/register"
-              >Account</router-link
-            >
-          </li>
-          <li class="nav-item">
-            <router-link
-              class="nav-link"
-              :to="`/users/${$route.params.id}/settings`"
-              >Account</router-link
+            <router-link class="nav-link" to="/devices/register"
+              >Register New Bike</router-link
             >
           </li>
         </ul>

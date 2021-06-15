@@ -36,10 +36,11 @@
     </side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
-      <dashboard-content class="" @click="toggleSidebar"> </dashboard-content>
+      <dashboard-content @click="toggleSidebar"> </dashboard-content>
     </div>
   </div>
 </template>
+
 
 <style lang="scss">
 </style>

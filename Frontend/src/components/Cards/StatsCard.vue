@@ -1,5 +1,5 @@
 <template>
-  <card class="card-stats">
+  <card class="card-stats card-container">
     <div class="row">
       <div class="col-5" v-if="$slots.header">
         <div class="icon-big text-center">
@@ -19,16 +19,17 @@
 </template>
 
 <script>
-  import Card from './Card.vue'
-  export default {
-    name: 'stats-card',
-    components: {
-      Card
-    }
-  }
-
+import Card from "./Card.vue";
+export default {
+  name: "stats-card",
+  components: {
+    Card,
+  },
+};
 </script>
 
 <style>
-
+.card-container {
+  height: 150px;
+}
 </style>
