@@ -1,5 +1,4 @@
-from urllib.parse import unquote_plus
-from flask import json, request, jsonify, session, redirect
+from flask import request, jsonify, session
 from passlib.hash import pbkdf2_sha256
 import uuid
 import pymongo
