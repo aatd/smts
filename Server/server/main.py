@@ -85,8 +85,24 @@ def get_device(imei):
     return Device().get_device_from_db(imei) 
 
 @app.route("/devices/<imei>", methods=["DELETE"])
+@login_required
 def delete_device(imei):
-    return Device().delete_device_from_db(imei)    
+    return Device().delete_device_from_db(imei)  
 
+@app.route("/devices/<imei>/locations", methods =["GET"])
+@login_required
+def get_locations(imei):
+    return Device().get_locations_from_db(imei)
+
+@app.route("/devices/<imei>/locations", methods =["POST"])
+@login_required
+def add_locations(imei):
+    return Device().add_position_to_device(imei)
+
+@app.route("/devices/<imei>/locations", methods = ["DELETE"])
+@login_required
+def delete_locations(imei):
+    return Device().delete_locations(imei)    
+    
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8008, debug=False)

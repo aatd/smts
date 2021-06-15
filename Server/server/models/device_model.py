@@ -8,6 +8,8 @@ from bson import ObjectId, json_util
 from flask import Flask, Response, request, jsonify, session
 from geojson import Point
 import uuid
+from models.gpsposition_model import GpsPosition
+
 
 
 
@@ -25,37 +27,8 @@ except pymongo.errors.ConnectionFailure:
 
 
 class Device:
-    name: str
-    imei: int
-    owner: int
-    devicePhoneNumber: str
-    ownerPhoneNumber: str
-    #locations: List[GpsPosition]
-    locations: List[str]
+    
 
-    def __init__(self, name="", imei=0, owner=0,
-                 devicePhoneNumber=0, ownerPhoneNumber=0):
-        self.name = name
-        self.imei = imei
-        self.owner = owner
-        self.devicePhoneNumber = devicePhoneNumber
-        self.ownerPhoneNumber = ownerPhoneNumber
-        self.locations = []
-
-    def as_dict(self):
-        locs = []
-
-        for loc in self.locations:
-            locs.append(loc.as_dict())
-
-        return {
-            "name": self.name,
-            "imei": self.imei,
-            "owner": self.owner,
-            "devicePhoneNumber": self.devicePhoneNumber,
-            "ownerPhoneNumber": self.ownerPhoneNumber,
-            "locations": locs
-        }
 
     def add_location(self, location):
         self.locations.append(location)
@@ -63,10 +36,11 @@ class Device:
 
 
 
-    def get_device_from_db(self, imei: int) :
+    def get_device_from_db(self, imei: str):
         coll = db["devices"]
               
-        device = coll.find_one({"imei": imei})  
+        device = coll.find_one({"imei": imei})
+        del device["locations"]  
         if device != None:
             return  jsonify(device),200
         return "No device found", 400    
@@ -102,15 +76,51 @@ class Device:
 
 
 
-    #def add_position_to_device(self, dev: Device, position: GpsPosition) -> bool:
-     #   pass
+    def add_position_to_device(self, imei: str):
+        coll = db["devices"]
+        json = request.json
+        gpsPos = {
+            "latitude" :  json["latitude"],
+            "longitude" : json["longitude"],
+            "height" : json["height"],
+            "time" : json["time"],
+            "velocity" : json["velocity"]
+        }
+        
+        device = coll.find_one({"imei":imei})
+        if device != None:
+            device.get('locations').append(gpsPos)
+            coll.find_one_and_replace({"imei": imei}, device)
+        
+            return jsonify(gpsPos),200
+        return "No device to add location to", 404   
+
+    def delete_locations(self, imei: str):
+        coll = db["devices"]
+        device = coll.find_one({"imei":imei})
+        if device != None:
+            del device.get('locations')[:]
+            coll.find_one_and_replace({"imei":imei}, device)
+            return "locations deleted", 200    
+
+        
+            
 
 
-   # def get_locations_from_db(self, dev: Device) -> List[GpsPosition]:
-    #    pass
+    def get_locations_from_db(self, imei: str):
+        coll = db["devices"]
+        device = coll.find_one({"imei": imei})
+        if device != None:
+            locations = device.get('locations')
+            
+           
+            
+           
+            return jsonify(locations)
+        return "No device to get locations from",400    
 
 
-    def delete_device_from_db(self,imei: int):
+    def delete_device_from_db(self,imei: str):
         coll = db["devices"]
               
         device = coll.find_one({"imei": imei})  
