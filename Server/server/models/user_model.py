@@ -37,32 +37,36 @@ class User:
         }
 
     def add_user_to_db(self):
-        json = request.json
-        user = {
-            "_id": uuid.uuid4().hex,
-            "name": json["name"],
-            "password": json["password"],
-            "phoneNumber": json["phoneNumber"],
-            "devices": []
-        }
+        print(session)
+        if "logged_in" not in session:
+            json = request.json
+            user = {
+                "_id": uuid.uuid4().hex,
+                "name": json["name"],
+                "password": json["password"],
+                "phoneNumber": json["phoneNumber"],
+                "devices": []
+            }
 
-        # encrypt user password sha256
-        user["password"] = pbkdf2_sha256.encrypt(user["password"])
-        print(user["_id"])
-        try:
-            coll = db['users']
+            # encrypt user password sha256
+            user["password"] = pbkdf2_sha256.encrypt(user["password"])
+            print(user["_id"])
+            try:
+                coll = db['users']
 
-            # check if username is available
-            if coll.find_one({"name": user["name"]}):
-                return jsonify({"error": "User name already taken"}), 400
+                # check if username is available
+                if coll.find_one({"name": user["name"]}):
+                    return jsonify({"error": "User name already taken"}), 400
 
-            coll.insert_one(user)
+                coll.insert_one(user)
 
-            return self.start_session(user)
+                return self.start_session(user)
 
-        except Exception as e:
-            print("error")
-            raise
+            except Exception as e:
+                print("error")
+                raise
+        else:
+            return jsonify({"error":"log out first"})
 
     def user_login(self):
         coll = db["users"]
@@ -128,10 +132,13 @@ class User:
 
         #check if user and id in path match
         if session["user"]["_id"] == request.view_args["userID"]:
-            device_ids = session["user"]["devices"]
+
             result = coll.find({"owner":session["user"]["_id"]})
+            
             devices = []
             for el in result:
+                del el["locations"]
+                del el["_id"]
                 devices.append(el)
             return jsonify(devices), 200
         
