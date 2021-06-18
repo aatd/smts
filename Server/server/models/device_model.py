@@ -1,10 +1,6 @@
-#from gpsposition_model import GpsPosition
-import re
 import pymongo
 from flask import jsonify, session, request
 import uuid
-
-from models.gpsposition_model import GpsPosition
 
 
 ############### Establish connection to database ###########
@@ -26,19 +22,8 @@ def check_against_userID(id_to_check:str):
     return False
 
 class Device:
-    def add_location(self, location):
-        self.locations.append(location)
 
-    def get_device_from_db(self, imei: str):
-        coll = db["devices"]
-
-        device = coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
-            del device["locations"]
-            if device != None:
-                   return jsonify(device), 200
-        return jsonify({"error":"No device found"}), 400
-
+    # /devices
     def add_device_to_db(self):
         json = request.json
         device = {
@@ -56,16 +41,40 @@ class Device:
             device_coll = db['devices']
             user_coll = db['users']
             if device_coll.find_one({"imei": device["imei"]}):
-                return jsonify({"error:": "Device already exists"}), 400
+                return jsonify({"error:": "Device already exists"}), 409
 
             device_coll.insert_one(device)
             user_coll.update_one({"_id": session["user"]["_id"]}, {"$push": {"devices":device["imei"]}})
-            return jsonify(device_coll.find_one({"imei":json["imei"]})), 200
-
+            #return jsonify(device_coll.find_one({"imei":json["imei"]})), 201
+            return jsonify({"message":"Device created"}), 201
         except Exception as e:
-            print("error")
+            return jsonify({"error":"could not create device"}), 400
             raise
 
+
+    # /devices/{imei}
+    def get_device_from_db(self, imei: str):
+        coll = db["devices"]
+
+        device = coll.find_one({"imei": imei})
+        if device != None and check_against_userID(device["owner"]):
+            del device["locations"]
+            if device != None:
+                   return jsonify(device), 200
+        return jsonify({"error":"No device found"}), 400
+
+    def delete_device_from_db(self, imei: str):
+        devices_coll = db["devices"]
+        user_coll = db["users"]
+        device = devices_coll.find_one({"imei": imei})
+        if device != None and check_against_userID(device["owner"]):
+            
+            devices_coll.delete_one({"imei": imei})
+            user_coll.update_one({"_id": session["user"]["_id"]}, {"$pull": {"devices":device["imei"]}})
+            return jsonify({"message":"device succesfully deleted!"}), 200
+        return jsonify({"error":"you dont own a device with the imei "+imei}), 404
+    
+    # /devices/{IMEI}/locations
     def add_position_to_device(self, imei: str):
         coll = db["devices"]
         json_list = request.json
@@ -79,6 +88,16 @@ class Device:
 
         return jsonify({"error":"No device to add location to"}), 404
 
+    def get_locations_from_db(self, imei: str):
+        coll = db["devices"]
+        device = coll.find_one({"imei": imei})
+        if device != None and check_against_userID(device["owner"]):
+            locations = device.get('locations')
+
+            return jsonify(locations), 200
+        return jsonify({"error":"No device to get locations from"}), 404
+
+
     def delete_locations(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
@@ -87,22 +106,6 @@ class Device:
             return jsonify({"message":"locations deleted"}), 200
         return jsonify({"error":"not possible to delete locations"}), 400
 
-    def get_locations_from_db(self, imei: str):
-        coll = db["devices"]
-        device = coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
-            locations = device.get('locations')
+   
 
-            return jsonify(locations), 200
-        return jsonify({"error":"No device to get locations from"}), 400
-
-    def delete_device_from_db(self, imei: str):
-        devices_coll = db["devices"]
-        user_coll = db["users"]
-        device = devices_coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
-            
-            devices_coll.delete_one({"imei": imei})
-            user_coll.update_one({"_id": session["user"]["_id"]}, {"$pull": {"devices":device["imei"]}})
-            return jsonify({"message":"device succesfully deleted!"}), 200
-        return jsonify({"error":"you dont own a device with the imei "+imei}), 400
+    

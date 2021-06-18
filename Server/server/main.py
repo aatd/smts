@@ -1,6 +1,6 @@
 from flask import Flask, request, session
 from functools import wraps
-
+from datetime import timedelta
 from flask.json import jsonify
 from models.user_model import User
 from models.device_model import Device
@@ -12,6 +12,10 @@ app.secret_key = "myThiefBackendSecretKey123"
 # Decorators
 # function that wraps routes that require login otherwise redirect to home
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(hours=12)
 
 def login_required(f):
     @wraps(f)
@@ -28,19 +32,17 @@ def login_required(f):
 # routes
 
 # Users
-@app.route("/users/", methods=["POST"])
+@app.route("/users", methods=["POST"])
 def create_user():
     return User().add_user_to_db()
 
 
-
-
-@app.route("/users/login/", methods=["GET"])
+@app.route("/users/login", methods=["GET"])
 def user_login():
     return User().user_login()
 
 
-@app.route("/users/logout/", methods=["GET"])
+@app.route("/users/logout", methods=["GET"])
 def user_logout():
     return User().user_logout()
 
@@ -50,32 +52,32 @@ def user_logout():
 def update_user(userID):
     return User().user_update()
 
-@app.route("/users/<userID>/", methods=["GET"])
+@app.route("/users/<userID>", methods=["GET"])
 @login_required
 def get_user(userID):
     return User().get_user()
 
 
-@app.route("/users/<userID>/", methods=["DELETE"])
+@app.route("/users/<userID>", methods=["DELETE"])
 @login_required
 def delete_user():
     return User().delete_user()
 
 
-@app.route("/users/<userID>/devices/", methods=["GET"])
+@app.route("/users/<userID>/devices", methods=["GET"])
 @login_required
 def get_devices_from_user(userID):
     return User().get_devices()
 
 
-@ app.route("/input/", methods=["GET"])
+@ app.route("/input", methods=["GET"])
 def input_from_device():
     return server.input_from_device(request)
 
 ##############################################
 # devices
 
-@app.route("/devices/", methods=["POST"])
+@app.route("/devices", methods=["POST"])
 @login_required
 def create_device():
     return Device().add_device_to_db()

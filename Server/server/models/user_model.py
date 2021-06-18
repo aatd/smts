@@ -27,17 +27,8 @@ class User:
         session['user'] = user
         return jsonify(user), 200
 
-    def get_user_as_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "password": self.password,
-            "phoneNumber": self.phoneNumber,
-            "devices": self.devices
-        }
-
+    # /users
     def add_user_to_db(self):
-        print(session)
         if "logged_in" not in session:
             json = request.json
             user = {
@@ -50,7 +41,6 @@ class User:
 
             # encrypt user password sha256
             user["password"] = pbkdf2_sha256.encrypt(user["password"])
-            print(user["_id"])
             try:
                 coll = db['users']
 
@@ -66,35 +56,42 @@ class User:
                 print("error")
                 raise
         else:
-            return jsonify({"error":"log out first"})
+            return jsonify({"error": "log out first"})
 
+    # /users/login
     def user_login(self):
         coll = db["users"]
-        json = request.json
-        user = coll.find_one({"name": json["name"]})
+        if not 'logged_in' in session:
 
-        if user and pbkdf2_sha256.verify(json['password'], user['password']):
-            return self.start_session(user)
+            json = request.json
+            user = coll.find_one({"name": json["name"]})
 
-        return jsonify({"error": "wrong username/password"}), 401
+            if user and pbkdf2_sha256.verify(json['password'], user['password']):
+                return self.start_session(user)
 
+            return jsonify({"error": "wrong username/password"}), 401
+
+        return jsonify({"message": "log out first"})
+
+
+    #/users/logout
     def user_logout(self):
-        
         message = "No one was logged in"
         if 'logged_in' in session:
-            message = "logged out "+session["user"]["name"]
+            message = "logged out"
         session.clear()
         return jsonify({"message": message}), 200
 
+    #/users/{userId}
     def user_update(self):
         coll = db["users"]
         jsonny = request.json
 
         if session["user"]["_id"] == request.view_args["userID"]:
-
-            # check if password is in request.json -> hash it
-
-            if jsonny.get("password") != -1:
+           
+        # check if password is in request.json -> hash it
+        
+            if jsonny.get("password") != None:
                 jsonny["password"] = pbkdf2_sha256.encrypt(jsonny["password"])
 
             coll.update_one({"_id": session["user"]["_id"]}, {"$set": jsonny})
@@ -107,6 +104,7 @@ class User:
 
         return jsonify({"error": "could not update user"}), 400
 
+    #/users/{userId}
     def delete_user(self):
         coll = db["users"]
 
@@ -114,6 +112,7 @@ class User:
         if session["user"]["name"] == request.json["name"]:
             result = coll.delete_one({"name": request.json["name"]})
             if result.acknowledged:
+                session.clear()
                 return jsonify({"message": "user deleted"}), 200
 
         return jsonify({"message": "could not delete user"}), 400
@@ -130,17 +129,16 @@ class User:
     def get_devices(self):
         coll = db["devices"]
 
-        #check if user and id in path match
+        # check if user and id in path match
         if session["user"]["_id"] == request.view_args["userID"]:
 
-            result = coll.find({"owner":session["user"]["_id"]})
-            
+            result = coll.find({"owner": session["user"]["_id"]})
+
             devices = []
             for el in result:
                 del el["locations"]
                 del el["_id"]
                 devices.append(el)
             return jsonify(devices), 200
-        
 
-        return jsonify({"error":"could not get devices"}), 400
+        return jsonify({"error": "could not get devices"}), 400
