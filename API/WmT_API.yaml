@@ -211,7 +211,7 @@ paths:
         200:
           description: "ok"
           schema:
-            $ref: "#/definitions/Device"
+            $ref: "#/definitions/DeviceData"
             
     delete:
       
@@ -237,6 +237,7 @@ paths:
       
       consumes:
       - "application/json"
+      - "application/x-www-form-urlencoded"
       
       parameters:
       - name: "IMEI"
@@ -332,14 +333,38 @@ definitions:
           type: "integer"
           format: "int64"
   
+  DeviceData:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      
+      imei:
+        type: "string"
+      
+      
+      owner:
+        type: "string"
+      
+      devicePhoneNumber:
+        type: "string"
+       
+       
+      
+      ownerPhoneNumber:
+        type: "string"
+      
+      battery:
+        type: "number"
+        format: "float"
   
   Device:
    type: "object"
    properties:
-    Name:
+    name:
       type: "string"
       
-    IMEI:
+    imei:
       type: "string"
       
       
