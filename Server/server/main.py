@@ -31,6 +31,11 @@ def login_required(f):
 ##############################################
 # routes
 
+#go away from my home
+@app.route("/",methods=["GET"])
+def go_home():
+    return "go home", 200
+
 # Users
 @app.route("/users", methods=["POST"])
 def create_user():
@@ -97,9 +102,10 @@ def get_locations(imei):
     return Device().get_locations_from_db(imei)
 
 @app.route("/devices/<imei>/locations", methods =["POST"])
-@login_required
 def add_locations(imei):
     return Device().add_position_to_device(imei)
+
+
 
 @app.route("/devices/<imei>/locations", methods = ["DELETE"])
 @login_required
