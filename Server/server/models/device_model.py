@@ -80,8 +80,16 @@ class Device:
     # /devices/{IMEI}/locations
     def add_position_to_device(self, imei: str):
         coll = db["devices"]
+        device = coll.find_one({"imei": imei})
         if request.json != None:
             json_list = request.json
+            if device != None and check_against_userID(device["owner"]):
+
+                for json in json_list:
+                    coll.update_one({"imei": imei}, {"$push": {"locations": json}})
+
+            return jsonify({"message": "position added to device"}), 200
+
         if "latitude" in request.args:
             json_list = {
                 "latitude": request.args["latitude"],
@@ -90,10 +98,6 @@ class Device:
                 "time": request.args["time"],
                 "velocity": request.args["velocity"]
             }
-
-        device = coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
-            #for json in json_list:
             coll.update_one({"imei": imei}, {"$push": {"locations": json_list}})
 
             return jsonify({"message": "position added to device"}), 200

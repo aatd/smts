@@ -8,6 +8,8 @@ from models.device_model import Device
 
 app = Flask(__name__)
 app.secret_key = "myThiefBackendSecretKey123"
+if __name__ == '__main__':
+    app.run(host="0.0.0.0")
 
 # Decorators
 # function that wraps routes that require login otherwise redirect to home
@@ -112,5 +114,3 @@ def add_locations(imei):
 def delete_locations(imei):
     return Device().delete_locations(imei)    
     
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8008, debug=True)
