@@ -4,9 +4,10 @@ from datetime import timedelta
 from flask.json import jsonify
 from models.user_model import User
 from models.device_model import Device
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = "myThiefBackendSecretKey123"
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
@@ -99,7 +100,7 @@ def delete_device(imei):
     return Device().delete_device_from_db(imei)  
 
 @app.route("/devices/<imei>/locations", methods =["GET"])
-@login_required
+#@login_required
 def get_locations(imei):
     return Device().get_locations_from_db(imei)
 

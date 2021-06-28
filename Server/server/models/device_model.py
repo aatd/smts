@@ -77,37 +77,40 @@ class Device:
             return jsonify({"message": "device succesfully deleted!"}), 200
         return jsonify({"error": "you dont own a device with the imei "+imei}), 404
 
-    # /devices/{IMEI}/locations
+    # /devices/{IMEI}/location
     def add_position_to_device(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
         if request.json != None:
             json_list = request.json
-            if device != None and check_against_userID(device["owner"]):
+            #if device != None and check_against_userID(device["owner"]):
 
-                for json in json_list:
-                    coll.update_one({"imei": imei}, {"$push": {"locations": json}})
-
-            return jsonify({"message": "position added to device"}), 200
-
-        if "latitude" in request.args:
-            json_list = {
-                "latitude": request.args["latitude"],
-                "longitude": request.args["longitude"],
-                "height": request.args["height"],
-                "time": request.args["time"],
-                "velocity": request.args["velocity"]
-            }
+                #for json in json_list:
             coll.update_one({"imei": imei}, {"$push": {"locations": json_list}})
 
             return jsonify({"message": "position added to device"}), 200
 
+        # if "latitude" in request.args:
+        #     json_list = {
+        #         "latitude": request.args["latitude"],
+        #         "longitude": request.args["longitude"],
+        #         "height": request.args["height"],
+        #         "time": request.args["time"],
+        #         "velocity": request.args["velocity"]
+        #     }
+        #     coll.update_one({"imei": imei}, {"$push": {"locations": json_list}})
+
+        #     return jsonify({"message": "position added to device"}), 200
+
         return jsonify({"error": "No device to add location to"}), 404
+
+
+
 
     def get_locations_from_db(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
+        if device != None:
             locations = device.get('locations')
 
             return jsonify(locations), 200
