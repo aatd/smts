@@ -91,7 +91,6 @@ export default {
       user2.password = this.form.pwd;
 
       var apiInstance = new Client.UsersApi();
-      var apiInstance2 = new Client.ApiClient();
 
       apiInstance
         .loginUser({ user: user2 })
