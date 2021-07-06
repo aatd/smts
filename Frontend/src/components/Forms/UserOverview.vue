@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import StatsCard from "src/components/Cards/StatsCard.vue";
+import StatsCard from "../Cards/StatsCard.vue";
 
 export default {
   name: "user-overview",

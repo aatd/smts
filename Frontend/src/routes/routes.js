@@ -15,14 +15,14 @@ import Upgrade from 'src/pages/Upgrade.vue'
 
 
 //Where's my Thieve Pages
-import Debug from 'src/pages/Debug.vue'
-import Login from 'src/components/Forms/Login.vue'
-import Register from 'src/components/Forms/Register.vue'
-import UserOverview from 'src/components/Forms/UserOverview.vue'
-import DeviceOverview from 'src/components/Forms/DeviceOverview.vue'
-import RegisterDevice from 'src/components/Forms/RegisterDevice.vue'
-import DeviceSettings from 'src/components/Forms/DeviceSettings.vue'
-import UserSettings from 'src/components/Forms/UserSettings.vue'
+import Debug from '../pages/Debug.vue'
+import Login from '../components/Forms/Login.vue'
+import Register from '../components/Forms/Register.vue'
+import DeviceOverview from '../components/Forms/DeviceOverview.vue'
+import RegisterDevice from '../components/Forms/RegisterDevice.vue'
+import DeviceSettings from '../components/Forms/DeviceSettings.vue'
+import UserSettings from '../components/Forms/UserSettings.vue'
+import UserOverview from '../components/Forms/UserOverview.vue'
 
 const routes2 = [
 
