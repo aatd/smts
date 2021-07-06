@@ -6,7 +6,7 @@
       src="https://verbraucherfenster.hessen.de/sites/verbraucherfenster.hessen.de/files/styles/article_image/public/AdobeStock_173691120.jpeg?itok=w0s4Prt4&c=a03f68c192f0719dbcd708609666a0ea"
       alt="..."
     />
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-form @submit="onRegister" @reset="onReset" v-if="show">
       <!--Username-->
       <b-form-group
         id="input-group-1"
@@ -127,6 +127,9 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
+    },
+    onRegister(event) {
+      this.$router.push("/users/1234");
     },
   },
 };

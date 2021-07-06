@@ -1,36 +1,35 @@
 <template>
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <!--App-Name-->
-      <a class="navbar-brand" href="#">Where's my Thief?</a>
+  <b-navbar toggleable="lg">
+    <!-- Right aligned nav items -->
+    <b-navbar-nav>
+      <b-nav-item @click="$router.go(-1)">
+        <b-button>
+          <i class="fa fa-long-arrow-left"></i>
+        </b-button>
+      </b-nav-item>
+    </b-navbar-nav>
+    <b-navbar-brand>Where's my Thief!?</b-navbar-brand>
 
-      <!--Hamburger Button-->
-      <button
-        type="button"
-        class="navbar-toggler navbar-toggler-right"
-        :class="{ toggled: $sidebar.showSidebar }"
-        aria-controls="navigation-index"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        @click="toggleSidebar"
-      >
-        <span class="navbar-toggler-bar burger-lines"></span>
-        <span class="navbar-toggler-bar burger-lines"></span>
-        <span class="navbar-toggler-bar burger-lines"></span>
-      </button>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-      <!--Navbar Content-->
-      <div class="collapse navbar-collapse justify-content-end">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <router-link class="nav-link" to="/devices/register"
-              >Register New Bike</router-link
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    <b-collapse id="nav-collapse" is-nav>
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item to="/devices/register">
+          <b-button block to="">
+            <i class="fa fa-plus"></i>
+            Register new My Thief
+          </b-button>
+        </b-nav-item>
+        <b-nav-item @click="logout">
+          <b-button block>
+            <i class="fa fa-sign-out"></i>
+            Logout
+          </b-button>
+        </b-nav-item>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
 </template>
 
 <script>
@@ -61,6 +60,9 @@ export default {
     },
     hideSidebar() {
       this.$sidebar.displaySidebar(false);
+    },
+    logout() {
+      this.$router.push("/");
     },
   },
 };

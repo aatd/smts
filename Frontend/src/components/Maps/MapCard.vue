@@ -1,5 +1,8 @@
 <template>
-  <card class="card-user register-container">
+  <div>
+    <b-button class="float-right m-1" v-b-modal.callPoliceModal>
+      Call Police
+    </b-button>
     <l-map :zoom="zoom" :center="center" style="height: 300px">
       <l-layer-group>
         <l-marker
@@ -19,7 +22,17 @@
       </l-layer-group>
       <l-tile-layer :url="url" :attribution="attribution" />
     </l-map>
-  </card>
+    <b-modal
+      id="callPoliceModal"
+      title="Call your local Authoroties!"
+      @ok="callPolice"
+    >
+      <p>Some adivce when Calling them for real!</p>
+      <ul class="list-group">
+        <li class="list-group-item">Stay Calm!</li>
+      </ul>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -32,6 +45,7 @@ import {
   LLayerGroup,
 } from "vue2-leaflet";
 import { BModal } from "bootstrap-vue";
+import * as Client from "src/components/api/index";
 
 export default {
   name: "map-card",
@@ -54,6 +68,7 @@ export default {
         positions: [],
         points: [],
       },
+      client: new Client.DevicesApi(),
     };
   },
   methods: {
@@ -81,14 +96,16 @@ export default {
         .then((obj) => {
           console.log(obj);
           newMarker.tooltip = `
-            <b>Road: </b>${obj.address.road} <br />
-            <b>County: </b>${obj.address.county} <br /> 
-            <b>Municipality: </b>${obj.address.municipality} <br /> 
-            <b>Postal: </b>${obj.address.postcode} <br /> 
-            <b>Country: </b>${obj.address.country_code}`;
+            <b>Road: </b>${obj.address.road} ${obj.address.house_number}<br />
+            <b>City: </b>${obj.address.city_district} <br /> 
+            <b>State: </b>${obj.address.state} <br /> 
+            <b>Postal: </b>${obj.address.postcode}`;
           self.markers.positions.push(newMarker);
           self.markers.points.push(newMarker.position);
-          self.center = latLng(newMarker.position.lat, newMarker.position.lng);
+          self.center = latLng(
+            newMarker.position.lat,
+            newMarker.position.lng - 0.001
+          );
 
           if (self.markers.positions.length > 1) {
             this.$nextTick(() => {
@@ -108,9 +125,22 @@ export default {
   },
   mounted: function () {
     const self = this;
+
+    fetch(`http://intern.bewegtbildhelden.de/devices/865067020621788/locations`)
+      .then((res) => res.json())
+      .then((loc) => {
+        self.addMarker(loc.latitude, loc.longitude);
+      });
+
     self.addRandomMarker = window.setInterval(function () {
-      self.addMarker(0.001 * Math.random() + 45.0, 0.01 * Math.random());
-    }, 4000);
+      fetch(
+        `http://intern.bewegtbildhelden.de/devices/865067020621788/locations`
+      )
+        .then((res) => res.json())
+        .then((loc) => {
+          self.addMarker(loc.latitude, loc.longitude);
+        });
+    }, 20000);
   },
   beforeDestroy() {
     clearInterval(this.addRandomMarker);

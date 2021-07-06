@@ -27,7 +27,8 @@
         </h4>
       </div>
       <h4 class="title">Live tracker of {{ mythieve.name }}</h4>
-      <!--Simple Map-->
+
+      <!--Device Location Map-->
       <MapCard></MapCard>
 
       <div class="row">
@@ -149,16 +150,22 @@ export default {
     },
   },
   mounted: function () {
-    //Tests
-    this.setQuoteOfTheUpdate();
-
     self = this;
-    self.bvalue = 1;
-
+    self.setQuoteOfTheUpdate();
+    fetch(`http://intern.bewegtbildhelden.de/devices/865067020621788/locations`)
+      .then((res) => res.json())
+      .then((element) => {
+        self.setBatteryIndicator(element.battery / 5000);
+      });
     self.batterIndicatorCallback = window.setInterval(function () {
-      self.bvalue -= 0.01;
-      self.setBatteryIndicator(self.bvalue);
-    }, 50);
+      fetch(
+        `http://intern.bewegtbildhelden.de/devices/865067020621788/locations`
+      )
+        .then((res) => res.json())
+        .then((element) => {
+          self.setBatteryIndicator(element.battery / 5000);
+        });
+    }, 20000);
   },
   beforeDestroy() {
     clearInterval(this.batterIndicatorCallback);
