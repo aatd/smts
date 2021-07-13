@@ -31,7 +31,6 @@ class Device:
             "_id": uuid.uuid4().hex,
             "name": json["name"],
             "imei": json["imei"],
-            # "owner": json["owner"],# Sesssion Daten abrufbar?: session["user"]
             "owner": session["user"]["_id"],
             "devicePhoneNumber": json["devicePhoneNumber"],
             "ownerPhoneNumber": session["user"]["phoneNumber"],
@@ -83,21 +82,6 @@ class Device:
         device = coll.find_one({"imei": imei})
         if request.json != None:
             json_list = request.json
-            if device != None and check_against_userID(device["owner"]):
-
-                for json in json_list:
-                    coll.update_one({"imei": imei}, {"$push": {"locations": json}})
-
-            return jsonify({"message": "position added to device"}), 200
-
-        if "latitude" in request.args:
-            json_list = {
-                "latitude": request.args["latitude"],
-                "longitude": request.args["longitude"],
-                "height": request.args["height"],
-                "time": request.args["time"],
-                "velocity": request.args["velocity"]
-            }
             coll.update_one({"imei": imei}, {"$push": {"locations": json_list}})
 
             return jsonify({"message": "position added to device"}), 200
@@ -107,10 +91,10 @@ class Device:
     def get_locations_from_db(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
-        if device != None and check_against_userID(device["owner"]):
+        if device != None: #and check_against_userID(device["owner"]):
             locations = device.get('locations')
 
-            return jsonify(locations), 200
+            return jsonify(locations[len(locations-1)]), 200
         return jsonify({"error": "No device to get locations from"}), 404
 
     def delete_locations(self, imei: str):
