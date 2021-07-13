@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <!--User Information-->
-    <card class="card-user" v-bind="user">
+    <card class="card-user devices-container" v-bind="user">
       <!--Background Picture-->
       <img slot="image" :src="user.bgImg" alt="..." />
 
@@ -21,21 +21,13 @@
         {{ user.qod }}
       </p>
 
-      <div class="row justify-content-center">
+      <div class="m-1 row justify-content-center">
         <router-link :to="`/users/${$route.params.id}/settings`">
           <b-button pill><b-icon icon="pencil"></b-icon></b-button>
         </router-link>
       </div>
-    </card>
-
-    <!--Cards for each Device-->
-    <card class="devices-container" v-bind="user">
       <div class="row device-card-list">
-        <div
-          class="col-xl-6 col-md-8"
-          v-for="mythieve in mythieves"
-          :key="mythieve.id"
-        >
+        <div class="col-xl-8" v-for="mythieve in mythieves" :key="mythieve.id">
           <router-link :to="`/devices/${mythieve.imei}`">
             <stats-card>
               <div slot="header">
@@ -60,7 +52,7 @@
 </template>
 
 <script>
-import StatsCard from "src/components/Cards/StatsCard.vue";
+import StatsCard from "../Cards/StatsCard.vue";
 
 export default {
   name: "user-overview",
@@ -208,5 +200,6 @@ export default {
 .devices-container {
   max-width: 600px;
   margin: auto;
+  margin-top: 20px;
 }
 </style>

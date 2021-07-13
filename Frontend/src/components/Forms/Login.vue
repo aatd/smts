@@ -7,7 +7,7 @@
       src="https://verbraucherfenster.hessen.de/sites/verbraucherfenster.hessen.de/files/styles/article_image/public/AdobeStock_173691120.jpeg?itok=w0s4Prt4&c=a03f68c192f0719dbcd708609666a0ea"
       alt="..."
     />
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-form @submit="onLogin" @reset="onReset" v-if="show">
       <!--Email or Name-->
       <b-form-group
         id="input-group-1"
@@ -18,7 +18,6 @@
         <b-form-input
           id="input-1"
           v-model="form.emailOrName"
-          type="email"
           placeholder="Enter email"
           required
         ></b-form-input>
@@ -64,6 +63,7 @@
 
 <script>
 import Card from "src/components/Cards/Card.vue";
+import * as Client from "src/components/api/index";
 
 export default {
   name: "login-card",
@@ -81,6 +81,26 @@ export default {
     };
   },
   methods: {
+    onLogin(event) {
+      event.preventDefault();
+
+      this.$router.push("/users/1234");
+
+      var user2 = new Client.User();
+      user2.name = this.form.emailOrName;
+      user2.password = this.form.pwd;
+
+      var apiInstance = new Client.UsersApi();
+
+      apiInstance
+        .loginUser({ user: user2 })
+        .then(() => {
+          console.log("Hello");
+        })
+        .catch((a) => {
+          console.log("Failed");
+        });
+    },
     onSubmit(event) {
       event.preventDefault();
       alert(JSON.stringify(this.form));

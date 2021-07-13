@@ -1,19 +1,41 @@
 <template>
-  <div class="card" :class="[type && `card-${type}`]">
-    <div class="card-image" v-if="$slots.image">
-      <slot name="image"></slot>
-    </div>
-    <div
-      class="card-header"
-      v-if="$slots.header || title"
-      :class="headerClasses"
-    >
-      <slot name="header">
-        <h4 class="card-title">{{ title }}</h4>
-      </slot>
-      <p class="card-category" v-if="subTitle">{{ subTitle }}</p>
-    </div>
-    <div class="card-body">
+  <div class="container-fluid">
+    <card class="card-user update-userdata-container" v-bind="form">
+      <!--Background Picture-->
+      <img
+        slot="image"
+        :src="form.bgImg"
+        alt="..."
+        v-on:click="invokeBGImageFileSelection"
+      />
+
+      <!--User Information-->
+      <div class="author">
+        <b-avatar badge-variant="info" size="150" :src="form.image">
+          <template #badge size="50"
+            ><b-icon
+              v-on:click="invokeImageFileSelection"
+              icon="pencil"
+            ></b-icon
+          ></template>
+        </b-avatar>
+
+        <!-- Accept specific image formats by IANA type -->
+        <b-form-file
+          v-show="false"
+          id="imgDeviceFile"
+          accept="image/jpeg, image/png"
+          @change="onchangeProfileImage"
+        ></b-form-file>
+
+        <!-- Accept specific image formats by IANA type -->
+        <b-form-file
+          v-show="false"
+          id="bgImgDeviceFile"
+          accept="image/jpeg, image/png"
+          @change="onChangeBGImage"
+        ></b-form-file>
+      </div>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <!--DeviceName-->
         <b-form-group
@@ -98,17 +120,14 @@
         </b-form-group>
 
         <!--Submit Button-->
+        <b-button block type="submit" variant="primary">Save changes</b-button>
+      </b-form>
+      <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
+        <pre class="m-0">{{ form }}</pre>
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
-      </b-form>
-      <b-card class="mt-3" header="Form Data Result">
-        <pre class="m-0">{{ form }}</pre>
       </b-card>
-    </div>
-    <slot name="raw-content"></slot>
-    <div class="card-footer" :class="footerClasses" v-if="$slots.footer">
-      <slot name="footer"></slot>
-    </div>
+    </card>
   </div>
 </template>
 
@@ -119,6 +138,8 @@ export default {
   data() {
     return {
       form: {
+        bgImg: "img/bicycles/b-1.jpg",
+        image: "img/bicycles/b-1.jpg",
         name: "",
         imei: "",
         userTel: "",
@@ -148,6 +169,33 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
+    },
+    //UI-Stuff for Images
+    invokeBGImageFileSelection() {
+      document.getElementById("bgImgDeviceFile").click();
+    },
+    invokeImageFileSelection() {
+      document.getElementById("imgDeviceFile").click();
+    },
+    onchangeProfileImage(e) {
+      self = this;
+      const image = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = (e) => {
+        this.previewImage = e.target.result;
+        self.form.image = e.target.result;
+      };
+    },
+    onChangeBGImage(e) {
+      self = this;
+      const image = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = (e) => {
+        this.previewImage = e.target.result;
+        self.form.bgImg = e.target.result;
+      };
     },
   },
   props: {

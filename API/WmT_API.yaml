@@ -1,159 +1,147 @@
 swagger: "2.0"
 info:
-    version: "1.0"
-    title: "Where's my Thief? - API"
-    description: " API zur Webanwendung"
+  version: "1.0"
+  title: "Where's my Thief? - API"
+  description: " API zur Webanwendung"
 
 basePath: "/v1"
-schemes: 
-
-- "https"
+schemes:
+  - "http"
 tags:
-- name: "Users"
-  description: "Benutzerverwaltung"
-- name: "Devices"
-  description: "devices"
-  
+  - name: "Users"
+    description: "Benutzerverwaltung"
+  - name: "Devices"
+    description: "devices"
+
 paths:
-  
-   
   /users:
     post:
       tags:
-      - "Users"
+        - "Users"
       summary: "create new User"
       description: "check if Username is available"
       operationId: "createUser"
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      
-      - "application/json"
+        - "application/json"
       parameters:
-      
-      - in: "body"
-        name: "user"
-        schema: 
-          $ref: "#/definitions/User"
-        required: true  
-      
-        
+        - in: "body"
+          name: "user"
+          schema:
+            $ref: "#/definitions/User"
+          required: true
+
       responses:
         201:
-         description: User created
-         schema: 
-          $ref: "#/definitions/UserData"
-       
+          description: User created
+          schema:
+            $ref: "#/definitions/UserData"
+
         409:
-           description: wrong username/ password 
-        
-           
-      
-    
-  
-          
+          description: wrong username/ password
+
   /users/login:
     post:
       tags:
-      - "Users"
+        - "Users"
       summary: "login User"
       operationId: "loginUser"
       consumes:
-      - "application/json"
+        - "application/json"
       description: "check if Username & password are correct  "
       parameters:
-      - in: "body"
-        name: "User"
-        schema:
-          $ref: "#/definitions/User"
-        
+        - in: "body"
+          name: "User"
+          schema:
+            $ref: "#/definitions/User"
+
       responses:
         200:
           description: OK
-          schema: 
+          schema:
             $ref: "#/definitions/UserData"
         401:
           description: wrong username/ password
-  
+
   /users/logout:
     post:
       tags:
-      - "Users"
+        - "Users"
       summary: "logout user"
-     
+
       responses:
         200:
           description: OK
-          
+
   /users/{userId}:
-  
     put:
       tags:
-      - "Users"
+        - "Users"
       summary: "Update User"
       operationId: "updateUser"
-      produces: 
-      - "application/json"
+      produces:
+        - "application/json"
       consumes:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "userId"
-        in: "path"
-        required: true
-        type: "string" 
-      - in: "body"
-        name: "User"
-        schema:
-          $ref: "#/definitions/User"
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "User"
+          schema:
+            $ref: "#/definitions/User"
       responses:
         "200":
           description: "successful operation"
           schema:
             $ref: "#/definitions/UserData"
-    
+
     get:
       tags:
-      - "Users"
+        - "Users"
       summary: "get User by ID"
       operationId: "getUserbyId"
-      produces: 
-      - "application/json"
+      produces:
+        - "application/json"
       parameters:
-      - name: "userId"
-        in: "path"
-        required: true
-        type: "string"  
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "successful operation"
           schema:
             $ref: "#/definitions/UserData"
-            
+
     delete:
       tags:
-       - "Users"
+        - "Users"
       parameters:
-      - name: "userId"
-        in: "path"
-        required: true
-        type: "string"
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "ok"
-  
+
   /users/{userId}/devices:
     get:
       tags:
-      - "Users"
+        - "Users"
       summary: "get Devices from User"
       operationId: "find all Devices"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "userId"
-        in: "path"
-        required: true
-        type: "string"
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         "200":
           description: OK
@@ -161,111 +149,100 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Device"
-    
-    
-      
 
-              
   /devices:
     post:
       tags:
-      - "Devices"
+        - "Devices"
       summary: "add Device"
       operationId: "addDevice"
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      
-      
-        
-      
-      - in: "body"
-  
-        required: true
-        name: "device"
-        schema:
+        - in: "body"
+
+          required: true
+          name: "device"
+          schema:
             $ref: "#/definitions/Device"
-     
+
       responses:
-           201: 
-            description: "Device created"
-              
+        201:
+          description: "Device created"
+
   /devices/{IMEI}:
     get:
       tags:
-      - "Devices"
+        - "Devices"
       summary: "get Device by ID"
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "IMEI"
-        in: "path"
-        required: true
-        type: "string"
-        
-    
-        
-      responses: 
-        200:
-          description: "ok"
-          schema:
-            $ref: "#/definitions/Device"
-            
-    delete:
-      
-        tags:
-        - "Devices"
-        parameters:
         - name: "IMEI"
           in: "path"
           required: true
           type: "string"
-        responses:
-          "200":
-            description: "ok"        
+
+      responses:
+        200:
+          description: "ok"
+          schema:
+            $ref: "#/definitions/DeviceData"
             
-  /devices/{IMEI}/locations:        
+    delete:
+      tags:
+        - "Devices"
+      parameters:
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "ok"
+
+  /devices/{IMEI}/locations:
     post:
       tags:
-      - "Devices"
+        - "Devices"
       summary: "add GPS-Position to Device"
-      
+
       produces:
-      - "application/json"
-      
+        - "application/json"
+
       consumes:
       - "application/json"
+      - "application/x-www-form-urlencoded"
       
       parameters:
-      - name: "IMEI"
-        in: "path"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "gpsPosition"
-        required: true
-        schema:
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "gpsPosition"
+          required: true
+          schema:
             type: "array"
             items:
               $ref: "#/definitions/gpsPosition"
-      
+
       responses:
         200:
           description: "Ok"
-          
-    
+
     get:
       tags:
-      - "Devices"
+        - "Devices"
       summary: "Get Locations of device"
       parameters:
-      - name: "IMEI"
-        in: "path"
-        required: true
-        type: "string"
-        
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
+
       responses:
         200:
           description: "OK"
@@ -273,26 +250,18 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/gpsPosition"
-              
-  
+
     delete:
       tags:
-      - "Devices"
+        - "Devices"
       parameters:
-      - name: "IMEI"
-        in: "path"
-        required: true
-        type: "string"
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         200:
           description: "ok"
-    
-    
-  
-          
-            
-
-
 
 definitions:
   User:
@@ -300,46 +269,70 @@ definitions:
     properties:
       id:
         type: "string"
-        
+
       name:
         type: "string"
       password:
         type: "string"
       phoneNumber:
         type: "string"
-        
+
       devices:
         type: "array"
-        items: 
+        items:
           type: "integer"
           format: "int64"
-          
+
   UserData:
     type: "object"
     properties:
       id:
         type: "string"
-        
+
       name:
         type: "string"
-      
+
       phoneNumber:
         type: "string"
-        
+
       devices:
         type: "array"
-        items: 
+        items:
           type: "integer"
           format: "int64"
   
+  DeviceData:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      
+      imei:
+        type: "string"
+      
+      
+      owner:
+        type: "string"
+      
+      devicePhoneNumber:
+        type: "string"
+       
+       
+      
+      ownerPhoneNumber:
+        type: "string"
+      
+      battery:
+        type: "number"
+        format: "float"
   
   Device:
    type: "object"
    properties:
-    Name:
+    name:
       type: "string"
       
-    IMEI:
+    imei:
       type: "string"
       
       
@@ -368,22 +361,16 @@ definitions:
       latitude:
         type: "number"
         format: "float"
-       
+
       longitude:
-         type: "number"
-         format: "float"
+        type: "number"
+        format: "float"
       height:
-         type: "number"
-         format: "float"
-      time: 
-         type: "string"
-         format: "ISO8601(datetime)"
+        type: "number"
+        format: "float"
+      time:
+        type: "string"
+        format: "ISO8601(datetime)"
       velocity:
         type: "number"
         format: "float"
-          
-        
-      
-      
-       
-
