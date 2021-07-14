@@ -2,3 +2,5 @@
 /include
 /lib
 __pycache__
+/utils
+/share*
