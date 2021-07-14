@@ -94,7 +94,7 @@ class Device:
         if device != None: #and check_against_userID(device["owner"]):
             locations = device.get('locations')
 
-            return jsonify(locations[len(locations-1)]), 200
+            return jsonify(locations[len(locations)-1]), 200
         return jsonify({"error": "No device to get locations from"}), 404
 
     def delete_locations(self, imei: str):

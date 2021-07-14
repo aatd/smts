@@ -6,6 +6,7 @@ from flask.json import jsonify
 from flask_cors import CORS
 from werkzeug.wrappers import accept
 
+from models.user_model import User
 from models.device_model import Device
 from flask_cors import CORS
 

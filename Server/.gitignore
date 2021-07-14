@@ -3,4 +3,4 @@
 /lib
 __pycache__
 /utils
-/share*
+/share/python-wheels
