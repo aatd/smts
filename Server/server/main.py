@@ -111,6 +111,9 @@ def get_device(imei):
 def delete_device(imei):
     return Device().delete_device_from_db(imei)
 
+@app.route(f"{version}/devices/<imei>/status", methods= ["GET"])
+def get_device_status(imei):
+    return Device().get_device_status(imei)
 
 @app.route(f"{version}/devices/<imei>/locations", methods =["GET"])
 @login_required

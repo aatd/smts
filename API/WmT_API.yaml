@@ -203,6 +203,23 @@ paths:
         "200":
           description: "ok"
 
+  /devices/{IMEI}/status:
+    get:
+      tags:
+        - "Devices"
+      summary: "get status of device"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "IMEI"
+          in: "path"
+          required: true
+          type: "string"
+
+      responses:
+        200:
+          description: "ok"
+
   /devices/{IMEI}/locations:
     post:
       tags:
@@ -238,6 +255,14 @@ paths:
         - "Devices"
       summary: "Get Locations of device"
       parameters:
+        - in: query
+          name: start
+          type: "string"
+          description: If only start value is given, the locations from this date until now are returned. Formatted as specified in ISO 8601
+        - in: query
+          name: end
+          type: "string"
+          description: If end parameter is given, the locations in between this time frame will be returned.
         - name: "IMEI"
           in: "path"
           required: true
@@ -370,7 +395,7 @@ definitions:
         format: "float"
       time:
         type: "string"
-        format: "ISO8601(datetime)"
+        format: "date-time"
       velocity:
         type: "number"
         format: "float"

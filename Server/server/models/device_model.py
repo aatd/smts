@@ -1,8 +1,9 @@
+
 import pymongo
 from flask import jsonify, session, request
 import uuid
-
-
+import datetime
+from pprint import pprint
 ############### Establish connection to database ###########
 try:
     mongo = pymongo.MongoClient(
@@ -76,13 +77,45 @@ class Device:
             return jsonify({"message": "device succesfully deleted!"}), 200
         return jsonify({"error": "you dont own a device with the imei "+imei}), 404
 
+
+    def get_device_status(self,imei):
+        coll = db["devices"]
+        device = coll.find_one({"imei": imei})
+        if device is not None and check_against_userID(device["owner"]):
+            locations = device.get('locations')
+            now = datetime.datetime.now()
+            last_entry = locations[len(locations)-1]['time']
+            maxDelta = datetime.timedelta(days=1)
+            if now-last_entry > maxDelta:
+                return jsonify('stolen'),200
+            else:
+                return jsonify('not stolen'), 200
+            
+        return jsonify('device not found'), 404
+
+
     # /devices/{IMEI}/locations
     def add_position_to_device(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
-        if request.json != None:
+        
+        if request.json != None and device != None:
             json_list = request.json
-            coll.update_one({"imei": imei}, {"$push": {"locations": json_list}})
+
+            # convert timestring into time.isoformat
+            year = 2000 + int(json_list['time'][1:3])
+            month = int(json_list['time'][4:6])
+            day = int(json_list['time'][7:9])
+            h = int(json_list['time'][10:12])
+            m = int(json_list['time'][13:15])
+            s = int(json_list['time'][16:18])
+            ms = int(json_list['time'][19:21])
+            time = datetime.datetime(year, month, day, h, m, s, ms)
+
+            json_list['time'] = time
+
+            res = coll.update_one(
+                {"imei": imei}, {"$push": {"locations": json_list}})
 
             return jsonify({"message": "position added to device"}), 200
 
@@ -91,10 +124,30 @@ class Device:
     def get_locations_from_db(self, imei: str):
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
-        if device != None: #and check_against_userID(device["owner"]):
-            locations = device.get('locations')
 
+        if device != None:
+            locations = device.get('locations')
+        # if url parameters start and end are given -> only return locations in this period
+            if request.args.get('start'):
+
+                retLocations = []
+
+                startTime = datetime.datetime.fromisoformat(
+                    request.args.get('start'))
+                endTime = datetime.datetime.now()
+                if request.args.get('end'):
+                    endTime = datetime.datetime.fromisoformat(
+                        request.args.get('end'))
+                for loc in locations:
+                    if loc['time'] >= startTime and loc['time'] <= endTime:
+                        retLocations.append(loc)
+
+                return jsonify(retLocations), 200
+
+            # else return last location
             return jsonify(locations[len(locations)-1]), 200
+
+        # return error if no device is found
         return jsonify({"error": "No device to get locations from"}), 404
 
     def delete_locations(self, imei: str):
