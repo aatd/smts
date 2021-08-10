@@ -1,5 +1,5 @@
 {
-    "python.pipenvPath": "", // if using pipenv
+    "python.pipenvPath": "pip", // if using pipenv
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
     "python.formatting.provider": "black",
@@ -13,7 +13,6 @@
     "python.linting.enabled": true,
     // if using pylint
     "python.linting.pylintEnabled": true,
-    "python.linting.pylintPath": "bin/pylint",
     "python.linting.pylintArgs": [
         "--load-plugins",
         "pylint_django", // only if you are using django framework
@@ -38,4 +37,5 @@
     "[python]": {
         "editor.tabSize": 4
     },
+    "python.linting.flake8Enabled": false,
 }

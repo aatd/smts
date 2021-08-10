@@ -6,18 +6,13 @@ from flask.json import jsonify
 from flask_cors import CORS
 from werkzeug.wrappers import accept
 
-from models.user_model import User
 from models.device_model import Device
-from flask_cors import CORS
+from models.user_model import User
 
 app = Flask(__name__)
 app.secret_key = "myThiefBackendSecretKey123"
 CORS(app)
 version = "/v1"
-
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0")
 
 # Decorators
 # function that wraps routes that require login otherwise redirect to home
