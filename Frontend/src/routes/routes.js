@@ -5,13 +5,13 @@ import CenteredContentLayout from '../layout/CenteredContentLayout.vue'
 import NotFound from '../pages/NotFoundPage.vue'
 
 //Where's my Thieve Pages
-import Login from '../components/Forms/Login.vue'
-import Register from '../components/Forms/Register.vue'
-import DeviceOverview from '../components/Forms/DeviceOverview.vue'
-import RegisterDevice from '../components/Forms/RegisterDevice.vue'
-import DeviceSettings from '../components/Forms/DeviceSettings.vue'
-import UserSettings from '../components/Forms/UserSettings.vue'
-import UserOverview from '../components/Forms/UserOverview.vue'
+import Login from '../pages/Login.vue'
+import Register from '../pages/Register.vue'
+import UserSettings from '../pages/UserSettings.vue'
+import UserOverview from '../pages/UserOverview.vue'
+import DeviceOverview from '../pages/DeviceOverview.vue'
+import RegisterDevice from '../pages/RegisterDevice.vue'
+import DeviceSettings from '../pages/DeviceSettings.vue'
 
 const routes = [
   {

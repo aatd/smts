@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="bgImage">
     <top-navbar></top-navbar>
     <transition name="fade" mode="out-in">
       <router-view></router-view>
@@ -9,6 +9,10 @@
 
 
 <style lang="scss">
+.bgImage {
+  background: url(/img/bg.jpg) no-repeat center center fixed;
+  min-height: 100vh;
+}
 </style>
 
 <script>

@@ -14,9 +14,9 @@ import SidebarPlugin from './SidebarPlugin'
 import MapCard from './Maps/MapCard.vue'
 import MapCardTest from './Maps/MapCardTest.vue'
 import Login from './Forms/Login.vue'
-import Register from "./Forms/Register.vue";
-import RegisterDevice from "./Forms/RegisterDevice.vue";
-import DeviceSettings from "./Forms/DeviceSettings.vue";
+import Register from "../pages/Register.vue";
+import RegisterDevice from "../pages/RegisterDevice.vue";
+import DeviceSettings from "../pages/DeviceSettings.vue";
 
 let components = {
   BaseCheckbox,

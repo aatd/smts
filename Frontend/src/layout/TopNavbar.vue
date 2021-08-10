@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="lg">
+  <b-navbar toggleable="lg" type="dark" variant="dark" sticky>
     <!-- Right aligned nav items -->
     <b-navbar-nav>
       <b-nav-item @click="$router.go(-1)">

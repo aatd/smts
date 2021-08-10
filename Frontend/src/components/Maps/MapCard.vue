@@ -1,8 +1,5 @@
 <template>
   <div>
-    <b-button class="float-right m-1" v-b-modal.callPoliceModal>
-      Call Police
-    </b-button>
     <l-map :zoom="zoom" :center="center" style="height: 300px">
       <l-layer-group>
         <l-marker
@@ -97,8 +94,8 @@ export default {
           console.log(obj);
           newMarker.tooltip = `
             <b>Road: </b>${obj.address.road} ${obj.address.house_number}<br />
-            <b>City: </b>${obj.address.city_district} <br /> 
-            <b>State: </b>${obj.address.state} <br /> 
+            <b>City: </b>${obj.address.city_district} <br />
+            <b>State: </b>${obj.address.state} <br />
             <b>Postal: </b>${obj.address.postcode}`;
           self.markers.positions.push(newMarker);
           self.markers.points.push(newMarker.position);
