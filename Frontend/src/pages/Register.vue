@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import * as Client from "../components/api/index";
+
 export default {
   name: "register-card",
   components: {},
@@ -128,6 +130,23 @@ export default {
       });
     },
     onRegister(event) {
+      event.preventDefault();
+
+      var userModel = new Client.User();
+      userModel.name = this.form.emailOrName;
+      userModel.password = this.form.pwd;
+
+      var apiInstance = new Client.UsersApi();
+
+      apiInstance
+        .createUser(userModel)
+        .then(() => {
+          console.log("Hello");
+          this.$router.push("/users/1234");
+        })
+        .catch((a) => {
+          console.log("Failed");
+        });
       this.$router.push("/users/1234");
     },
   },

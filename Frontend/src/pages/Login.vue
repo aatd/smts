@@ -88,9 +88,9 @@ export default {
 
       this.$router.push("/users/1234");
 
-      var user2 = new Client.User();
-      user2.name = this.form.emailOrName;
-      user2.password = this.form.pwd;
+      var userModel = new Client.User();
+      userModel.name = this.form.emailOrName;
+      userModel.password = this.form.pwd;
 
       var apiInstance = new Client.UsersApi();
 
