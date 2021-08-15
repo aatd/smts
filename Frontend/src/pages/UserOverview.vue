@@ -2,9 +2,6 @@
   <div class="container-fluid">
     <!--User Information-->
     <card class="card-user devices-container" v-bind="user">
-      <!--Background Picture-->
-      <img slot="image" :src="user.bgImg || 'img/logo.png'" alt="..." />
-
       <!--User Information-->
       <div class="author">
         <b-avatar badge-variant="light" size="7rem" :src="user.image">
@@ -12,7 +9,7 @@
 
         <h4 class="title">
           {{ user.name }}<br />
-          <small>{{ user.email }}</small>
+          <small>{{ user.tel }}</small>
         </h4>
       </div>
 
@@ -31,7 +28,11 @@
           <router-link :to="`/devices/${mythieve.imei}`">
             <stats-card>
               <div slot="header">
-                <b-avatar size="100" :src="mythieve.bycyleImageUrl"></b-avatar>
+                <b-avatar
+                  size="100"
+                  icon="bicycle"
+                  :src="mythieve.deviceImage"
+                ></b-avatar>
               </div>
               <div slot="content">
                 <p class="card-category">Name:</p>
@@ -53,6 +54,7 @@
 
 <script>
 import StatsCard from "../components/Cards/StatsCard.vue";
+import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
   name: "user-overview",
@@ -62,132 +64,79 @@ export default {
   data() {
     return {
       user: {
-        name: "Asef Alper Tunga Dündar",
-        email: "asaf93@hotmail.de",
-        tel: "+490123456789",
-        image: "img/faces/face-2.jpg",
-        bgImg: "img/bicycles/b-7.jpg",
-        qod: "Test an api for Fun-Attribute",
+        name: "",
+        email: "",
+        tel: "",
+        image: "",
+        qod: "",
       },
-      mythieves: [
-        {
-          name: "Bike #1",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-1.jpg",
-        },
-        {
-          name: "Bike #2",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-2.jpg",
-        },
-        {
-          name: "Bike #3",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-3.jpg",
-        },
-        {
-          name: "Bike #4",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-4.jpg",
-        },
-        {
-          name: "Bike #5",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-4.jpg",
-        },
-        {
-          name: "Bike #6",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-4.jpg",
-        },
-        {
-          name: "Bike #7",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-4.jpg",
-        },
-        {
-          name: "Bike #8",
-          deviceTel: "+49123123123123",
-          imei: "492178492440648",
-          bycyleImageUrl: "img/bicycles/b-4.jpg",
-        },
-      ],
+      mythieves: [],
     };
   },
   methods: {
-    //Design Stuff
-    getClasses(index) {
-      var remainder = index % 3;
-      if (remainder === 0) {
-        return "col-md-3 col-md-offset-1";
-      } else if (remainder === 2) {
-        return "col-md-4";
-      } else {
-        return "col-md-3";
-      }
-    },
-
-    //Sending Stuff
-    updateProfileImage() {
-      console.log("Not Implemented");
-    },
-    updateBGImage() {
-      console.log("Not Implemented");
-    },
-    updateProfileSettings() {
-      console.log("Not Implemented");
-    },
-
-    //UI-Stuff for Images
-    invokeBGImageFileSelection() {
-      document.getElementById("bgImgFile").click();
-    },
-    invokeImageFileSelection() {
-      document.getElementById("imgFile").click();
-    },
-    onchangeProfileImage(e) {
-      self = this;
-      const image = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = (e) => {
-        this.previewImage = e.target.result;
-        self.user.image = e.target.result;
-      };
-    },
-    onChangeBGImage(e) {
-      self = this;
-      const image = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = (e) => {
-        this.previewImage = e.target.result;
-        self.user.bgImg = e.target.result;
-      };
-    },
-
-    //UI-Stuff
-    goToDeviceSettings() {
-      this.setQuoteOfTheUpdate();
-    },
-
-    //Fun-Stuff fetching fun things like quates
+    /**
+     *
+     */
     setQuoteOfTheUpdate() {
       const self = this;
       fetch("https://api.quotable.io/random")
         .then((response) => response.json())
         .then((data) => (self.user.qod = data.content));
     },
+
+    /**
+     *
+     */
+    getUserData() {
+      var apiInstance = new Client.UsersApi();
+
+      apiInstance
+        .getUserbyId(localStorage.getItem("username"))
+        .then((data) => {
+          console.log(
+            "Got userdata succesfully to fill userinformation to overview page"
+          );
+          localStorage.setItem("username", data.name);
+          this.user.name = data.name;
+          localStorage.setItem("phonenumber", data.phoneNumber);
+          this.user.tel = data.phoneNumber;
+          localStorage.setItem("deviceIDs", JSON.stringify(data.devices));
+          this.user.image = localStorage.getItem("userimage");
+        })
+        .catch((error) => {
+          if (error.response.status == 401) {
+            console.log(error.response.text);
+            this.$bvToast.show("login-error-credentials-toast");
+          } else {
+            this.$bvToast.show("login-error-server-toast");
+          }
+        });
+    },
+
+    /**
+     *
+     */
+    getDevices() {
+      var apiInstance = new Client.UsersApi();
+      var username = localStorage.getItem("username");
+
+      apiInstance.findAllDevices(username).then((data) => {
+        console.log("Got Device Object");
+        data.forEach((device) => {
+          this.mythieves.push({
+            name: device.name,
+            deviceTel: device.devicePhoneNumber,
+            imei: device.imei,
+            deviceImage: localStorage.getItem(`devices/${device.imei}/image`),
+          });
+        });
+      });
+    },
   },
   mounted: function () {
     this.setQuoteOfTheUpdate();
+    this.getUserData();
+    this.getDevices();
   },
 };
 </script>
@@ -200,6 +149,6 @@ export default {
 .devices-container {
   max-width: 400px;
   margin: auto;
-  margin-top: 20px;
+  margin-top: 120px;
 }
 </style>

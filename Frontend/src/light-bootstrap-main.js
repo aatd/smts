@@ -1,5 +1,4 @@
 import VTooltip from 'v-tooltip'
-import Notifications from './components/NotificationPlugin'
 import GlobalComponents from './globalComponents'
 import GlobalDirectives from './globalDirectives'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -10,7 +9,6 @@ export default {
   install(Vue) {
     Vue.use(GlobalComponents)
     Vue.use(GlobalDirectives)
-    Vue.use(Notifications)
     Vue.use(VTooltip)
   }
 }

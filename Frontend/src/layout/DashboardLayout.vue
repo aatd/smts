@@ -21,12 +21,5 @@ export default {
   components: {
     TopNavbar,
   },
-  methods: {
-    toggleSidebar() {
-      if (this.$sidebar.showSidebar) {
-        this.$sidebar.displaySidebar(false);
-      }
-    },
-  },
 };
 </script>

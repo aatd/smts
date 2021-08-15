@@ -1,107 +1,149 @@
 <template>
-  <card class="card-user devices-container">
-    <!--Background Picture-->
-    <img slot="image" src="img/logo.png" alt="..." />
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-      <!--DeviceName-->
-      <b-form-group
-        id="input-group-1"
-        label="Device Name:"
-        label-for="input-1"
-        description='Choose a Name of your "My Thief"-Device!'
-      >
-        <b-form-input
-          id="input-1"
-          v-model="form.name"
-          placeholder="Enter a cool Name..."
-          required
-        ></b-form-input>
-      </b-form-group>
+  <div class="content">
+    <div class="container-fluid">
+      <card class="card-user devices-container">
+        <!--Background Picture-->
+        <img slot="image" src="img/logo.png" alt="..." />
 
-      <!--IMEI-->
-      <b-form-group
-        id="input-group-2"
-        label="IMEI:"
-        label-for="input-2"
-        description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
-      >
-        <b-form-input
-          id="input-2"
-          v-model="form.imei"
-          placeholder="Enter IMEI..."
-          type="tel"
-          required
-        ></b-form-input>
-      </b-form-group>
+        <!--Form to Submit new Deivce to Server-->
+        <b-form @submit="registerDevice">
+          <!--DeviceName-->
+          <b-form-group
+            id="input-group-register-device-name"
+            label="Device Name:"
+            label-for="input-register-device-name"
+            description='Choose a Name of your "My Thief"-Device!'
+          >
+            <b-form-input
+              id="input-register-device-name"
+              v-model="form.name"
+              placeholder="Enter a cool Name..."
+              required
+            ></b-form-input>
+          </b-form-group>
 
-      <!--Tel-->
-      <b-form-group
-        id="input-group-3"
-        label="Your Telephonenumber:"
-        label-for="input-3"
-        description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
-      >
-        <b-form-input
-          id="input-3"
-          v-model="form.userTel"
-          placeholder="Enter Your Telephonebumer: +49..."
-          type="tel"
-          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-          required
-        ></b-form-input>
-      </b-form-group>
+          <!--IMEI-->
+          <b-form-group
+            id="input-group-register-device-imei"
+            label="IMEI:"
+            label-for="input-register-device-imei"
+            description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
+          >
+            <b-form-input
+              id="input-register-device-imei"
+              v-model="form.imei"
+              placeholder="Enter IMEI..."
+              type="tel"
+              required
+            ></b-form-input>
+          </b-form-group>
 
-      <!--Device-Tel-->
-      <b-form-group
-        id="input-group-3"
-        label="My-Thieves Telephonenumber:"
-        label-for="input-4"
-        description="The number of your My-Thieves SIM-Card. If you want to send SMS's to configure your My-Thieve"
-      >
-        <b-form-input
-          id="input-4"
-          v-model="form.deviceTel"
-          placeholder="Enter Telnnumber: +49..."
-          type="tel"
-          required
-        ></b-form-input>
-      </b-form-group>
+          <!--Tel-->
+          <!--b-form-group
+            id="input-group-register-device-user-tel"
+            label="Your Telephonenumber:"
+            label-for="input-register-device-user-tel"
+            description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
+          >
+            <b-form-input
+              id="input-register-device-user-tel"
+              v-model="form.userTel"
+              placeholder="Enter Your Telephonebumer: +49..."
+              type="tel"
+              required
+            ></b-form-input>
+          </b-form-group-->
 
-      <!--SIM-PIN-->
-      <b-form-group
-        id="input-group-4"
-        label="My-Thieves SIM-PIN:"
-        label-for="input-5"
-        description="To activate your SIM-Card we need it's PIN in it's Configuration."
-      >
-        <b-form-input
-          id="input-5"
-          v-model="form.pin"
-          placeholder="XXXX"
-          type="tel"
-          size="4"
-          maxlength="4"
-          required
-        ></b-form-input>
-      </b-form-group>
+          <!--Device-Tel-->
+          <b-form-group
+            id="input-group-register-device-tel"
+            label="My-Thieves Telephonenumber:"
+            label-for="input-register-device-tel"
+            description="The number of your My-Thieves SIM-Card. If you want to send SMS's to configure your My-Thieve"
+          >
+            <b-form-input
+              id="input-register-device-tel"
+              v-model="form.deviceTel"
+              placeholder="Enter Telnnumber: +49..."
+              type="tel"
+              required
+            ></b-form-input>
+          </b-form-group>
 
-      <!--Submit Button-->
-      <b-button block type="submit" variant="primary">RegisterDevice</b-button>
-    </b-form>
-    <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
-      <pre class="m-0">{{ form }}</pre>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
-    </b-card>
-  </card>
+          <!--SIM-PIN-->
+          <b-form-group
+            id="input-group-register-device-pin"
+            label="My-Thieves SIM-PIN:"
+            label-for="input-register-device-pin"
+            description="To activate your SIM-Card we need it's PIN in it's Configuration."
+          >
+            <b-form-input
+              id="input-register-device-pin"
+              v-model="form.pin"
+              placeholder="XXXX"
+              pattern="^[0-9]{4}$"
+              maxlength="4"
+              required
+            ></b-form-input>
+          </b-form-group>
+
+          <!--APN-->
+          <b-form-group
+            id="input-group-register-device-apn"
+            label="APN:"
+            label-for="input-register-device-apn"
+            description="The APN is needed to dial in to your providers network."
+          >
+            <small>asdf</small>
+            <b-form-input
+              id="input-register-device-apn"
+              v-model="form.name"
+              placeholder="Enter the APN of your provider!"
+              required
+            ></b-form-input>
+          </b-form-group>
+
+          <!--Submit Button-->
+          <b-button block type="submit" variant="primary">
+            RegisterDevice
+          </b-button>
+        </b-form>
+
+        <!--Debug Stuff-->
+        <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
+          <pre class="m-0">{{ form }}</pre>
+          <b-button @click="onReset" block variant="danger">Reset</b-button>
+        </b-card>
+      </card>
+
+      <div id="toasts">
+        <!--Toast generic login error-->
+        <b-toast
+          id="register-device-error-toast"
+          variant="warning"
+          solid
+          toaster="b-toaster-bottom-center"
+          title="Login error"
+        >
+          <template #toast-title>
+            <div class="d-flex flex-grow-1 align-items-baseline">
+              <strong class="mr-auto">Login failed</strong>
+            </div>
+          </template>
+          Couldn't add new Device to your account. Are the name, IMEI, or the
+          devices phonenumber already in use?
+        </b-toast>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { saveAs } from "file-saver";
+import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
   name: "register-device-card",
-  components: {},
   data() {
     return {
       form: {
@@ -112,23 +154,17 @@ export default {
         pin: "",
         apn: "",
       },
-      show: true,
     };
   },
   methods: {
-    onSubmit(event) {
-      event.preventDefault();
-      this.createConfigFile();
-    },
-    onReset(event) {
-      event.preventDefault();
-
+    onReset() {
       // Reset our form values
       this.form.name = "";
       this.form.imei = "";
       this.form.pin = "";
       this.form.userTel = "";
       this.form.deviceTel = "";
+      this.form.apn = "";
 
       // Trick to reset/clear native browser form validation state
       this.show = false;
@@ -143,9 +179,8 @@ export default {
       #define PIN      {'${this.form.pin[0]}','${this.form.pin[1]}','${this.form.pin[2]}','${this.form.pin[3]}'}
       #define PHONE    ${this.form.userTel}"
       #define MYPHONE  ${this.form.deviceTel}"
-      #define URL      "TODO"
-      #define PASSWORD "TODO"
-      #define USER     "TODO"
+      #define URL      "${window.location.href}"
+      #define USER     "${this.form.deviceTel}"
       `;
 
       var file = new File([data], "config.h", {
@@ -154,33 +189,28 @@ export default {
 
       saveAs(file);
     },
-  },
-  props: {
-    title: {
-      type: String,
-      description: 'Register new "My Thief" - Device',
-    },
-    subTitle: {
-      type: String,
-      description:
-        'This Form will create a inital Config-File to setup your "My-Thief"-Device',
-    },
-    type: {
-      type: String,
-      description: "primary",
-    },
-    headerClasses: {
-      type: [String, Object, Array],
-      description: "Card header css classes",
-    },
-    bodyClasses: {
-      type: [String, Object, Array],
-      description: "Card body css classes",
-    },
-    footerClasses: {
-      type: [String, Object, Array],
-      description: "Card footer css classes",
+    registerDevice(event) {
+      event.preventDefault();
+      var deviceModel = new Client.Device();
+      deviceModel.name = this.form.name;
+      deviceModel.imei = this.form.imei;
+      deviceModel.devicePhoneNumber = this.form.deviceTel;
+
+      var apiInstance = new Client.DevicesApi();
+
+      apiInstance
+        .addDevice(deviceModel)
+        .then(() => {
+          console.log("Device added successfully.");
+          this.$router.push(`/users/${localStorage.getItem("username")}`);
+        })
+        .catch(() => {
+          this.$bvToast.show("register-device-error-toast");
+        });
     },
   },
 };
 </script>
+
+<style>
+</style>

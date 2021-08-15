@@ -1,17 +1,14 @@
 <template>
   <div class="container-fluid">
-    <card class="card-user update-userdata-container" v-bind="form">
-      <!--Background Picture-->
-      <img
-        slot="image"
-        :src="form.bgImg"
-        alt="..."
-        v-on:click="invokeBGImageFileSelection"
-      />
-
-      <!--User Information-->
+    <card class="card-user devices-container" v-bind="form">
+      <!--Deviceimage which is just stored locally for ecological reasons-->
       <div class="author">
-        <b-avatar badge-variant="info" size="150" :src="form.image">
+        <b-avatar
+          badge-variant="info"
+          size="7rem"
+          icon="bicycle"
+          :src="form.image"
+        >
           <template #badge size="50"
             ><b-icon
               v-on:click="invokeImageFileSelection"
@@ -25,18 +22,11 @@
           v-show="false"
           id="imgDeviceFile"
           accept="image/jpeg, image/png"
-          @change="onchangeProfileImage"
-        ></b-form-file>
-
-        <!-- Accept specific image formats by IANA type -->
-        <b-form-file
-          v-show="false"
-          id="bgImgDeviceFile"
-          accept="image/jpeg, image/png"
-          @change="onChangeBGImage"
+          @change="onChangeDeviceImage"
         ></b-form-file>
       </div>
-      <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+      <!--Actucal Form-->
+      <b-form @submit="onUpdateDeviceSetings">
         <!--DeviceName-->
         <b-form-group
           id="input-group-1"
@@ -64,23 +54,6 @@
             v-model="form.imei"
             placeholder="Enter IMEI..."
             type="tel"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <!--Tel-->
-        <b-form-group
-          id="input-group-3"
-          label="Your Telephonenumber:"
-          label-for="input-3"
-          description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
-        >
-          <b-form-input
-            id="input-3"
-            v-model="form.userTel"
-            placeholder="Enter Your Telephonebumer: +49..."
-            type="tel"
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
             required
           ></b-form-input>
         </b-form-group>
@@ -122,46 +95,42 @@
         <!--Submit Button-->
         <b-button block type="submit" variant="primary">Save changes</b-button>
       </b-form>
+
+      <!--Debug Stuff-->
       <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
         <pre class="m-0">{{ form }}</pre>
-        <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
+        <b-button @click="onReset" block variant="danger">Reset</b-button>
       </b-card>
     </card>
   </div>
 </template>
 
 <script>
+import * as Client from "../components/api/wheresMyThiefClient/index";
+
 export default {
-  name: "register-device-card",
+  name: "update-device-page",
   components: {},
   data() {
     return {
       form: {
-        bgImg: "img/bicycles/b-1.jpg",
-        image: "img/bicycles/b-1.jpg",
         name: "",
         imei: "",
-        userTel: "",
         deviceTel: "",
         pin: "",
+        image: "",
       },
-      show: true,
     };
   },
   methods: {
-    onSubmit(event) {
-      event.preventDefault();
-      alert(JSON.stringify(this.form));
-    },
-    onReset(event) {
-      event.preventDefault();
-
+    /**
+     *
+     */
+    onReset() {
       // Reset our form values
       this.form.name = "";
       this.form.imei = "";
       this.form.pin = "";
-      this.form.userTel = "";
       this.form.deviceTel = "";
 
       // Trick to reset/clear native browser form validation state
@@ -170,60 +139,58 @@ export default {
         this.show = true;
       });
     },
-    //UI-Stuff for Images
-    invokeBGImageFileSelection() {
-      document.getElementById("bgImgDeviceFile").click();
-    },
+
+    /**
+     *
+     */
     invokeImageFileSelection() {
       document.getElementById("imgDeviceFile").click();
     },
-    onchangeProfileImage(e) {
-      self = this;
-      const image = e.target.files[0];
+
+    /**
+     *
+     */
+    onChangeDeviceImage(event) {
+      var self = this;
+      const image = event.target.files[0];
       const reader = new FileReader();
       reader.readAsDataURL(image);
-      reader.onload = (e) => {
-        this.previewImage = e.target.result;
-        self.form.image = e.target.result;
+      reader.onload = (event) => {
+        this.previewImage = event.target.result;
+        localStorage.setItem(
+          `devices/${self.form.imei}/image`,
+          event.target.result
+        );
+        self.form.image = localStorage.getItem(
+          `devices/${self.form.imei}/image`
+        );
       };
     },
-    onChangeBGImage(e) {
-      self = this;
-      const image = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = (e) => {
-        this.previewImage = e.target.result;
-        self.form.bgImg = e.target.result;
-      };
+
+    /**
+     *
+     */
+    onUpdateDeviceSetings(event) {
+      event.preventDefault();
+    },
+
+    /**
+     *
+     */
+    getCurrentDeviceData() {
+      var self = this;
+      let apiInstance = new Client.DevicesApi();
+      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
+        self.form.name = data.name;
+        self.form.imei = data.imei;
+        self.form.deviceTel = data.devicePhoneNumber;
+        self.form.pin = localStorage.getItem(`devices/${data.imei}/pin`);
+        self.form.image = localStorage.getItem(`devices/${data.imei}/image`);
+      });
     },
   },
-  props: {
-    title: {
-      type: String,
-      description: 'Register new "My Thief" - Device',
-    },
-    subTitle: {
-      type: String,
-      description:
-        'This Form will create a inital Config-File to setup your "My-Thief"-Device',
-    },
-    type: {
-      type: String,
-      description: "primary",
-    },
-    headerClasses: {
-      type: [String, Object, Array],
-      description: "Card header css classes",
-    },
-    bodyClasses: {
-      type: [String, Object, Array],
-      description: "Card body css classes",
-    },
-    footerClasses: {
-      type: [String, Object, Array],
-      description: "Card footer css classes",
-    },
+  mounted: function () {
+    this.getCurrentDeviceData();
   },
 };
 </script>

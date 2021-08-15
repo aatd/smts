@@ -1,23 +1,21 @@
 <template>
   <div class="container-fluid">
     <!--User Information-->
-    <card class="card-user devices-container" v-bind="mythieve">
-      <!--Background Picture-->
-      <img slot="image" src="img/logo.png" alt="..." />
-
+    <card class="card-user devices-container" v-bind="mythief">
       <!--Device Information-->
       <div class="author">
         <div>
           <b-avatar
             badge-variant="light"
             size="120px"
-            :src="mythieve.bycyleImageUrl"
+            icon="bicycle"
+            :src="mythief.image"
           >
           </b-avatar>
           <b-avatar
             badge-variant="light"
             size="70px"
-            :src="mythieve.bycyleImageUrl"
+            :src="mythief.bycyleImageUrl"
           >
             <div class="battery">
               <div
@@ -25,38 +23,50 @@
                 class="battery-level"
                 style="z-index: -1"
               ></div>
-              <small id="battery-label">90%</small>
+              <small id="battery-label"></small>
             </div>
           </b-avatar>
         </div>
 
         <h4 class="title">
-          {{ mythieve.name }}<br />
-          <small>Tel: {{ mythieve.deviceTel }}</small
+          {{ mythief.name }}<br />
+          <small>Tel: {{ mythief.deviceTel }}</small
           ><br />
-          <small>IMEI: {{ mythieve.imei }}</small
+          <small>IMEI: {{ mythief.imei }}</small
           ><br />
         </h4>
       </div>
-
-      <div class="row">
-        <div class="col-8">
-          <h4 class="title">Live tracker of {{ mythieve.name }}</h4>
-        </div>
-        <div class="col-4">
-          <b-button pill class="float-right m-1" v-b-modal.callPoliceModal>
-            Call Police
-          </b-button>
-        </div>
-      </div>
+      <h4 class="title">
+        Live tracker
+        <b-badge v-if="mythief.status == 'active'" variant="danger">
+          tracker active
+        </b-badge>
+        <b-badge v-else-if="mythief.status == 'inactive'" variant="success">
+          tracker inactive
+        </b-badge>
+        <b-badge v-else variant="secondary" pill>status unknown</b-badge>
+      </h4>
+      <b-button variant="danger" block v-b-modal.callPoliceModal>
+        Call Police<b-icon icon="telephone"> </b-icon>
+      </b-button>
+      <b-form-select
+        v-model="timeInterval"
+        class="mb-3"
+        v-if="mythief.status == 'active'"
+      >
+        <b-form-select-option value="0">Show recent data</b-form-select-option>
+        <b-form-select-option value="10">10min</b-form-select-option>
+        <b-form-select-option value="30">30min</b-form-select-option>
+        <b-form-select-option value="60">60min</b-form-select-option>
+        <b-form-select-option value="120">120min</b-form-select-option>
+        <b-form-select-option value="180">180min</b-form-select-option>
+      </b-form-select>
       <!--Device Location Map-->
-      <MapCard></MapCard>
+      <MapCard :deltaTime="timeInterval"></MapCard>
 
-      <div class="m-2 row">
-        <b-button block pill :to="`/devices/${$route.params.id}/settings`">
-          Edit Device<b-icon icon="pencil"> </b-icon>
-        </b-button>
-      </div>
+      <b-button block :to="`/devices/${$route.params.id}/settings`">
+        Edit Device<b-icon icon="pencil"> </b-icon>
+      </b-button>
     </card>
   </div>
 </template>
@@ -64,6 +74,7 @@
 <script>
 import StatsCard from "../components/Cards/StatsCard.vue";
 import MapCard from "../components/Maps/MapCard.vue";
+import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
   name: "device-overview",
@@ -73,16 +84,20 @@ export default {
   },
   data() {
     return {
-      mythieve: {
-        name: "Bike #1",
-        deviceTel: "+49123123123123",
-        imei: "492178492440648",
-        bycyleImageUrl: "img/bicycles/b-1.jpg",
-        qod: "Test an api for Fun-Attribute",
+      mythief: {
+        name: "",
+        deviceTel: "",
+        imei: "",
+        image: "",
+        status: "",
       },
+      timeInterval: "0",
     };
   },
   methods: {
+    /**
+     *
+     */
     setBatteryIndicator(value) {
       //get relevant HTMLElements and resets it's states
       var batteryElement = document.getElementById("battery-indicator");
@@ -104,34 +119,35 @@ export default {
       batteryElement.style.height = `${100 * value}%`;
       batteryLabel.innerText = `${Math.floor(100 * value)}%`;
     },
+
+    /**
+     *
+     */
     setQuoteOfTheUpdate() {
-      const self = this;
+      var self = this;
       fetch("https://api.quotable.io/random")
         .then((response) => response.json())
-        .then((data) => (self.mythieve.qod = data.content));
+        .then((data) => (self.mythief.qod = data.content));
+    },
+
+    /**
+     *
+     */
+    getDeviceData() {
+      var self = this;
+      let apiInstance = new Client.DevicesApi();
+      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
+        self.mythief.name = data.name;
+        self.mythief.imei = data.imei;
+        self.mythief.deviceTel = data.devicePhoneNumber;
+        self.mythief.pin = localStorage.getItem(`devices/${data.imei}/pin`);
+        self.mythief.image = localStorage.getItem(`devices/${data.imei}/image`);
+        self.setBatteryIndicator(Math.floor(data.battery));
+      });
     },
   },
   mounted: function () {
-    self = this;
-    self.setQuoteOfTheUpdate();
-    self.setBatteryIndicator(0.4);
-    fetch(`http://intern.bewegtbildhelden.de/devices/865067020621788/locations`)
-      .then((res) => res.json())
-      .then((element) => {
-        self.setBatteryIndicator(element.battery / 5000);
-      });
-    self.batterIndicatorCallback = window.setInterval(function () {
-      fetch(
-        `http://intern.bewegtbildhelden.de/devices/865067020621788/locations`
-      )
-        .then((res) => res.json())
-        .then((element) => {
-          self.setBatteryIndicator(element.battery / 5000);
-        });
-    }, 20000);
-  },
-  beforeDestroy() {
-    clearInterval(this.batterIndicatorCallback);
+    this.getDeviceData();
   },
 };
 </script>

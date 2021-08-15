@@ -1,9 +1,6 @@
 import DashboardLayout from '../layout/DashboardLayout.vue'
 import CenteredContentLayout from '../layout/CenteredContentLayout.vue'
 
-// GeneralViews
-import NotFound from '../pages/NotFoundPage.vue'
-
 //Where's my Thieve Pages
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
@@ -29,7 +26,7 @@ const routes = [
         name: 'Register',
         component: Register,
       },
-    ]
+    ],
   },
   {
     path: '/users',
@@ -45,7 +42,10 @@ const routes = [
         name: 'UserSettings',
         component: UserSettings,
       },
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      sessionMiddleware(next);
+    },
   },
   {
     path: '/devices',
@@ -66,10 +66,20 @@ const routes = [
         name: 'DeviceSettings',
         component: DeviceSettings,
       },
-
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      sessionMiddleware(next);
+    },
   },
   { path: '*', redirect: '/users/login' }
 ]
+
+function sessionMiddleware(next) {
+  var x = document.cookie.indexOf("session=") // Very poor
+  if (x >= 0) {
+    next();
+  }
+  else next({ name: 'Login' })
+}
 
 export default routes

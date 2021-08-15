@@ -1,28 +1,26 @@
 /*!
 
  =========================================================
- * Vue Light Bootstrap Dashboard - v2.0.0 (Bootstrap 4)
+ * Where's My Thief - Frontend-Application - v0.0.1
  =========================================================
 
- * Product Page: http://www.creative-tim.com/product/light-bootstrap-dashboard
- * Copyright 2019 Creative Tim (http://www.creative-tim.com)
- * Licensed under MIT (https://github.com/creativetimofficial/light-bootstrap-dashboard/blob/master/LICENSE.md)
+ * Licensed under MIT (https://github.com/aatd/smts)
 
  =========================================================
-
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
  */
 
-// Install Vue plugin
+//#region Install Main Vue plugin
 import Vue from 'vue'
 import App from './App.vue'
+//#endregion
 
-// Install LightBootstrap plugin
+//#region Install LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
 Vue.use(LightBootstrap)
+//#endregion
 
-// Install Vue-Router
+//#region Install Vue-Router
 import VueRouter from 'vue-router'
 import routes from './routes/routes'
 Vue.use(VueRouter)
@@ -37,12 +35,13 @@ const router = new VueRouter({
     }
   }
 })
+//#endregion
 
-// Install Serive Worker
+//#region Install Serive Worker
 import './registerServiceWorker'
+//#endregion
 
-
-// Install Leaflet Maps
+//#region Install Leaflet Maps
 import { LMap, LTileLayer, LMarker, LTooltip, LPopup } from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
@@ -57,17 +56,19 @@ Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+//#endregion
 
-// Import Bootstrap (order!)
+//#region Import Bootstrap
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-
-Vue.prototype.$IsDebug = false;
+//#endregion
 
 // MAIN-Entrypoint!
+Vue.prototype.$IsDebug = false;
+
 new Vue({
   el: '#app',
   render: h => h(App),

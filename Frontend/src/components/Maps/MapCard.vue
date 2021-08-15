@@ -9,7 +9,6 @@
           :draggable="marker.draggable"
           :lat-lng.sync="marker.position"
           :icon="marker.icon"
-          @click="alert(marker)"
           ref="marker"
         >
           <l-popup ref="popup" :content="marker.tooltip" />
@@ -27,6 +26,14 @@
       <p>Some adivce when Calling them for real!</p>
       <ul class="list-group">
         <li class="list-group-item">Stay Calm!</li>
+        <li class="list-group-item">
+          Don't risk anything dangerous. People stealing Bikes or kinds may be
+          violent!
+        </li>
+        <li class="list-group-item">
+          Get all Information about your Bike. Like your Bike's frame number and
+          it's looks.
+        </li>
       </ul>
     </b-modal>
   </div>
@@ -42,7 +49,7 @@ import {
   LLayerGroup,
 } from "vue2-leaflet";
 import { BModal } from "bootstrap-vue";
-import * as Client from "src/components/api/index";
+import * as Client from "../api/wheresMyThiefClient/index";
 
 export default {
   name: "map-card",
@@ -53,6 +60,9 @@ export default {
     BModal,
     LPolyline,
     LLayerGroup,
+  },
+  props: {
+    deltaTime: String,
   },
   data() {
     return {
@@ -65,16 +75,18 @@ export default {
         positions: [],
         points: [],
       },
-      client: new Client.DevicesApi(),
     };
   },
   methods: {
+    /**
+     *
+     */
     callPolice: function () {
       window.location.href = "tel:110";
     },
-    alert(item) {
-      alert("this is " + JSON.stringify(item));
-    },
+    /**
+     *
+     */
     addMarker: function (latitude, longitude) {
       //Create new Marker object
       const newMarker = {
@@ -121,26 +133,33 @@ export default {
     },
   },
   mounted: function () {
-    const self = this;
+    var self = this;
+    self.addMarkerCallback = window.setInterval(function () {
+      if (self.$IsDebug) {
+        self.addMarker(0.001 * Math.random() + 45.0, 0.01 * Math.random());
+      } else {
+        var apiInstance = new Client.DevicesApi();
 
-    fetch(`http://intern.bewegtbildhelden.de/devices/865067020621788/locations`)
-      .then((res) => res.json())
-      .then((loc) => {
-        self.addMarker(loc.latitude, loc.longitude);
-      });
-
-    self.addRandomMarker = window.setInterval(function () {
-      fetch(
-        `http://intern.bewegtbildhelden.de/devices/865067020621788/locations`
-      )
-        .then((res) => res.json())
-        .then((loc) => {
-          self.addMarker(loc.latitude, loc.longitude);
-        });
+        apiInstance
+          .devicesImeiLocationsGet(self.$route.params.id)
+          .then((data) => {
+            if (data.length == 0) {
+              console.log("No new Locations found!");
+              return;
+            }
+            let location = new Client.GPSPosition();
+            location.longitude = data.longitude;
+            location.latitude = data.latitude;
+            self.addMarker(location.latitude, location.longitude);
+          })
+          .catch((error) => {
+            console.log("Retrieving locations failed.");
+          });
+      }
     }, 20000);
   },
   beforeDestroy() {
-    clearInterval(this.addRandomMarker);
+    clearInterval(this.addMarkerCallback);
   },
 };
 </script>
@@ -157,10 +176,5 @@ export default {
   font-weight: bolder;
   color: #aaa;
   text-shadow: #555;
-}
-.container {
-  display: flex;
-  justify-content: center;
-  max-width: 800px;
 }
 </style>

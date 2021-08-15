@@ -9,9 +9,7 @@
       </b-nav-item>
     </b-navbar-nav>
     <b-navbar-brand>Where's my Thief!?</b-navbar-brand>
-
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
     <b-collapse id="nav-collapse" is-nav>
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
@@ -33,36 +31,25 @@
 </template>
 
 <script>
+import * as Client from "../components/api/wheresMyThiefClient/index";
+
 export default {
-  computed: {
-    routeName() {
-      const { name } = this.$route;
-      return this.capitalizeFirstLetter(name);
-    },
-  },
-  data() {
-    return {
-      activeNotifications: false,
-    };
-  },
   methods: {
-    capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    },
-    toggleNotificationDropDown() {
-      this.activeNotifications = !this.activeNotifications;
-    },
-    closeDropDown() {
-      this.activeNotifications = false;
-    },
-    toggleSidebar() {
-      this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
-    },
-    hideSidebar() {
-      this.$sidebar.displaySidebar(false);
-    },
+    /**
+     *
+     */
     logout() {
-      this.$router.push("/");
+      var apiInstance = new Client.UsersApi();
+
+      apiInstance
+        .usersLogoutPost()
+        .then(() => {
+          console.log("Hello");
+          this.$router.push(`/users/login`);
+        })
+        .catch((a) => {
+          console.log("Failed");
+        });
     },
   },
 };
