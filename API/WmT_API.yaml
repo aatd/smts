@@ -379,7 +379,7 @@ definitions:
     locations:
       type: "array"
       items:
-        $ref: "#/definitions/gpsPosition"
+        $ref: "#/definitions/GPSPosition"
   
   GPSPosition:
     type: "object"
