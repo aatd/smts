@@ -53,13 +53,18 @@ def make_session_permanent():
 ##############################################
 # Routes
 
-# ok
+
 @app.route(f"{version}/", methods=["GET"])
 def is_server_alive():
     "Returns a HTTP 200 to indicate that the server is online"
 
     # Just return a 200. Later maybe some status, and health information.
     return "server is alive", 200
+
+
+@app.route(f"{version}/input", methods=["GET"])
+def input_from_device():
+    return server.input_from_device(request)
 
 
 # Users routes
@@ -106,7 +111,7 @@ def login_user():
         return "Login Failed", 401
 
     # Get userdata
-    userData = User().get_userdata(request.json["name"])
+    userData = User().user_get_data(request.json["name"])
     if userData is None:
         return "Login Failed", 401
 
@@ -146,7 +151,7 @@ def update_user(userID):
     user_id = session["user"]["_id"]
 
     # Try updating user
-    updated_user, err = User().user_update_v2(user_id, name, password, phone_number)
+    updated_user, err = User().user_update(user_id, name, password, phone_number)
 
     # Error check
     if (updated_user is None) or (err is not None):
@@ -175,7 +180,6 @@ def get_user(userID):
     return userData, 200
 
 
-# ok
 @app.route(f"{version}/users/<userID>", methods=["DELETE"])
 @login_required
 def delete_user():
@@ -186,7 +190,7 @@ def delete_user():
     userID = session["user"]["_id"]
 
     # Try deleting from Database
-    deleted, err = User().delete_user_v2(username, userID)
+    deleted, err = User().user_delete(username, userID)
     if not deleted | err is not None:
         return "Couldn't delete User.", 401
 
@@ -202,7 +206,7 @@ def get_user_devices(userID):
     user_id = session["user"]["_id"]
 
     # Try get all data from DB
-    devices, error = User().get_devices_v2(user_id)
+    devices, error = User().user_get_devices(user_id)
 
     # Error check
     if (devices is None) or (error is not None):
@@ -212,22 +216,10 @@ def get_user_devices(userID):
     return jsonify(devices), 200
 
 
-# kp
-@app.route(f"{version}/input", methods=["GET"])
-def input_from_device():
-    return server.input_from_device(request)
-
-
 ##############################################
 # devices
 
 
-# @app.route(f"{version}/devices", methods=["POST"])
-# @login_required
-# def create_device():
-#     return Device().add_device_to_db()
-
-# ok
 @app.route(f"{version}/devices", methods=["POST"])
 @login_required
 def create_device():
@@ -248,7 +240,7 @@ def create_device():
         return "There are some information missing!", 409
 
     # Attemp user creation
-    deviceData, err = Device().create_device(name, imei, owner, tel, ownerTel)
+    deviceData, err = Device().create_device(name, imei, owner, tel, ownerTel, apn, pin)
 
     # Error check
     if (err is not None) or (deviceData is None):
@@ -257,12 +249,6 @@ def create_device():
     return deviceData, 201
 
 
-# @app.route(f"{version}/devices/<imei>", methods=["GET"])
-# @login_required
-# def get_device(imei):
-#     return Device().get_device_from_db(imei)
-
-# ok
 @app.route(f"{version}/devices/<imei>", methods=["GET"])
 @login_required
 def get_device(imei):
@@ -279,12 +265,6 @@ def get_device(imei):
     return deviceData, 200
 
 
-# @app.route(f"{version}/devices/<imei>", methods=["DELETE"])
-# @login_required
-# def delete_device(imei):
-#     return Device().delete_device_from_db(imei)
-
-# ok
 @app.route(f"{version}/devices/<imei>", methods=["DELETE"])
 @login_required
 def delete_device(imei):
@@ -303,11 +283,6 @@ def delete_device(imei):
     return "Device deleted successfully", 200
 
 
-# @app.route(f"{version}/devices/<imei>/status", methods=["GET"])
-# def get_device_status(imei):
-#     return Device().get_device_status(imei)
-
-# ok
 @app.route(f"{version}/devices/<imei>/status", methods=["GET"])
 def get_device_status(imei):
 
@@ -315,22 +290,16 @@ def get_device_status(imei):
     maxDelta = datetime.timedelta(minutes=60)
 
     # Try getting the current status
-    status, error = Device.get_device_status_v2(imei, maxDelta)
+    status, error = Device().get_device_status(imei, maxDelta)
 
     # Check wether there is an error with the output
-    if error is not None | status is None:
+    if (error is not None) or (status is None):
         return "Status cannot be found", 404
 
     # return data
     return status, 200
 
 
-# @app.route(f"{version}/devices/<imei>/locations", methods=["GET"])
-# @login_required
-# def get_locations(imei):
-#     return Device().get_locations_from_db(imei)
-
-# ok
 @app.route(f"{version}/devices/<imei>/locations", methods=["GET"])
 @login_required
 def get_locations(imei):
@@ -364,7 +333,7 @@ def get_locations(imei):
 # def add_locations(imei):
 #     return Device().add_position_to_device(imei)
 
-# ok
+
 @app.route(f"{version}/devices/<imei>/locations", methods=["POST"])
 def create_locations(imei):
 
@@ -385,12 +354,6 @@ def create_locations(imei):
         return "Couldn't create new location", 409
 
     return new_location, 201
-
-
-# @app.route(f"{version}/devices/<imei>/locations", methods=["DELETE"])
-# @login_required
-# def delete_locations(imei):
-#     return Device().delete_locations(imei)
 
 
 @app.route(f"{version}/devices/<imei>/locations", methods=["DELETE"])
