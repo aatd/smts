@@ -1,7 +1,8 @@
 <template>
   <div class="content">
     <div class="container-fluid">
-      <card class="card-user devices-container">
+      <!--Page Content-->
+      <card class="card-user where-is-my-thief-container">
         <!--Background Picture-->
         <img slot="image" src="img/logo.png" alt="..." />
 
@@ -19,7 +20,8 @@
               v-model="form.name"
               placeholder="Enter a cool Name..."
               required
-            ></b-form-input>
+            >
+            </b-form-input>
           </b-form-group>
 
           <!--IMEI-->
@@ -29,30 +31,20 @@
             label-for="input-register-device-imei"
             description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
           >
+            <a
+              href="https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity"
+            >
+              What is the SIM-Cards IMEI?
+            </a>
             <b-form-input
               id="input-register-device-imei"
               v-model="form.imei"
               placeholder="Enter IMEI..."
               type="tel"
               required
-            ></b-form-input>
+            >
+            </b-form-input>
           </b-form-group>
-
-          <!--Tel-->
-          <!--b-form-group
-            id="input-group-register-device-user-tel"
-            label="Your Telephonenumber:"
-            label-for="input-register-device-user-tel"
-            description="Without your number, My Thieve cannot send you SMS's in case when it cannot send data to Server!"
-          >
-            <b-form-input
-              id="input-register-device-user-tel"
-              v-model="form.userTel"
-              placeholder="Enter Your Telephonebumer: +49..."
-              type="tel"
-              required
-            ></b-form-input>
-          </b-form-group-->
 
           <!--Device-Tel-->
           <b-form-group
@@ -67,7 +59,8 @@
               placeholder="Enter Telnnumber: +49..."
               type="tel"
               required
-            ></b-form-input>
+            >
+            </b-form-input>
           </b-form-group>
 
           <!--SIM-PIN-->
@@ -84,7 +77,8 @@
               pattern="^[0-9]{4}$"
               maxlength="4"
               required
-            ></b-form-input>
+            >
+            </b-form-input>
           </b-form-group>
 
           <!--APN-->
@@ -94,13 +88,16 @@
             label-for="input-register-device-apn"
             description="The APN is needed to dial in to your providers network."
           >
-            <small>asdf</small>
+            <a href="https://en.wikipedia.org/wiki/Access_Point_Name">
+              What is an APN?
+            </a>
             <b-form-input
               id="input-register-device-apn"
-              v-model="form.name"
+              v-model="form.apn"
               placeholder="Enter the APN of your provider!"
               required
-            ></b-form-input>
+            >
+            </b-form-input>
           </b-form-group>
 
           <!--Submit Button-->
@@ -139,11 +136,10 @@
 </template>
 
 <script>
-import { saveAs } from "file-saver";
 import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
-  name: "register-device-card",
+  name: "register-device-page",
   data() {
     return {
       form: {
@@ -157,12 +153,14 @@ export default {
     };
   },
   methods: {
+    /**
+     * Debug only, resets the json Object which wold be sended to server
+     */
     onReset() {
       // Reset our form values
       this.form.name = "";
       this.form.imei = "";
       this.form.pin = "";
-      this.form.userTel = "";
       this.form.deviceTel = "";
       this.form.apn = "";
 
@@ -172,29 +170,18 @@ export default {
         this.show = true;
       });
     },
-    createConfigFile() {
-      var data = `
-      #define APN      "${this.form.name}"
-      #define IMEI     "${this.form.imei}"
-      #define PIN      {'${this.form.pin[0]}','${this.form.pin[1]}','${this.form.pin[2]}','${this.form.pin[3]}'}
-      #define PHONE    ${this.form.userTel}"
-      #define MYPHONE  ${this.form.deviceTel}"
-      #define URL      "${window.location.href}"
-      #define USER     "${this.form.deviceTel}"
-      `;
 
-      var file = new File([data], "config.h", {
-        type: "text/plain;charset=utf-8",
-      });
-
-      saveAs(file);
-    },
+    /**
+     * Attemps a new device registration on the Server
+     */
     registerDevice(event) {
       event.preventDefault();
       var deviceModel = new Client.Device();
       deviceModel.name = this.form.name;
       deviceModel.imei = this.form.imei;
       deviceModel.devicePhoneNumber = this.form.deviceTel;
+      deviceModel.apn = this.form.apn;
+      deviceModel.pin = this.form.pin;
 
       var apiInstance = new Client.DevicesApi();
 

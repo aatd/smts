@@ -1,7 +1,8 @@
 <template>
   <div class="content">
     <div class="container-fluid">
-      <card class="card-user register-container">
+      <!--Page Content-->
+      <card class="card-user where-is-my-thief-container">
         <!--Background Picture-->
         <img slot="image" src="img/logo.png" alt="..." />
         <b-form @submit="onRegister">
@@ -85,7 +86,7 @@
 import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
-  name: "register-card",
+  name: "register-page",
   components: {},
   data() {
     return {
@@ -133,6 +134,7 @@ export default {
         .createUser(userModel)
         .then((data) => {
           console.log("Registration successeded.");
+          localStorage.setItem("username", data.name);
           this.$router.push(`/users/${data.name}`);
         })
         .catch(() => {

@@ -1,7 +1,8 @@
 <template>
   <div class="container-fluid">
-    <card class="card-user devices-container" v-bind="form">
-      <!--Profileimage which is just sotred locally for ecological reasons-->
+    <!--Page Content-->
+    <card class="card-user where-is-my-thief-container-avatar" v-bind="form">
+      <!--Profile image which is just sotred locally for ecological reasons-->
       <div id="changeImageForm" class="author">
         <b-avatar badge-variant="info" size="7rem" :src="form.image">
           <template #badge
@@ -76,6 +77,7 @@
             v-model="form.pwdNew"
             type="password"
             placeholder="Enter a new Password"
+            required
           ></b-form-input>
         </b-form-group>
 
@@ -90,11 +92,15 @@
             v-model="form.pwdNewCheck"
             type="password"
             placeholder="Re-enter your new Password"
+            required
           ></b-form-input>
         </b-form-group>
 
         <!--Submit Button-->
         <b-button block type="submit" variant="primary">Save changes</b-button>
+        <b-button block v-b-modal.deleteUserModal variant="danger">
+          Delete your account
+        </b-button>
       </b-form>
 
       <!--Debug Stuff-->
@@ -103,6 +109,26 @@
         <b-button block @click="onReset" variant="danger">Reset</b-button>
       </b-card>
     </card>
+
+    <!--Page Modals-->
+    <div class="modals">
+      <!--Delete user Modal-->
+      <b-modal
+        id="deleteUserModal"
+        title="Do you really want to delete your Account?"
+        hide-footer
+      >
+        <!--Download Config file-->
+        <b-button class="mt-3" variant="danger" block @click="deleteUser">
+          Delete Useraccount and all Devices permanently
+        </b-button>
+
+        <!--Close Modal-->
+        <b-button class="mt-3" block @click="$bvModal.hide('deleteUserModal')">
+          Cancel
+        </b-button>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -110,7 +136,7 @@
 import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
-  name: "user-profile",
+  name: "update-user-page",
   data() {
     return {
       form: {
@@ -144,9 +170,10 @@ export default {
     },
 
     /**
-     *
+     * Attpemts to update the current user on the server
      */
     updateProfileSettings() {
+      var self = this;
       var apiInstance = new Client.UsersApi();
       var userModel = new Client.User();
 
@@ -157,29 +184,59 @@ export default {
       userModel.phoneNumber = this.form.tel;
 
       //New Password
-      if (this.form.pwdNew != this.form.pwdNewCheck) {
+      if (
+        this.form.pwdNew != this.form.pwdNewCheck &&
+        this.form.pwdNew != "" &&
+        this.form.pwdNewCheck != ""
+      ) {
         console.log("New Password not doublechecked.");
         return;
       }
       userModel.password = this.form.pwdNew;
 
       apiInstance
-        .updateUser("asdf", { user: userModel })
+        .updateUser(localStorage.getItem("username"), { user: userModel })
         .then((data) => {
-          console.log(data);
+          // get all old local stuff
+          var oldUsername = localStorage.getItem("username");
+          var image = localStorage.getItem(`users/${oldUsername}/image`);
+
+          // change all new items
+          localStorage.setItem("username", data.name);
+          localStorage.setItem("phonenumber", data.phoneNumber);
+          localStorage.setItem(`users/${data.name}/image`, image);
+
+          // remove old image
+          localStorage.removeItem(`users/${oldUsername}/image`);
+
+          // navigate to overivew
+          this.$router.push(`/users/${data.name}`);
+          console.log("Successfull updated user");
         })
         .catch((error) => {});
     },
 
     /**
-     *
+     * Attempts to delete the current user on the server
+     */
+    deleteUser() {
+      //TODO
+    },
+
+    /**
+     * Methods invokes the hidden
+     * fileselsction element so we
+     * can use a generic HTML-Element
+     * for fileselection
      */
     invokeImageFileSelection() {
       document.getElementById("imgFile").click();
     },
 
     /**
-     *
+     * Callback Method when fileselection
+     * for the Porfileimage ws completed.
+     * Saves the choosen image to localstorage
      */
     onChangeProfileImage(event) {
       var self = this;
@@ -188,22 +245,25 @@ export default {
       reader.readAsDataURL(image);
       reader.onload = (event) => {
         this.previewImage = event.target.result;
-        localStorage.setItem("userimage", event.target.result);
-        self.form.image = localStorage.getItem("userimage");
+        var username = localStorage.getItem("username");
+        localStorage.setItem(`users/${username}/image`, event.target.result);
+        self.form.image = localStorage.getItem(`users/${username}/image`);
       };
     },
 
     /**
-     *
+     * Collects all data of a user and sets
+     * the local form model of this component
      */
     getCurrentUserData() {
       let self = this;
       let apiInstance = new Client.UsersApi();
+      let username = localStorage.getItem("username");
       apiInstance.getUserbyId(this.$route.params.id).then((data) => {
         console.log(data);
         self.form.username = data.name;
         self.form.tel = data.phoneNumber;
-        self.form.image = localStorage.getItem("userimage");
+        self.form.image = localStorage.getItem(`users/${username}/image`);
       });
     },
   },

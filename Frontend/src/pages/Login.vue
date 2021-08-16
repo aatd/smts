@@ -1,8 +1,8 @@
 <template>
   <div class="content">
     <div class="container-fluid">
-      <!--User Information-->
-      <card class="card-user devices-container">
+      <!--Page Content-->
+      <card class="card-user where-is-my-thief-container">
         <!--Background Picture-->
         <img slot="image" src="img/logo.png" alt="..." />
 
@@ -56,7 +56,7 @@
           <b-button block type="submit" variant="primary">Login</b-button>
         </b-form>
 
-        <!--DEbug Stuff-->
+        <!--Debug Stuff-->
         <b-card class="mt-3" header="Form Data Result" v-if="$IsDebug">
           <pre class="m-0">{{ form }}</pre>
           <b-button type="submit" variant="primary">Submit</b-button>
@@ -151,7 +151,7 @@ export default {
         .then((data) => {
           console.log("Login successeded");
           localStorage.setItem("username", data.name);
-          localStorage.setItem("userPhoneNumber", data.phoneNumber);
+          localStorage.setItem("phonenumber", data.phoneNumber);
           this.$router.push(`/users/${data.name}`);
         })
         .catch((error) => {
@@ -164,7 +164,7 @@ export default {
         });
     },
     /**
-     *
+     * Debug only, resets the json Object which wold be sended to server
      */
     onReset() {
       // Reset our form values

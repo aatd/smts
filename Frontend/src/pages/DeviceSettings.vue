@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
-    <card class="card-user devices-container" v-bind="form">
+    <!--Page Content-->
+    <card class="card-user where-is-my-thief-container-avatar" v-bind="form">
       <!--Deviceimage which is just stored locally for ecological reasons-->
       <div class="author">
         <b-avatar
@@ -25,17 +26,18 @@
           @change="onChangeDeviceImage"
         ></b-form-file>
       </div>
+
       <!--Actucal Form-->
       <b-form @submit="onUpdateDeviceSetings">
         <!--DeviceName-->
         <b-form-group
-          id="input-group-1"
+          id="input-group-update-device-name"
           label="Device Name:"
-          label-for="input-1"
-          description='Choose a Name of your "My Thief"-Device!'
+          label-for="input-update-device-name"
+          description='Choose a cool name of your "My Thief"-Device!'
         >
           <b-form-input
-            id="input-1"
+            id="input-update-device-name"
             v-model="form.name"
             placeholder="Enter a cool Name..."
             required
@@ -44,29 +46,33 @@
 
         <!--IMEI-->
         <b-form-group
-          id="input-group-2"
+          id="input-group-update-device-imei"
           label="IMEI:"
-          label-for="input-2"
-          description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web!"
+          label-for="input-update-device-imei"
+          description="On your SIM-Card you will find your IMEI Number. Withour that number the My-Thieve cannot dial in to the Web or receive SMS!"
         >
+          <a
+            href="https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity"
+          >
+            What is the SIM-Cards IMEI?
+          </a>
           <b-form-input
-            id="input-2"
+            id="input-update-device-imei"
             v-model="form.imei"
             placeholder="Enter IMEI..."
-            type="tel"
             required
           ></b-form-input>
         </b-form-group>
 
         <!--Device-Tel-->
         <b-form-group
-          id="input-group-3"
+          id="input-group-update-device-tel"
           label="My-Thieves Telephonenumber:"
-          label-for="input-4"
+          label-for="input-update-device-tel"
           description="The number of your My-Thieves SIM-Card. If you want to send SMS's to configure your My-Thieve"
         >
           <b-form-input
-            id="input-4"
+            id="input-update-device-tel"
             v-model="form.deviceTel"
             placeholder="Enter Telnnumber: +49..."
             type="tel"
@@ -76,13 +82,13 @@
 
         <!--SIM-PIN-->
         <b-form-group
-          id="input-group-4"
+          id="input-group-update-device-pin"
           label="My-Thieves SIM-PIN:"
-          label-for="input-5"
+          label-for="input-update-device-pin"
           description="To activate your SIM-Card we need it's PIN in it's Configuration."
         >
           <b-form-input
-            id="input-5"
+            id="input-update-device-pin"
             v-model="form.pin"
             placeholder="XXXX"
             type="tel"
@@ -92,8 +98,30 @@
           ></b-form-input>
         </b-form-group>
 
+        <!--APN-->
+        <b-form-group
+          id="input-group-update-device-apn"
+          label="My-Thieves SIM-PIN:"
+          label-for="input-group-update-device-apn"
+          description="With this information is is possible to dial in to your providers network."
+        >
+          <a href="https://en.wikipedia.org/wiki/Access_Point_Name">
+            What is an APN?
+          </a>
+          <b-form-input
+            id="input-group-update-device-apn"
+            v-model="form.apn"
+            placeholder="internet"
+            required
+          >
+          </b-form-input>
+        </b-form-group>
+
         <!--Submit Button-->
         <b-button block type="submit" variant="primary">Save changes</b-button>
+        <b-button block v-b-modal.deleteDeviceModal variant="danger">
+          Delete this Device
+        </b-button>
       </b-form>
 
       <!--Debug Stuff-->
@@ -102,6 +130,30 @@
         <b-button @click="onReset" block variant="danger">Reset</b-button>
       </b-card>
     </card>
+
+    <!--Page Modals-->
+    <div class="modals">
+      <!--Delete user Modal-->
+      <b-modal
+        id="deleteDeviceModal"
+        title="Do you really want to delete thid Device?"
+        hide-footer
+      >
+        <!--Download Config file-->
+        <b-button class="mt-3" variant="danger" block @click="deleteDevice">
+          Delete this device permanently
+        </b-button>
+
+        <!--Close Modal-->
+        <b-button
+          class="mt-3"
+          block
+          @click="$bvModal.hide('deleteDeviceModal')"
+        >
+          Cancel
+        </b-button>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -119,12 +171,13 @@ export default {
         deviceTel: "",
         pin: "",
         image: "",
+        apn: "",
       },
     };
   },
   methods: {
     /**
-     *
+     * Debug only, resets the json Object which wold be sended to server
      */
     onReset() {
       // Reset our form values
@@ -132,6 +185,7 @@ export default {
       this.form.imei = "";
       this.form.pin = "";
       this.form.deviceTel = "";
+      this.form.apn = "";
 
       // Trick to reset/clear native browser form validation state
       this.show = false;
@@ -141,14 +195,19 @@ export default {
     },
 
     /**
-     *
+     * Methods invokes the hidden
+     * fileselsction element so we
+     * can use a generic HTML-Element
+     * for fileselection
      */
     invokeImageFileSelection() {
       document.getElementById("imgDeviceFile").click();
     },
 
     /**
-     *
+     * Callback Method when fileselection
+     * for the Porfileimage ws completed.
+     * Saves the choosen image to localstorage
      */
     onChangeDeviceImage(event) {
       var self = this;
@@ -168,14 +227,23 @@ export default {
     },
 
     /**
-     *
+     * Attempts a update of the Server Device object
      */
     onUpdateDeviceSetings(event) {
       event.preventDefault();
+      //TODO
     },
 
     /**
      *
+     */
+    deleteDevice(event) {
+      // TODO
+    },
+
+    /**
+     * Collects all data of a device and sets
+     * the local form model of this component
      */
     getCurrentDeviceData() {
       var self = this;

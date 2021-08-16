@@ -18,24 +18,6 @@
       </l-layer-group>
       <l-tile-layer :url="url" :attribution="attribution" />
     </l-map>
-    <b-modal
-      id="callPoliceModal"
-      title="Call your local Authoroties!"
-      @ok="callPolice"
-    >
-      <p>Some adivce when Calling them for real!</p>
-      <ul class="list-group">
-        <li class="list-group-item">Stay Calm!</li>
-        <li class="list-group-item">
-          Don't risk anything dangerous. People stealing Bikes or kinds may be
-          violent!
-        </li>
-        <li class="list-group-item">
-          Get all Information about your Bike. Like your Bike's frame number and
-          it's looks.
-        </li>
-      </ul>
-    </b-modal>
   </div>
 </template>
 
@@ -52,7 +34,7 @@ import { BModal } from "bootstrap-vue";
 import * as Client from "../api/wheresMyThiefClient/index";
 
 export default {
-  name: "map-card",
+  name: "map-component",
   components: {
     LMap,
     LTileLayer,
@@ -67,7 +49,7 @@ export default {
   data() {
     return {
       zoom: 17,
-      center: latLng(47.41322, -1.219482),
+      center: latLng(50.93393, 6.988509),
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -79,13 +61,13 @@ export default {
   },
   methods: {
     /**
+     * Adds a Marker to the and fills the map-component.
+     * After adding it to it this method looks up the
+     * adress based on the params given with
+     * https://nominatim.org/release-docs/develop/
      *
-     */
-    callPolice: function () {
-      window.location.href = "tel:110";
-    },
-    /**
-     *
+     * @param {Number} latitude
+     * @param {Number} longitude
      */
     addMarker: function (latitude, longitude) {
       //Create new Marker object
@@ -93,7 +75,7 @@ export default {
         position: { lat: latitude, lng: longitude },
         draggable: false,
         visible: true,
-        tooltip: "Hello",
+        tooltip: "",
       };
 
       var self = this;
@@ -134,16 +116,22 @@ export default {
   },
   mounted: function () {
     var self = this;
+
+    var updateTime = this.$IsDebug ? 5000 : 20000;
+
     self.addMarkerCallback = window.setInterval(function () {
       if (self.$IsDebug) {
-        self.addMarker(0.001 * Math.random() + 45.0, 0.01 * Math.random());
+        self.addMarker(
+          50.93393 + 0.001 * Math.random(),
+          6.988509 + 0.001 * Math.random()
+        );
       } else {
         var apiInstance = new Client.DevicesApi();
 
         apiInstance
           .devicesImeiLocationsGet(self.$route.params.id)
           .then((data) => {
-            if (data.length == 0) {
+            if (data == null) {
               console.log("No new Locations found!");
               return;
             }
@@ -156,7 +144,7 @@ export default {
             console.log("Retrieving locations failed.");
           });
       }
-    }, 20000);
+    }, updateTime);
   },
   beforeDestroy() {
     clearInterval(this.addMarkerCallback);

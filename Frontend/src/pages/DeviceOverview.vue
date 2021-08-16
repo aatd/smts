@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
-    <!--User Information-->
-    <card class="card-user devices-container" v-bind="mythief">
+    <!--Page Content-->
+    <card class="card-user where-is-my-thief-container-avatar" v-bind="mythief">
       <!--Device Information-->
       <div class="author">
         <div>
@@ -36,6 +36,8 @@
           ><br />
         </h4>
       </div>
+
+      <!--Device Status indicator-->
       <h4 class="title">
         Live tracker
         <b-badge v-if="mythief.status == 'active'" variant="danger">
@@ -46,28 +48,143 @@
         </b-badge>
         <b-badge v-else variant="secondary" pill>status unknown</b-badge>
       </h4>
+
+      <!--Call Police Modal Button-->
       <b-button variant="danger" block v-b-modal.callPoliceModal>
-        Call Police<b-icon icon="telephone"> </b-icon>
+        Call Police<b-icon icon="telephone"></b-icon>
       </b-button>
+
+      <!--Time interval selector-->
       <b-form-select
         v-model="timeInterval"
         class="mb-3"
-        v-if="mythief.status == 'active'"
+        v-if="mythief.status == 'active' || $IsDebug"
       >
-        <b-form-select-option value="0">Show recent data</b-form-select-option>
+        <b-form-select-option value="0"
+          >Show only recent data</b-form-select-option
+        >
         <b-form-select-option value="10">10min</b-form-select-option>
         <b-form-select-option value="30">30min</b-form-select-option>
         <b-form-select-option value="60">60min</b-form-select-option>
         <b-form-select-option value="120">120min</b-form-select-option>
         <b-form-select-option value="180">180min</b-form-select-option>
       </b-form-select>
+
       <!--Device Location Map-->
       <MapCard :deltaTime="timeInterval"></MapCard>
 
-      <b-button block :to="`/devices/${$route.params.id}/settings`">
-        Edit Device<b-icon icon="pencil"> </b-icon>
+      <!--Device Settings Page Button-->
+      <b-button
+        variant="info"
+        block
+        :to="`/devices/${$route.params.id}/settings`"
+      >
+        Edit Device<b-icon icon="pencil"></b-icon>
+      </b-button>
+
+      <!--Device Init Config Download-->
+      <b-button
+        block
+        v-if="mythief.status === '' || $IsDebug"
+        v-b-modal.updateConfigSMSModal
+        variant="warning"
+      >
+        Update My-Thief when already setup before<b-icon icon="pencil"></b-icon>
+      </b-button>
+
+      <!--Device Init Config Download-->
+      <b-button
+        block
+        v-if="mythief.status === '' || $IsDebug"
+        v-b-modal.createConfigFileModal
+        variant="warning"
+      >
+        Configuration for first use<b-icon icon="pencil"></b-icon>
       </b-button>
     </card>
+
+    <!--Page Modals-->
+    <div class="modals">
+      <!--Create Config Modal-->
+      <b-modal
+        id="createConfigFileModal"
+        title="Configuration file for your 'My-Thief'-Device!"
+        hide-footer
+      >
+        <!--Download Config file-->
+        <b-button
+          class="mt-3"
+          variant="success"
+          block
+          @click="downloadConfigFile"
+        >
+          Download Configuration File
+        </b-button>
+
+        <!--Close Modal-->
+        <b-button
+          class="mt-3"
+          block
+          @click="$bvModal.hide('createConfigFileModal')"
+        >
+          Cancel
+        </b-button>
+      </b-modal>
+
+      <!--Update Config Modal by SMS-->
+      <b-modal
+        id="updateConfigSMSModal"
+        title="Update your 'My-Thief'-Device when is is already setup by SMS!"
+        hide-footer
+      >
+        <!--Download Config file-->
+        <b-button class="mt-3" variant="success" block @click="updateViaSMS">
+          Update
+        </b-button>
+
+        <!--Close Modal-->
+        <b-button
+          class="mt-3"
+          block
+          @click="$bvModal.hide('updateConfigSMSModal')"
+        >
+          Cancel
+        </b-button>
+      </b-modal>
+
+      <!--Call Police Modal-->
+      <b-modal
+        id="callPoliceModal"
+        title="Call your local Authoroties!"
+        hide-footer
+      >
+        <!--Before calling Police advice Modal-->
+        <p>Some advice when calling the police</p>
+        <b-list-group>
+          <b-list-group-item variant="success">
+            Stay Calm! Even if you are not insured!
+          </b-list-group-item>
+          <b-list-group-item variant="danger">
+            Don't risk anything dangerous. People stealing Bikes or kinds may be
+            violent!</b-list-group-item
+          >
+          <b-list-group-item variant="secondary">
+            Get all Information about your Bike. Like your Bike's frame number
+            and it's looks.</b-list-group-item
+          >
+        </b-list-group>
+
+        <!--Call Police for real!-->
+        <b-button class="mt-3" variant="success" block @click="callPolice">
+          Call Authoroties
+        </b-button>
+
+        <!--Close Modal-->
+        <b-button class="mt-3" block @click="$bvModal.hide('callPoliceModal')">
+          Close
+        </b-button>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -75,9 +192,10 @@
 import StatsCard from "../components/Cards/StatsCard.vue";
 import MapCard from "../components/Maps/MapCard.vue";
 import * as Client from "../components/api/wheresMyThiefClient/index";
+import { saveAs } from "file-saver";
 
 export default {
-  name: "device-overview",
+  name: "device-overview-page",
   components: {
     StatsCard,
     MapCard,
@@ -96,9 +214,19 @@ export default {
   },
   methods: {
     /**
+     * Calls the Police (only german one for now. Later localized!)
+     */
+    callPolice: function () {
+      console.log("Invoking police call");
+      window.location.href = "tel:110";
+    },
+    /**
+     * Sets the battery element in #battery-indicator element.
      *
+     * @param {number} value runs only on the interval [0,1]. Croping all other numbers to this interval
      */
     setBatteryIndicator(value) {
+      console.log("Setting battery value");
       //get relevant HTMLElements and resets it's states
       var batteryElement = document.getElementById("battery-indicator");
       var batteryLabel = document.getElementById("battery-label");
@@ -121,17 +249,7 @@ export default {
     },
 
     /**
-     *
-     */
-    setQuoteOfTheUpdate() {
-      var self = this;
-      fetch("https://api.quotable.io/random")
-        .then((response) => response.json())
-        .then((data) => (self.mythief.qod = data.content));
-    },
-
-    /**
-     *
+     * Get the current device data from the server
      */
     getDeviceData() {
       var self = this;
@@ -143,7 +261,44 @@ export default {
         self.mythief.pin = localStorage.getItem(`devices/${data.imei}/pin`);
         self.mythief.image = localStorage.getItem(`devices/${data.imei}/image`);
         self.setBatteryIndicator(Math.floor(data.battery));
+        console.log("Got device data");
       });
+    },
+
+    /**
+     * Creates the config.h file for first bootrapgin the My-Thief-Device
+     */
+    downloadConfigFile() {
+      var apiInstance = new Client.ApiClient();
+      var data = `
+      #define APN      "${this.form.name}"
+      #define IMEI     "${this.form.imei}"
+      #define PIN      {
+        '${this.form.pin[0]}',
+        '${this.form.pin[1]}',
+        '${this.form.pin[2]}',
+        '${this.form.pin[3]}'
+      }
+      #define PHONE    ${localStorage.getItem("phonenumber")}}"
+      #define MYPHONE  ${this.form.deviceTel}"
+      #define URL      "${apiInstance.basePath}"
+      #define USER     "${this.form.deviceTel}"
+      `;
+
+      var file = new File([data], "config.h", {
+        type: "text/plain;charset=utf-8",
+      });
+
+      console.log("Invoking 'Config.h' download");
+
+      saveAs(file);
+    },
+
+    /**
+     *
+     */
+    updateViaSMS() {
+      window.location.href = `sms:${this.mythief.deviceTel}?body=update`;
     },
   },
   mounted: function () {
@@ -155,6 +310,7 @@ export default {
 <style lang="scss">
 $lightning-size: 18px;
 
+/** This class is an implmentation for a battery indicator.*/
 .battery {
   border: 3px solid #333;
   width: 30px;

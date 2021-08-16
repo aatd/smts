@@ -2,18 +2,10 @@
   <div class="bgImage">
     <top-navbar></top-navbar>
     <transition name="fade" mode="out-in">
-      <router-view></router-view>
+      <router-view class="where-is-my-thief-wrapper"></router-view>
     </transition>
   </div>
 </template>
-
-
-<style lang="scss">
-.bgImage {
-  background: url(/img/bg.jpg) no-repeat center center fixed;
-  min-height: 100vh;
-}
-</style>
 
 <script>
 import TopNavbar from "./TopNavbar.vue";
@@ -23,3 +15,24 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.bgImage {
+  background: url(/img/bg.jpg) no-repeat center center fixed;
+  min-height: 100vh;
+}
+.where-is-my-thief-container {
+  max-width: 400px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.where-is-my-thief-container-avatar {
+  max-width: 400px;
+  margin: auto;
+  margin-top: 120px;
+}
+.where-is-my-thief-wrapper {
+  padding-bottom: 100px;
+}
+</style>

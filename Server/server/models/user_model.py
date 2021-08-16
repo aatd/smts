@@ -103,13 +103,12 @@ class User:
         return jsonify({"message": "log out first"}), 409
 
     # /users/login
-    def user_auth(self):
+    def user_auth(self, username, password):
         coll = db["users"]
 
-        json = request.json
-        user = coll.find_one({"name": json["name"]})
+        user = coll.find_one({"name": username})
 
-        if user and pbkdf2_sha256.verify(json["password"], user["password"]):
+        if user and pbkdf2_sha256.verify(password, user["password"]):
             return True
 
         return False
@@ -156,6 +155,13 @@ class User:
         if phonenumber is not None:
             user["phoneNumber"] = phonenumber
 
+        # Sanity check of properties
+        if (
+            coll.find_one({"name": user["name"]})
+            and coll.find_one({"_id": userID})["name"] != user["name"]
+        ):  # Does User already exists?
+            return None, ValueError("User already exisits")
+
         # Try Updating
         cursor = coll.update_one({"_id": userID}, {"$set": user})
         if not cursor.acknowledged:
@@ -169,7 +175,7 @@ class User:
         # Password hash is not required
         del updated_user["password"]
 
-        return jsonify(updated_user), None
+        return updated_user, None
 
     # /users/{userId}
     def delete_user(self):
@@ -216,6 +222,8 @@ class User:
         if user["name"] != username:
             return None, ValueError("DB Error: Couldn't find entry")
 
+        del user["password"]
+
         return user, None
 
     def get_userdata(self, name):
@@ -238,6 +246,25 @@ class User:
             devices.append(device)
         jsonObject = jsonify(devices)
         return jsonObject, 200
+
+    def get_devices_v2(self, id):
+        coll = db["devices"]
+
+        result = coll.find({"owner": id})
+        if result is None:
+            return None, ValueError("No devices found")
+
+        devices = []
+        for device in result:
+            del (
+                device["locations"],
+                device["_id"],
+                device["owner"],
+                device["ownerPhoneNumber"],
+            )
+            devices.append(device)
+
+        return devices, None
 
     def get_user_devices(self):
         "Get the Users Devices from DB"

@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
-    <!--User Information-->
-    <card class="card-user devices-container" v-bind="user">
+    <!--Page Content-->
+    <card class="where-is-my-thief-container-avatar card-user" v-bind="user">
       <!--User Information-->
       <div class="author">
         <b-avatar badge-variant="light" size="7rem" :src="user.image">
@@ -24,7 +24,7 @@
         </b-button>
       </div>
       <div class="row device-card-list">
-        <div class="col-xl-8" v-for="mythieve in mythieves" :key="mythieve.id">
+        <div class="col-xl-12" v-for="mythieve in mythieves" :key="mythieve.id">
           <router-link :to="`/devices/${mythieve.imei}`">
             <stats-card>
               <div slot="header">
@@ -57,7 +57,7 @@ import StatsCard from "../components/Cards/StatsCard.vue";
 import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
-  name: "user-overview",
+  name: "user-overview-page",
   components: {
     StatsCard,
   },
@@ -100,8 +100,8 @@ export default {
           this.user.name = data.name;
           localStorage.setItem("phonenumber", data.phoneNumber);
           this.user.tel = data.phoneNumber;
-          localStorage.setItem("deviceIDs", JSON.stringify(data.devices));
-          this.user.image = localStorage.getItem("userimage");
+          localStorage.setItem("deviceids", JSON.stringify(data.devices));
+          this.user.image = localStorage.getItem(`users/${data.name}/image`);
         })
         .catch((error) => {
           if (error.response.status == 401) {

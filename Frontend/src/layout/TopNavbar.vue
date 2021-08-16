@@ -44,7 +44,10 @@ export default {
       apiInstance
         .usersLogoutPost()
         .then(() => {
-          console.log("Hello");
+          localStorage.removeItem("username");
+          localStorage.removeItem("deviceIDs");
+          localStorage.removeItem("userPhoneNumber");
+          localStorage.removeItem("phonenumber");
           this.$router.push(`/users/login`);
         })
         .catch((a) => {
