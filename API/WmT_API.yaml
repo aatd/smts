@@ -9,9 +9,9 @@ schemes:
   - "http"
 tags:
   - name: "Users"
-    description: "Benutzerverwaltung"
+    description: "User management - Functions for Users"
   - name: "Devices"
-    description: "devices"
+    description: "Device management - Functions for Devices"
 
 paths:
   /users:
@@ -19,7 +19,7 @@ paths:
       tags:
         - "Users"
       summary: "create new User"
-      description: "check if Username is available"
+      description: "Function to create a new user in the database. Requires Parameters: 'name', 'password', 'phonenumber'. If the registration is succesful, a 'UserData' element is returned"
       operationId: "createUser"
       consumes:
         - "application/json"
@@ -45,11 +45,11 @@ paths:
     post:
       tags:
         - "Users"
-      summary: "login User"
+      summary: "login an existing User (!)"
       operationId: "loginUser"
       consumes:
         - "application/json"
-      description: "check if Username & password are correct  "
+      description: "Function to login an existing User. Checks if the User exists in the database and if the entered password is correct. Returns 'Userdata' element (in : object User??)"
       parameters:
         - in: "body"
           name: "User"
@@ -69,6 +69,7 @@ paths:
       tags:
         - "Users"
       summary: "logout user"
+      description: "Function to logout User from application. "
 
       responses:
         200:
@@ -80,6 +81,7 @@ paths:
         - "Users"
       summary: "Update User"
       operationId: "updateUser"
+      description: "Function to update user information. Updated information will be overwritten in the database. Returns the changed 'Userdata'"
       produces:
         - "application/json"
       consumes:
@@ -104,6 +106,8 @@ paths:
         - "Users"
       summary: "get User by ID"
       operationId: "getUserbyId"
+      description: "get a specific user by its unique ID. Returns the user as an 'Userdata' element."
+      
       produces:
         - "application/json"
       parameters:
@@ -120,6 +124,8 @@ paths:
     delete:
       tags:
         - "Users"
+      summary: "delete User"
+      description: "Delete an existing User. User must be logged in, to delete its information from the database."
       parameters:
         - name: "userId"
           in: "path"
@@ -134,6 +140,7 @@ paths:
       tags:
         - "Users"
       summary: "get Devices from User"
+      description: "Function to get all 'Devices' from an specific user. Returns an array of 'Devices' from the database."
       operationId: "find all Devices"
       produces:
         - "application/json"
@@ -154,7 +161,8 @@ paths:
     post:
       tags:
         - "Devices"
-      summary: "add Device"
+      summary: "add a new device"
+      description: "Function to add a new Device to the database. The logged in users information will be inserted as owner and ownerphonenumber. Requires device parameters: 'name', 'imei', 'devicePhoneNumber'."
       operationId: "addDevice"
       consumes:
         - "application/json"
@@ -177,6 +185,7 @@ paths:
       tags:
         - "Devices"
       summary: "get Device by ID"
+      description: "Function to get an specific device by its unique 'imei' as a parameter. Returns the 'DeviceData'"
       produces:
         - "application/json"
       parameters:
@@ -192,8 +201,11 @@ paths:
             $ref: "#/definitions/DeviceData"
             
     delete:
+    
       tags:
         - "Devices"
+      summary: "delete a device"
+      description: "Function to delete a single device from the database. "
       parameters:
         - name: "imei"
           in: "path"
@@ -207,7 +219,8 @@ paths:
     get:
       tags:
         - "Devices"
-      summary: "get status of device"
+      summary: "get status of device (!)"
+      description: "Function to check if the device is active??? return json status: stolen or not"
       produces:
         - "application/json"
       parameters:
@@ -225,6 +238,7 @@ paths:
       tags:
         - "Devices"
       summary: "add GPS-Position to Device"
+      description: "Function to add a GPSPosition element, recieved from the device, to its database GPSPosition array."
 
       produces:
         - "application/json"
@@ -254,6 +268,7 @@ paths:
       tags:
         - "Devices"
       summary: "Get Locations of device"
+      description: "Function to return all saved locations for a specific timespan from an device as a GPSPosition array. Requires start and (optional) end of desired timespan."
       parameters:
         - in: query
           name: start
@@ -279,6 +294,8 @@ paths:
     delete:
       tags:
         - "Devices"
+      summary: "delete GPSPositions of device"
+      description: "delete all stored GPSPositions of a device from the Database" 
       parameters:
         - name: "imei"
           in: "path"
@@ -291,6 +308,7 @@ paths:
 definitions:
   User:
     type: "object"
+   
     properties:
       id:
         type: "string"
