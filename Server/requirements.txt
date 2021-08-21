@@ -1,5 +1,0 @@
-flask
-pymongo #== 3.4.0 #muss für 64-bit Systeme die neueste Version sein, nicht 3.4
-geojson
-flask-cors
-passlib

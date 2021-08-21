@@ -20,15 +20,15 @@ module.exports = {
         maxChunks: 6
       })
     ],
-    devtool:'source-map',
+    devtool: 'source-map',
   },
-  pwa: {
-    name: `Where's my thief?`,
-    themeColor: '#344675',
-    msTileColor: '#344675',
-    appleMobileWebAppCapable: 'yes',
-    appleMobileWebAppStatusBarStyle: '#344675'
-  },
+  // pwa: {
+  //   name: `Where's my thief?`,
+  //   themeColor: '#344675',
+  //   msTileColor: '#344675',
+  //   appleMobileWebAppCapable: 'yes',
+  //   appleMobileWebAppStatusBarStyle: '#344675'
+  // },
   css: {
     // Enable CSS source maps.
     sourceMap: process.env.NODE_ENV !== 'production'

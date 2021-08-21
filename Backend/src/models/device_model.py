@@ -6,10 +6,11 @@ import pymongo
 ##############################################
 # Init DB
 try:
-    mongo = pymongo.MongoClient("localhost:27017", serverSelectionTimeoutMS=1000)
+    mongo = pymongo.MongoClient("localhost", 27017)
     db = mongo.smts
 except pymongo.errors.ConnectionFailure:
     print("Cannot connect to database")
+    exit(1)
 
 
 class Device:
@@ -96,7 +97,8 @@ class Device:
         location["velocity"] = velocity
 
         # Try update the deivce object with it's new location
-        updated = coll.update_one({"imei": imei}, {"$push": {"locations": location}})
+        updated = coll.update_one(
+            {"imei": imei}, {"$push": {"locations": location}})
 
         if not updated.acknowledged:
             return None, ValueError("Location couldn't be added to DB")
@@ -126,7 +128,8 @@ class Device:
             return False, ValueError("Couldn't find devices to be deleted.")
 
         # First try delete deive number in user
-        user_filter_rm_imei = {"_id": user_id}, {"$pull": {"devices": device["imei"]}}
+        user_filter_rm_imei = {"_id": user_id}, {
+            "$pull": {"devices": device["imei"]}}
         deleted_in_user = user_coll.update_one(user_filter_rm_imei)
         if not deleted_in_user.acknowledged:
             return False, ValueError("Couldn't delete device in User object.")
@@ -134,7 +137,8 @@ class Device:
         # Delete device object now. When not succeeding restore data in user
         deleted = devices_coll.delete_one({"imei": imei})
         if not deleted.acknowledged:
-            user_filter_imei = {"_id": user_id}, {"$push": {"devices": device["imei"]}}
+            user_filter_imei = {"_id": user_id}, {
+                "$push": {"devices": device["imei"]}}
             user_coll.update_one(user_filter_imei)
             return False, ValueError("Couldn't delete device. restored data in User")
 
@@ -152,7 +156,8 @@ class Device:
             return None, ValueError("Couldn't retrieve device data for status")
 
         locations = device.get("locations")
-        deltaTime = datetime.datetime.now() - locations[len(locations) - 1]["time"]
+        deltaTime = datetime.datetime.now(
+        ) - locations[len(locations) - 1]["time"]
         if deltaTime > maxDeltaTime:
             # return status active -> is being stolen or moved!
             return "active", None

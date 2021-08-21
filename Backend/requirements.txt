@@ -1,0 +1,5 @@
+flask
+pymongo == 2.7
+geojson
+flask-cors
+passlib

@@ -1,25 +1,19 @@
 import uuid
-from os import error
 
 import pymongo
-from flask import jsonify, request, session
 from passlib.hash import pbkdf2_sha256
 
 ##############################################
 # Init DB
 try:
-    mongo = pymongo.MongoClient("localhost:27017", serverSelectionTimeoutMS=1000)
+    mongo = pymongo.MongoClient("localhost", 27017)
     db = mongo.smts
 except pymongo.errors.ConnectionFailure:
     print("Cannot connect to database")
+    exit(1)
 
 
 class User:
-    def start_session(self, user):
-        del user["password"]
-        session["logged_in"] = True
-        session["user"] = user
-        return jsonify(user), 201
 
     def create_user(self, name, pwd, tel):
 
@@ -43,7 +37,7 @@ class User:
                 return None, ValueError("User already exists!")
 
             # Everything okey and new User can be inserted!
-            coll.insert_one(user)
+            coll.insert(user)
 
             return user, None
 

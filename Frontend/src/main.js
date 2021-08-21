@@ -38,7 +38,7 @@ const router = new VueRouter({
 //#endregion
 
 //#region Install Serive Worker
-import './registerServiceWorker'
+//import './registerServiceWorker'
 //#endregion
 
 //#region Install Leaflet Maps
@@ -71,6 +71,7 @@ Vue.prototype.$IsDebug = false;
 
 new Vue({
   el: '#app',
+  mode: "history",
   render: h => h(App),
   router
 })
