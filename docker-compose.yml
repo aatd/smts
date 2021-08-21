@@ -2,21 +2,13 @@ version: '3.8'
 
 services:
 
-  # mongodb:
-  #   image: mongo:4.0.8
-  #   container_name: mongodb
-  #   restart: unless-stopped
-  #   command: mongod --auth
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: smts_admin
-  #     MONGO_INITDB_ROOT_PASSWORD: mySecretPassword
-  #     MONGO_INITDB_DATABASE: smts
-  #     MONGODB_DATA_DIR: /data/db
-  #     MONDODB_LOG_DIR: /dev/null
-  #   volumes:
-  #     - mongodbdata:/data/db
-  #   networks:
-  #     - backend
+  database:
+    image: mythief-db
+    build: 
+      context: ./DB
+    ports:
+      - "27017:27017"
+
 
   frontend:
     
@@ -27,19 +19,19 @@ services:
         - ISRPI=TRUE
     ports:
       - "80:80"
-    networks: 
-      - frontend
-      - backend
+
   
   backend:
     image: mythief-backend
     build:
       context: ./Backend
+    environment: 
+        - DATABASE_IP=192.168.0.228
     ports: 
       - "5000:5000"
-    networks: 
-      - backend
+
 
 networks: 
   frontend:
   backend:
+  database:

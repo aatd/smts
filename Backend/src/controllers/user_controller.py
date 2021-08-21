@@ -1,8 +1,4 @@
-from geojson import Point
-from flask import Flask, Response, request
-import pymongo
-import json
-from bson import ObjectId, json_util
+from flask import Response
 import models
 
 

@@ -1,4 +1,6 @@
+from socket import socket
 import uuid
+import os
 
 import pymongo
 from passlib.hash import pbkdf2_sha256
@@ -6,10 +8,11 @@ from passlib.hash import pbkdf2_sha256
 ##############################################
 # Init DB
 try:
-    mongo = pymongo.MongoClient("localhost", 27017)
+    mongo = pymongo.MongoClient(os.environ['DATABASE_IP'], 27017)
     db = mongo.smts
-except pymongo.errors.ConnectionFailure:
+except pymongo.errors.ConnectionFailure as err:
     print("Cannot connect to database")
+    print(err)
     exit(1)
 
 

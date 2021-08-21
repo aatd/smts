@@ -1,15 +1,23 @@
 import datetime
 import uuid
+import os
 
 import pymongo
 
 ##############################################
 # Init DB
 try:
-    mongo = pymongo.MongoClient("localhost", 27017)
+
+    print('Trying to connect to DB located at: ' + os.environ['DATABASE_IP'])
+    mongo = pymongo.MongoClient(os.environ['DATABASE_IP'], 27017)
     db = mongo.smts
-except pymongo.errors.ConnectionFailure:
+    print('Trying to connect to DB located at: ' +
+          os.environ['DATABASE_IP'] + '...Successful')
+
+
+except pymongo.errors.ConnectionFailure as err:
     print("Cannot connect to database")
+    print(err)
     exit(1)
 
 
@@ -52,7 +60,7 @@ class Device:
             return None, ValueError("Device imei already exists!")
 
         # Everything okey and new device can be inserted!
-        result = coll.insert_one(device)
+        result = coll.insert(device)
         if not result.acknowledged:
             return None, ValueError("New Device coulnd't be added to DB")
 
