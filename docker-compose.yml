@@ -23,6 +23,8 @@ services:
     image: mythief-frontend
     build: 
       context: ./Frontend
+      args: 
+        - ISRPI=TRUE
     ports:
       - "80:80"
     networks: 

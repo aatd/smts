@@ -4,6 +4,7 @@ FROM node:10-alpine as builder
 WORKDIR /mythief-ui
 
 ARG ISRPI 
+ENV ISRPI $ISRPI
 
 # Copy the package.json and install dependencies
 COPY package*.json ./
