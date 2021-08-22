@@ -8,11 +8,24 @@ from passlib.hash import pbkdf2_sha256
 ##############################################
 # Init DB
 try:
-    mongo = pymongo.MongoClient(os.environ['DATABASE_IP'], 27017)
+
+    print("Trying to connect to User-DB located at: " +
+          os.environ["DATABASE_IP"])
+    mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
     db = mongo.smts
+    print(
+        "Trying to connect to DB located at: "
+        + os.environ["DATABASE_IP"]
+        + "...Successful"
+    )
+
 except pymongo.errors.ConnectionFailure as err:
-    print("Cannot connect to database")
-    print(err)
+    print(
+        "Trying to connect to User-DB located at: "
+        + os.environ["DATABASE_IP"]
+        + "...Failed...Err: "
+        + err
+    )
     exit(1)
 
 

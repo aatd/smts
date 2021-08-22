@@ -9,10 +9,10 @@ VOLUME ["/var/lib/mongodb"]
 VOLUME ["/data/db"]
 
 # Define default command.
-CMD ["mongod"]
+# CMD ["mongod"]
 
 # Expose ports.
 EXPOSE 27017
 EXPOSE 28017
 
-ENTRYPOINT /usr/bin/mongod
+ENTRYPOINT ["/usr/bin/mongod" , "--journal" ]

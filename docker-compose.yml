@@ -26,12 +26,6 @@ services:
     build:
       context: ./Backend
     environment: 
-        - DATABASE_IP=192.168.0.228
+        - DATABASE_IP=192.168.0.59
     ports: 
       - "5000:5000"
-
-
-networks: 
-  frontend:
-  backend:
-  database:

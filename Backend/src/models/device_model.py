@@ -8,16 +8,24 @@ import pymongo
 # Init DB
 try:
 
-    print('Trying to connect to DB located at: ' + os.environ['DATABASE_IP'])
-    mongo = pymongo.MongoClient(os.environ['DATABASE_IP'], 27017)
+    print("Trying to connect to Device-DB located at: " +
+          os.environ["DATABASE_IP"])
+    mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
     db = mongo.smts
-    print('Trying to connect to DB located at: ' +
-          os.environ['DATABASE_IP'] + '...Successful')
+    print(
+        "Trying to connect to DB located at: "
+        + os.environ["DATABASE_IP"]
+        + "...Successful"
+    )
 
 
 except pymongo.errors.ConnectionFailure as err:
-    print("Cannot connect to database")
-    print(err)
+    print(
+        "Trying to connect to Device-DB located at: "
+        + os.environ["DATABASE_IP"]
+        + "...Failed...Err: "
+        + err
+    )
     exit(1)
 
 
