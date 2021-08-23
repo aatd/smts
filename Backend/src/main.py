@@ -1,9 +1,7 @@
 import datetime
 from datetime import timedelta
 from functools import wraps
-from gettext import lngettext
 
-from click.types import DateTime
 from flask import Flask, request, session
 from flask.json import jsonify
 from flask_cors import CORS
@@ -21,6 +19,8 @@ version = "/v1"
 
 ##############################################
 # Middleware
+
+
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -240,7 +240,8 @@ def create_device():
         return "There are some information missing!", 409
 
     # Attemp user creation
-    deviceData, err = Device().create_device(name, imei, owner, tel, ownerTel, apn, pin)
+    deviceData, err = Device().create_device(
+        name, imei, owner, tel, ownerTel, apn, pin)
 
     # Error check
     if (err is not None) or (deviceData is None):

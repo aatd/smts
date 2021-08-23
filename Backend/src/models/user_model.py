@@ -9,20 +9,33 @@ from passlib.hash import pbkdf2_sha256
 # Init DB
 try:
 
-    print("Trying to connect to User-DB located at: " +
-          os.environ["DATABASE_IP"])
-    mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
+    if os.environ.get("DATABASE_IP") is not None:
+        db_location = os.environ["DATABASE_IP"] + ":27017"
+    else:
+        db_location = "localhost:27017"
+
+    print("Trying to connect to Device-DB located at: " +
+          db_location)
+    #mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
+    mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
     db = mongo.smts
     print(
         "Trying to connect to DB located at: "
-        + os.environ["DATABASE_IP"]
+        + db_location
         + "...Successful"
     )
 
+
 except pymongo.errors.ConnectionFailure as err:
+
+    if os.environ.get("DATABASE_IP") is not None:
+        db_location = os.environ["DATABASE_IP"] + ":27017"
+    else:
+        db_location = "localhost:2017"
+
     print(
-        "Trying to connect to User-DB located at: "
-        + os.environ["DATABASE_IP"]
+        "Trying to connect to Device-DB located at: "
+        + db_location
         + "...Failed...Err: "
         + err
     )
@@ -53,7 +66,7 @@ class User:
                 return None, ValueError("User already exists!")
 
             # Everything okey and new User can be inserted!
-            coll.insert(user)
+            coll.insert_one(user)
 
             return user, None
 

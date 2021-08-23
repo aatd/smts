@@ -8,21 +8,33 @@ import pymongo
 # Init DB
 try:
 
+    if os.environ.get("DATABASE_IP") is not None:
+        db_location = os.environ["DATABASE_IP"] + ":27017"
+    else:
+        db_location = "localhost:27017"
+
     print("Trying to connect to Device-DB located at: " +
-          os.environ["DATABASE_IP"])
-    mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
+          db_location)
+    #mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
+    mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
     db = mongo.smts
     print(
         "Trying to connect to DB located at: "
-        + os.environ["DATABASE_IP"]
+        + db_location
         + "...Successful"
     )
 
 
 except pymongo.errors.ConnectionFailure as err:
+
+    if os.environ.get("DATABASE_IP") is not None:
+        db_location = os.environ["DATABASE_IP"] + ":27017"
+    else:
+        db_location = "localhost:2017"
+
     print(
         "Trying to connect to Device-DB located at: "
-        + os.environ["DATABASE_IP"]
+        + db_location
         + "...Failed...Err: "
         + err
     )
@@ -68,7 +80,7 @@ class Device:
             return None, ValueError("Device imei already exists!")
 
         # Everything okey and new device can be inserted!
-        result = coll.insert(device)
+        result = coll.insert_one(device)
         if not result.acknowledged:
             return None, ValueError("New Device coulnd't be added to DB")
 
