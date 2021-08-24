@@ -1,30 +1,35 @@
-version: '3.8'
+version: '3'
 
 services:
 
-  database:
-    image: mongo
-    restart: always
+  mythief-server:
+    image: nginx:1.17.10
+    container_name: mythief-server
+    depends_on: 
+      - mythief-backend
+      - mythief-frontend
+    volumes:
+      - ./Server/nginx.conf:/etc/nginx/nginx.conf
+      - ./Frontend/dist:/usr/share/nginx/html
     ports: 
-      - 27017:27017
-      - 28017:28017
-
-  frontend:
-    
-    image: mythief-frontend
-    build: 
-      context: ./Frontend
-      args: 
-        - ISRPI=FALSE
-    ports:
       - 80:80
 
-  
-  backend:
+  mythief-backend:
     image: mythief-backend
+    container_name: mythief-backend
     build:
       context: ./Backend
+      args: 
+        - ISRPI=FALSE
     environment: 
         - DATABASE_IP=192.168.0.94
     ports: 
       - 5000:5000
+
+  mythief-frontend:
+    image: mythief-frontend
+    container_name: mythief-frontend
+    build:
+      context: ./Frontend
+    ports: 
+      - 8080:80

@@ -28,4 +28,4 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /mythief-ui/dist /usr/share/nginx/html
 
 EXPOSE 80
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx","-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]
