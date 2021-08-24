@@ -35,9 +35,14 @@ export class ApiClient {
          * @type {String}
          * @default http://localhost/v1
          */
+        if (process.env.NODE_ENV === 'production') {
+            var origin = new URL(window.location.href).origin;
+            this.basePath = origin + '/backend'.replace(/\/+$/, ''); //For Production
 
-        var origin = new URL(window.location.href).hostname;
-        this.basePath = "http://" + origin + ':5000/v1'.replace(/\/+$/, '');
+        } else {
+            var hostname = new URL(window.location.href).hostname;
+            this.basePath = "http://" + hostname + ':5000/v1'.replace(/\/+$/, '');
+        }
 
         /**
          * The authentication methods to be included for all API calls.

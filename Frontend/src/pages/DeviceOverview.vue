@@ -111,6 +111,13 @@
         title="Configuration file for your 'My-Thief'-Device!"
         hide-footer
       >
+        <b-card
+          class="mt-3"
+          header="'config.h' for first install on your MyThief Device"
+        >
+          <pre class="m-0">{{ getConfigFile() }}</pre>
+        </b-card>
+
         <!--Download Config file-->
         <b-button
           class="mt-3"
@@ -208,6 +215,7 @@ export default {
         imei: "",
         image: "",
         status: "",
+        pin: "0000",
       },
       timeInterval: "0",
     };
@@ -258,7 +266,8 @@ export default {
         self.mythief.name = data.name;
         self.mythief.imei = data.imei;
         self.mythief.deviceTel = data.devicePhoneNumber;
-        self.mythief.pin = localStorage.getItem(`devices/${data.imei}/pin`);
+        self.mythief.pin =
+          localStorage.getItem(`devices/${data.imei}/pin`) || "0000";
         self.mythief.image = localStorage.getItem(`devices/${data.imei}/image`);
         self.setBatteryIndicator(Math.floor(data.battery));
         console.log("Got device data");
@@ -271,18 +280,18 @@ export default {
     downloadConfigFile() {
       var apiInstance = new Client.ApiClient();
       var data = `
-      #define APN      "${this.form.name}"
-      #define IMEI     "${this.form.imei}"
+      #define APN      "${this.mythief.name}"
+      #define IMEI     "${this.mythief.imei}"
       #define PIN      {
-        '${this.form.pin[0]}',
-        '${this.form.pin[1]}',
-        '${this.form.pin[2]}',
-        '${this.form.pin[3]}'
+        '${this.mythief.pin[0]}',
+        '${this.mythief.pin[1]}',
+        '${this.mythief.pin[2]}',
+        '${this.mythief.pin[3]}'
       }
-      #define PHONE    ${localStorage.getItem("phonenumber")}}"
-      #define MYPHONE  ${this.form.deviceTel}"
+      #define PHONE    ${localStorage.getItem("phonenumber")}"
+      #define MYPHONE  ${this.mythief.deviceTel}"
       #define URL      "${apiInstance.basePath}"
-      #define USER     "${this.form.deviceTel}"
+      #define USER     "${localStorage.getItem("username")}"
       `;
 
       var file = new File([data], "config.h", {
@@ -292,6 +301,29 @@ export default {
       console.log("Invoking 'Config.h' download");
 
       saveAs(file);
+    },
+    /**
+     *
+     */
+    getConfigFile() {
+      var apiInstance = new Client.ApiClient();
+
+      var data = `
+      #define APN      "${this.mythief.name}"
+      #define IMEI     "${this.mythief.imei}"
+      #define PIN      {
+        '${this.mythief.pin[0]}',
+        '${this.mythief.pin[1]}',
+        '${this.mythief.pin[2]}',
+        '${this.mythief.pin[3]}'
+      }
+      #define PHONE    ${localStorage.getItem("phonenumber")}"
+      #define MYPHONE  ${this.mythief.deviceTel}"
+      #define URL      "${apiInstance.basePath}"
+      #define USER     "${localStorage.getItem("username")}"
+      `;
+
+      return data;
     },
 
     /**
