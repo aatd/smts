@@ -36,8 +36,8 @@ export class ApiClient {
          * @default http://localhost/v1
          */
 
-        var origin = new URL(window.location.href).origin;
-        this.basePath = origin + ':5000/v1'.replace(/\/+$/, '');
+        var origin = new URL(window.location.href).hostname;
+        this.basePath = "http://" + origin + ':5000/v1'.replace(/\/+$/, '');
 
         /**
          * The authentication methods to be included for all API calls.

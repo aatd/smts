@@ -19,8 +19,6 @@ services:
     container_name: mythief-backend
     build:
       context: ./Backend
-      args: 
-        - ISRPI=FALSE
     environment: 
         - DATABASE_IP=192.168.0.94
     ports: 
@@ -31,5 +29,7 @@ services:
     container_name: mythief-frontend
     build:
       context: ./Frontend
+      args: 
+        - ISRPI=TRUE
     ports: 
       - 8080:80
