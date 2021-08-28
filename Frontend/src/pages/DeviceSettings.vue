@@ -171,8 +171,8 @@ export default {
         deviceTel: "",
         pin: "",
         image: "",
-        apn: "",
-      },
+        apn: ""
+      }
     };
   },
   methods: {
@@ -214,7 +214,7 @@ export default {
       const image = event.target.files[0];
       const reader = new FileReader();
       reader.readAsDataURL(image);
-      reader.onload = (event) => {
+      reader.onload = event => {
         this.previewImage = event.target.result;
         localStorage.setItem(
           `devices/${self.form.imei}/image`,
@@ -231,14 +231,18 @@ export default {
      */
     onUpdateDeviceSetings(event) {
       event.preventDefault();
-      //TODO
+      // No Function is API / Server
     },
 
     /**
      *
      */
     deleteDevice(event) {
-      // TODO
+      console.log("delete this device");
+      event.preventDefault();
+      var self = this;
+      let apiInstance = new Client.DevicesApi();
+      apiInstance.devicesImeiDelete(this.$route.params.id);
     },
 
     /**
@@ -248,20 +252,19 @@ export default {
     getCurrentDeviceData() {
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
+      apiInstance.devicesImeiGet(this.$route.params.id).then(data => {
         self.form.name = data.name;
         self.form.imei = data.imei;
         self.form.deviceTel = data.devicePhoneNumber;
         self.form.pin = localStorage.getItem(`devices/${data.imei}/pin`);
         self.form.image = localStorage.getItem(`devices/${data.imei}/image`);
       });
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getCurrentDeviceData();
-  },
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>

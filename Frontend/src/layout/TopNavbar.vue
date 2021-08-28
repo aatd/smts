@@ -2,7 +2,7 @@
   <b-navbar toggleable="lg" type="dark" variant="dark" sticky>
     <!-- Right aligned nav items -->
     <b-navbar-nav>
-      <b-nav-item @click="$router.go(-1)">
+      <b-nav-item @click="goBack">
         <b-button>
           <i class="fa fa-long-arrow-left"></i>
         </b-button>
@@ -50,13 +50,17 @@ export default {
           localStorage.removeItem("phonenumber");
           this.$router.push(`/users/login`);
         })
-        .catch((a) => {
+        .catch(a => {
           console.log("Failed");
         });
     },
-  },
+    goBack() {
+      if (this.$router.currentRoute.name != "UserOverview") {
+        this.$router.go(-1);
+      }
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
