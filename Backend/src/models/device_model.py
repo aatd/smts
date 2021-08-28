@@ -50,6 +50,8 @@ class Device:
         devicePhoneNumber: str,
         ownerPhoneNumer: str,
         apn: str,
+        apnUser:str,
+        apnPassword:str,
         pin: str,
     ):
         # Create device Object to write to DB
@@ -63,6 +65,8 @@ class Device:
             "ownerPhoneNumber": ownerPhoneNumer,
             "battery": 0,
             "apn": apn,
+            "apnUser":apnUser,
+            "apnPassword":apnPassword,
             "pin": pin,
             "locations": [],
         }

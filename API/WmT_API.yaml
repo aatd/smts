@@ -19,7 +19,7 @@ paths:
       tags:
         - "Users"
       summary: "create new User"
-      description: "Function to create a new user in the database. Requires Parameters: 'name', 'password', 'phonenumber'. If the registration is succesful, a 'UserData' element is returned"
+      description: "Function to create a new user in the database. Requires Parameters: 'name', 'password', 'phonenumber'. If the registration is succesful, a 'User' element is returned"
       operationId: "createUser"
       consumes:
         - "application/json"
@@ -36,7 +36,7 @@ paths:
         201:
           description: User created
           schema:
-            $ref: "#/definitions/UserData"
+            $ref: "#/definitions/User"
 
         409:
           description: wrong username/ password
@@ -49,7 +49,7 @@ paths:
       operationId: "loginUser"
       consumes:
         - "application/json"
-      description: "Function to login an existing User. Checks if the User exists in the database and if the entered password is correct. Returns 'Userdata' element (in : object User??)"
+      description: "Function to login an existing User. Checks if the User exists in the database and if the entered password is correct. Returns 'User' element (in : object User??)"
       parameters:
         - in: "body"
           name: "User"
@@ -60,7 +60,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/UserData"
+            $ref: "#/definitions/User"
         401:
           description: wrong username/ password
 
@@ -76,12 +76,32 @@ paths:
           description: OK
 
   /users/{userId}:
+    get:
+      tags:
+        - "Users"
+      summary: "get User by ID"
+      operationId: "getUserbyId"
+      description: "get a specific user by its unique ID. Returns the user as an 'User' element."
+
+      produces:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+
     put:
       tags:
         - "Users"
       summary: "Update User"
       operationId: "updateUser"
-      description: "Function to update user information. Updated information will be overwritten in the database. Returns the changed 'Userdata'"
+      description: "Function to update user information. Updated information will be overwritten in the database. Returns the changed 'User'"
       produces:
         - "application/json"
       consumes:
@@ -99,27 +119,7 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/UserData"
-
-    get:
-      tags:
-        - "Users"
-      summary: "get User by ID"
-      operationId: "getUserbyId"
-      description: "get a specific user by its unique ID. Returns the user as an 'Userdata' element."
-      
-      produces:
-        - "application/json"
-      parameters:
-        - name: "userId"
-          in: "path"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/UserData"
+            $ref: "#/definitions/User"
 
     delete:
       tags:
@@ -185,7 +185,7 @@ paths:
       tags:
         - "Devices"
       summary: "get Device by ID"
-      description: "Function to get an specific device by its unique 'imei' as a parameter. Returns the 'DeviceData'"
+      description: "Function to get an specific device by its unique 'imei' as a parameter. Returns the 'Device'"
       produces:
         - "application/json"
       parameters:
@@ -198,10 +198,34 @@ paths:
         200:
           description: "ok"
           schema:
-            $ref: "#/definitions/DeviceData"
-            
+            $ref: "#/definitions/Device"
+
+    put:
+      tags:
+        - "Devices"
+      summary: "Update Device"
+      operationId: "updateDevice"
+      description: "Function to update device information. Updated information will be overwritten in the database. Returns the changed 'Device'"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "imei"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "Device"
+          schema:
+            $ref: "#/definitions/Device"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Device"
+
     delete:
-    
       tags:
         - "Devices"
       summary: "delete a device"
@@ -244,9 +268,9 @@ paths:
         - "application/json"
 
       consumes:
-      - "application/json"
-      - "application/x-www-form-urlencoded"
-      
+        - "application/json"
+        - "application/x-www-form-urlencoded"
+
       parameters:
         - name: "imei"
           in: "path"
@@ -295,7 +319,7 @@ paths:
       tags:
         - "Devices"
       summary: "delete GPSPositions of device"
-      description: "delete all stored GPSPositions of a device from the Database" 
+      description: "delete all stored GPSPositions of a device from the Database"
       parameters:
         - name: "imei"
           in: "path"
@@ -308,7 +332,7 @@ paths:
 definitions:
   User:
     type: "object"
-   
+
     properties:
       id:
         type: "string"
@@ -326,79 +350,45 @@ definitions:
           type: "integer"
           format: "int64"
 
-  UserData:
-    type: "object"
-    properties:
-      id:
-        type: "string"
-
-      name:
-        type: "string"
-
-      phoneNumber:
-        type: "string"
-
-      devices:
-        type: "array"
-        items:
-          type: "integer"
-          format: "int64"
-  
-  DeviceData:
+  Device:
     type: "object"
     properties:
       name:
         type: "string"
-      
+
       imei:
         type: "string"
-      
-      
+
       owner:
         type: "string"
-      
+
       devicePhoneNumber:
         type: "string"
-       
-       
-      
+
+      pin:
+        type: "string"
+
+      apn:
+        type: "string"
+
+      apnUser:
+        type: "string"
+
+      apnPassword:
+        type: "string"
+
       ownerPhoneNumber:
         type: "string"
-      
+
       battery:
         type: "number"
         format: "float"
-  
-  Device:
-   type: "object"
-   properties:
-    name:
-      type: "string"
-      
-    imei:
-      type: "string"
-      
-      
-    owner:
-      type: "string"
-      
-    devicePhoneNumber:
-       type: "string"
-       
-       
-      
-    ownerPhoneNumber:
-      type: "string"
-      
-    battery:
-      type: "number"
-      format: "float"
-      
-    locations:
-      type: "array"
-      items:
-        $ref: "#/definitions/GPSPosition"
-  
+
+      locations:
+        type: "array"
+        items:
+          $ref: "#/definitions/GPSPosition"
+
   GPSPosition:
     type: "object"
     properties:

@@ -100,6 +100,38 @@
             </b-form-input>
           </b-form-group>
 
+          <!--APN-User-->
+          <b-form-group
+            id="input-group-register-device-apn-user"
+            label="APN-Username:"
+            label-for="input-register-device-apn-user"
+            description="The APN username is needed to dial in to your providers network."
+          >
+            <b-form-input
+              id="input-register-device-apn-user"
+              v-model="form.apnUser"
+              placeholder="Enter the APN usrename of your provider!"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+
+          <!--APN-Password-->
+          <b-form-group
+            id="input-group-register-device-apn-password"
+            label="APN-Password:"
+            label-for="input-register-device-apn-password"
+            description="The APN password is needed to dial in to your providers network."
+          >
+            <b-form-input
+              id="input-register-device-apn-password"
+              v-model="form.apnPassword"
+              placeholder="Enter the APN password of your provider!"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+
           <!--Submit Button-->
           <b-button block type="submit" variant="primary">
             RegisterDevice
@@ -149,6 +181,8 @@ export default {
         deviceTel: "",
         pin: "",
         apn: "",
+        apnUser: "",
+        apnPassword: "",
       },
     };
   },
@@ -163,6 +197,8 @@ export default {
       this.form.pin = "";
       this.form.deviceTel = "";
       this.form.apn = "";
+      this.form.apnUser = "";
+      this.form.apnPassword = "";
 
       // Trick to reset/clear native browser form validation state
       this.show = false;
@@ -181,6 +217,8 @@ export default {
       deviceModel.imei = this.form.imei;
       deviceModel.devicePhoneNumber = this.form.deviceTel;
       deviceModel.apn = this.form.apn;
+      deviceModel.apnUser = this.form.apnUser;
+      deviceModel.apnPassword = this.form.apnPassword;
       deviceModel.pin = this.form.pin;
 
       var apiInstance = new Client.DevicesApi();

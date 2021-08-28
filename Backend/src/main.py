@@ -232,16 +232,18 @@ def create_device():
     tel = json.get("devicePhoneNumber")
     pin = json.get("pin")
     apn = json.get("apn")
+    apnUser = json.get("apnUser")
+    apnPassword = json.get("apnPassword")
     owner = session["user"]["_id"]
     ownerTel = session["user"]["phoneNumber"]
 
     # Check if all data are aquired
-    if None in (name, imei, tel, pin, apn, owner):
+    if None in (name, imei, tel, pin, apn,apnUser, apnPassword, owner):
         return "There are some information missing!", 409
 
     # Attemp user creation
     deviceData, err = Device().create_device(
-        name, imei, owner, tel, ownerTel, apn, pin)
+        name, imei, owner, tel, ownerTel, apn,apnUser, apnPassword, pin)
 
     # Error check
     if (err is not None) or (deviceData is None):

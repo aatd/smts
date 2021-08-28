@@ -12,7 +12,8 @@
         "webpack:///src/*": "${webRoot}/*"
       },
       "runtimeArgs": [
-        "--use-mobile-user-agent"
+        "--use-mobile-user-agent",
+        "--disable-web-security"
       ]
     }
   ]

@@ -3,7 +3,7 @@
     <!-- Right aligned nav items -->
     <b-navbar-nav>
       <b-nav-item @click="goBack">
-        <b-button>
+        <b-button v-if="showGoBackButton">
           <i class="fa fa-long-arrow-left"></i>
         </b-button>
       </b-nav-item>
@@ -34,6 +34,11 @@
 import * as Client from "../components/api/wheresMyThiefClient/index";
 
 export default {
+  data() {
+    return {
+      showGoBackButton: true,
+    };
+  },
   methods: {
     /**
      *
@@ -50,7 +55,7 @@ export default {
           localStorage.removeItem("phonenumber");
           this.$router.push(`/users/login`);
         })
-        .catch(a => {
+        .catch((a) => {
           console.log("Failed");
         });
     },
@@ -58,8 +63,17 @@ export default {
       if (this.$router.currentRoute.name != "UserOverview") {
         this.$router.go(-1);
       }
-    }
-  }
+    },
+  },
+  watch: {
+    $route(to, from) {
+      if (to.name === "UserOverview") {
+        this.showGoBackButton = false;
+      } else {
+        this.showGoBackButton = true;
+      }
+    },
+  },
 };
 </script>
 

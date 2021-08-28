@@ -16,33 +16,35 @@
 import {ApiClient} from '../ApiClient';
 
 /**
- * The UserData model module.
- * @module model/UserData
+ * The User model module.
+ * @module model/User
  * @version 1.0
  */
-export class UserData {
+export class User {
   /**
-   * Constructs a new <code>UserData</code>.
-   * @alias module:model/UserData
+   * Constructs a new <code>User</code>.
+   * @alias module:model/User
    * @class
    */
   constructor() {
   }
 
   /**
-   * Constructs a <code>UserData</code> from a plain JavaScript object, optionally creating a new instance.
+   * Constructs a <code>User</code> from a plain JavaScript object, optionally creating a new instance.
    * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
    * @param {Object} data The plain JavaScript object bearing properties of interest.
-   * @param {module:model/UserData} obj Optional instance to populate.
-   * @return {module:model/UserData} The populated <code>UserData</code> instance.
+   * @param {module:model/User} obj Optional instance to populate.
+   * @return {module:model/User} The populated <code>User</code> instance.
    */
   static constructFromObject(data, obj) {
     if (data) {
-      obj = obj || new UserData();
+      obj = obj || new User();
       if (data.hasOwnProperty('id'))
         obj.id = ApiClient.convertToType(data['id'], 'String');
       if (data.hasOwnProperty('name'))
         obj.name = ApiClient.convertToType(data['name'], 'String');
+      if (data.hasOwnProperty('password'))
+        obj.password = ApiClient.convertToType(data['password'], 'String');
       if (data.hasOwnProperty('phoneNumber'))
         obj.phoneNumber = ApiClient.convertToType(data['phoneNumber'], 'String');
       if (data.hasOwnProperty('devices'))
@@ -55,21 +57,26 @@ export class UserData {
 /**
  * @member {String} id
  */
-UserData.prototype.id = undefined;
+User.prototype.id = undefined;
 
 /**
  * @member {String} name
  */
-UserData.prototype.name = undefined;
+User.prototype.name = undefined;
+
+/**
+ * @member {String} password
+ */
+User.prototype.password = undefined;
 
 /**
  * @member {String} phoneNumber
  */
-UserData.prototype.phoneNumber = undefined;
+User.prototype.phoneNumber = undefined;
 
 /**
  * @member {Array.<Number>} devices
  */
-UserData.prototype.devices = undefined;
+User.prototype.devices = undefined;
 
 

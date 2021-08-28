@@ -8,7 +8,8 @@
 
  =========================================================
 
- */
+ */window.useDevServer = true;
+
 
 //#region Install Main Vue plugin
 import Vue from 'vue'

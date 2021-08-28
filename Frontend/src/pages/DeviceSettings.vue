@@ -28,7 +28,7 @@
       </div>
 
       <!--Actucal Form-->
-      <b-form @submit="onUpdateDeviceSetings">
+      <b-form @submit="onUpdateDeviceSettings">
         <!--DeviceName-->
         <b-form-group
           id="input-group-update-device-name"
@@ -101,7 +101,7 @@
         <!--APN-->
         <b-form-group
           id="input-group-update-device-apn"
-          label="My-Thieves SIM-PIN:"
+          label="My-Thieves APN:"
           label-for="input-group-update-device-apn"
           description="With this information is is possible to dial in to your providers network."
         >
@@ -111,6 +111,44 @@
           <b-form-input
             id="input-group-update-device-apn"
             v-model="form.apn"
+            placeholder="internet"
+            required
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <!--APNUSER-->
+        <b-form-group
+          id="input-group-update-device-apn-user"
+          label="My-Thieves APN-User:"
+          label-for="input-group-update-device-apn-user"
+          description="With this information is is possible to dial in to your providers network."
+        >
+          <a href="https://en.wikipedia.org/wiki/Access_Point_Name">
+            What is an APN?
+          </a>
+          <b-form-input
+            id="input-group-update-device-apn-user"
+            v-model="form.apnUser"
+            placeholder="internet"
+            required
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <!--APNPASSWORD-->
+        <b-form-group
+          id="input-group-update-device-apn-password"
+          label="My-Thieves APN-Password:"
+          label-for="input-group-update-device-apn-password"
+          description="With this information is is possible to dial in to your providers network."
+        >
+          <a href="https://en.wikipedia.org/wiki/Access_Point_Name">
+            What is an APN?
+          </a>
+          <b-form-input
+            id="input-group-update-device-apn-password"
+            v-model="form.apnPassword"
             placeholder="internet"
             required
           >
@@ -169,10 +207,12 @@ export default {
         name: "",
         imei: "",
         deviceTel: "",
-        pin: "",
         image: "",
-        apn: ""
-      }
+        apn: "",
+        apnUser: "",
+        apnPassword: "",
+        pin: "",
+      },
     };
   },
   methods: {
@@ -214,7 +254,7 @@ export default {
       const image = event.target.files[0];
       const reader = new FileReader();
       reader.readAsDataURL(image);
-      reader.onload = event => {
+      reader.onload = (event) => {
         this.previewImage = event.target.result;
         localStorage.setItem(
           `devices/${self.form.imei}/image`,
@@ -229,9 +269,24 @@ export default {
     /**
      * Attempts a update of the Server Device object
      */
-    onUpdateDeviceSetings(event) {
+    onUpdateDeviceSettings(event) {
       event.preventDefault();
       // No Function is API / Server
+
+      //Create Device Object
+      var device = new Client.Device();
+      device = {
+        imei: this.form.imei,
+        pin: this.form.pin,
+        apn: this.form.apn,
+        apnUser: this.form.apnUser,
+        apnPassword: this.form.apnPassword,
+        devicePhoneNumber: this.form.deviceTel,
+        owner: localStorage.getItem("username"),
+        name: this.form.name,
+        locations: [],
+        ownerPhoneNumber: localStorage.getItem("phonenumber"),
+      };
     },
 
     /**
@@ -252,18 +307,30 @@ export default {
     getCurrentDeviceData() {
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then(data => {
+      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
         self.form.name = data.name;
         self.form.imei = data.imei;
         self.form.deviceTel = data.devicePhoneNumber;
         self.form.pin = localStorage.getItem(`devices/${data.imei}/pin`);
         self.form.image = localStorage.getItem(`devices/${data.imei}/image`);
+        self.form.apnPassword = data.apnPassword;
+        self.form.apnUser = data.apnUser;
+
+        self.form = {
+          name: data.name,
+          imei: data.imei,
+          deviceTel: data.devicePhoneNumber,
+          pin: data.pin,
+          image: localStorage.getItem(`devices/${data.imei}/image`),
+          apnPassword: data.apnPassword,
+          apnUser: data.apnUser,
+        };
       });
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.getCurrentDeviceData();
-  }
+  },
 };
 </script>
 

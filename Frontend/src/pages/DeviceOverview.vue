@@ -110,7 +110,23 @@
         id="createConfigFileModal"
         title="Configuration file for your 'My-Thief'-Device!"
         hide-footer
+        scrollable
       >
+        <!--Before calling Police advice Modal-->
+        <p>Some advice when calling the police</p>
+        <b-list-group>
+          <b-list-group-item variant="success">
+            Stay Calm! Even if you are not insured!
+          </b-list-group-item>
+          <b-list-group-item variant="danger">
+            Don't risk anything dangerous. People stealing Bikes or kinds may be
+            violent!</b-list-group-item
+          >
+          <b-list-group-item variant="secondary">
+            Get all Information about your Bike. Like your Bike's frame number
+            and it's looks.</b-list-group-item
+          >
+        </b-list-group>
         <b-card
           class="mt-3"
           header="'config.h' for first install on your MyThief Device"
@@ -144,7 +160,7 @@
         title="Update your 'My-Thief'-Device when is is already setup by SMS!"
         hide-footer
       >
-        <!--Download Config file-->
+        <!--Send Config sms-->
         <b-button class="mt-3" variant="success" block @click="updateViaSMS">
           Update
         </b-button>
@@ -215,7 +231,10 @@ export default {
         imei: "",
         image: "",
         status: "",
-        pin: "0000",
+        pin: "",
+        apn: "",
+        apnUser: "",
+        apnPassword: "",
       },
       timeInterval: "0",
     };
@@ -266,8 +285,10 @@ export default {
         self.mythief.name = data.name;
         self.mythief.imei = data.imei;
         self.mythief.deviceTel = data.devicePhoneNumber;
-        self.mythief.pin =
-          localStorage.getItem(`devices/${data.imei}/pin`) || "0000";
+        self.mythief.pin = data.pin;
+        self.mythief.apn = data.apn;
+        self.mythief.apnUser = data.apnUser;
+        self.mythief.apnPassword = data.apnPassword;
         self.mythief.image = localStorage.getItem(`devices/${data.imei}/image`);
         self.setBatteryIndicator(Math.floor(data.battery));
         console.log("Got device data");
@@ -281,24 +302,23 @@ export default {
       var apiInstance = new Client.ApiClient();
       var data = `
       #define APN      "${this.mythief.name}"
-      #define IMEI     "${this.mythief.imei}"
+      #define USER     "${this.mythief.apnUser}"
+      #define PASSWORD "${this.mythief.apnPassword}"
       #define PIN      {
         '${this.mythief.pin[0]}',
         '${this.mythief.pin[1]}',
         '${this.mythief.pin[2]}',
         '${this.mythief.pin[3]}'
       }
-      #define PHONE    ${localStorage.getItem("phonenumber")}"
-      #define MYPHONE  ${this.mythief.deviceTel}"
+      #define PHONE    ${this.mythief.deviceTel}"
       #define URL      "${apiInstance.basePath}"
-      #define USER     "${localStorage.getItem("username")}"
       `;
 
       var file = new File([data], "config.h", {
         type: "text/plain;charset=utf-8",
       });
 
-      console.log("Invoking 'Config.h' download");
+      console.log("Invoking 'config.h' download");
 
       saveAs(file);
     },
@@ -310,19 +330,17 @@ export default {
 
       var data = `
       #define APN      "${this.mythief.name}"
-      #define IMEI     "${this.mythief.imei}"
+      #define USER     "${this.mythief.apnUser}"
+      #define PASSWORD "${this.mythief.apnPassword}"
       #define PIN      {
         '${this.mythief.pin[0]}',
         '${this.mythief.pin[1]}',
         '${this.mythief.pin[2]}',
         '${this.mythief.pin[3]}'
       }
-      #define PHONE    ${localStorage.getItem("phonenumber")}"
-      #define MYPHONE  ${this.mythief.deviceTel}"
+      #define PHONE    ${this.mythief.deviceTel}"
       #define URL      "${apiInstance.basePath}"
-      #define USER     "${localStorage.getItem("username")}"
       `;
-
       return data;
     },
 

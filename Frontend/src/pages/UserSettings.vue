@@ -62,7 +62,6 @@
             v-model="form.pwdOld"
             type="password"
             placeholder="Enter your current Password"
-            required
           ></b-form-input>
         </b-form-group>
 
@@ -77,7 +76,6 @@
             v-model="form.pwdNew"
             type="password"
             placeholder="Enter a new Password"
-            required
           ></b-form-input>
         </b-form-group>
 
@@ -92,7 +90,6 @@
             v-model="form.pwdNewCheck"
             type="password"
             placeholder="Re-enter your new Password"
-            required
           ></b-form-input>
         </b-form-group>
 
@@ -117,6 +114,7 @@
         id="deleteUserModal"
         title="Do you really want to delete your Account?"
         hide-footer
+        centered="false"
       >
         <!--Download Config file-->
         <b-button class="mt-3" variant="danger" block @click="deleteUser">
