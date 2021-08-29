@@ -191,7 +191,7 @@ def delete_user():
 
     # Try deleting from Database
     deleted, err = User().user_delete(username, userID)
-    if not deleted | err is not None:
+    if (deleted is not True) or (err is not None):
         return "Couldn't delete User.", 401
 
     # Return ok
@@ -238,12 +238,13 @@ def create_device():
     ownerTel = session["user"]["phoneNumber"]
 
     # Check if all data are aquired
-    if None in (name, imei, tel, pin, apn,apnUser, apnPassword, owner):
+    if None in (name, imei, tel, pin, apn, apnUser, apnPassword, owner):
         return "There are some information missing!", 409
 
     # Attemp user creation
     deviceData, err = Device().create_device(
-        name, imei, owner, tel, ownerTel, apn,apnUser, apnPassword, pin)
+        name, imei, owner, tel, ownerTel, apn, apnUser, apnPassword, pin
+    )
 
     # Error check
     if (err is not None) or (deviceData is None):
@@ -271,15 +272,13 @@ def get_device(imei):
 @app.route(f"{version}/devices/<imei>", methods=["DELETE"])
 @login_required
 def delete_device(imei):
-
-    # Get required data from request
-    userID = session["user"]["_id"]
+    "TODO"
 
     # Try deletion
-    deleted, error = Device.delete_device(userID, imei)
+    deleted, error = Device().delete_device(imei)
 
     # Check wethe deletion was successful
-    if not deleted | error is not None:
+    if (deleted is not True) or (error is not None):
         return "Deletion of device failed", 400
 
     # Return data
@@ -287,6 +286,7 @@ def delete_device(imei):
 
 
 @app.route(f"{version}/devices/<imei>/status", methods=["GET"])
+@login_required
 def get_device_status(imei):
 
     # Compute maximum time we define the bike as active
@@ -332,11 +332,6 @@ def get_locations(imei):
     return jsonify(locations), 200
 
 
-# @app.route(f"{version}/devices/<imei>/locations", methods=["POST"])
-# def add_locations(imei):
-#     return Device().add_position_to_device(imei)
-
-
 @app.route(f"{version}/devices/<imei>/locations", methods=["POST"])
 def create_locations(imei):
 
@@ -348,12 +343,16 @@ def create_locations(imei):
     vel = json.get("velocity")
     height = json.get("height")
 
+    # Check if all data are aquired
+    if None in (lat, imei, lng):
+        return "There are some information missing!", 409
+
     # Try create new Locations on device
     new_location, error = Device().create_device_location(
         imei, time, lat, lng, height, vel
     )
 
-    if new_location is None | error is not None:
+    if (new_location is None) or (error is not None):
         return "Couldn't create new location", 409
 
     return new_location, 201

@@ -4,6 +4,21 @@
     <transition name="fade" mode="out-in">
       <router-view class="where-is-my-thief-wrapper"></router-view>
     </transition>
+    <div class="modals">
+      <b-modal
+        id="loading-modal"
+        centered
+        title="BootstrapVue"
+        hide-footer
+        hide-header
+        size="sm"
+      >
+        <div class="d-flex justify-content-center mb-3">
+          <b-spinner label="Loading..."></b-spinner>
+          <p>Loading...</p>
+        </div>
+      </b-modal>
+    </div>
   </div>
 </template>
 

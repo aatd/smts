@@ -1,6 +1,6 @@
 import datetime
-import uuid
 import os
+import uuid
 
 import pymongo
 
@@ -13,16 +13,11 @@ try:
     else:
         db_location = "localhost:27017"
 
-    print("Trying to connect to Device-DB located at: " +
-          db_location)
-    #mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
+    print("Trying to connect to Device-DB located at: " + db_location)
+    # mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
     mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
     db = mongo.smts
-    print(
-        "Trying to connect to DB located at: "
-        + db_location
-        + "...Successful"
-    )
+    print("Trying to connect to DB located at: " + db_location + "...Successful")
 
 
 except pymongo.errors.ConnectionFailure as err:
@@ -50,8 +45,8 @@ class Device:
         devicePhoneNumber: str,
         ownerPhoneNumer: str,
         apn: str,
-        apnUser:str,
-        apnPassword:str,
+        apnUser: str,
+        apnPassword: str,
         pin: str,
     ):
         # Create device Object to write to DB
@@ -65,8 +60,8 @@ class Device:
             "ownerPhoneNumber": ownerPhoneNumer,
             "battery": 0,
             "apn": apn,
-            "apnUser":apnUser,
-            "apnPassword":apnPassword,
+            "apnUser": apnUser,
+            "apnPassword": apnPassword,
             "pin": pin,
             "locations": [],
         }
@@ -129,8 +124,7 @@ class Device:
         location["velocity"] = velocity
 
         # Try update the deivce object with it's new location
-        updated = coll.update_one(
-            {"imei": imei}, {"$push": {"locations": location}})
+        updated = coll.update_one({"imei": imei}, {"$push": {"locations": location}})
 
         if not updated.acknowledged:
             return None, ValueError("Location couldn't be added to DB")
@@ -150,28 +144,17 @@ class Device:
 
         return device, None
 
-    def delete_device(self, user_id: str, imei: str):
+    def delete_device(self, imei: str):
         devices_coll = db["devices"]
-        user_coll = db["users"]
 
         # Get and check device
         device = devices_coll.find_one({"imei": imei})
         if device is None:
             return False, ValueError("Couldn't find devices to be deleted.")
 
-        # First try delete deive number in user
-        user_filter_rm_imei = {"_id": user_id}, {
-            "$pull": {"devices": device["imei"]}}
-        deleted_in_user = user_coll.update_one(user_filter_rm_imei)
-        if not deleted_in_user.acknowledged:
-            return False, ValueError("Couldn't delete device in User object.")
-
         # Delete device object now. When not succeeding restore data in user
         deleted = devices_coll.delete_one({"imei": imei})
         if not deleted.acknowledged:
-            user_filter_imei = {"_id": user_id}, {
-                "$push": {"devices": device["imei"]}}
-            user_coll.update_one(user_filter_imei)
             return False, ValueError("Couldn't delete device. restored data in User")
 
         return True, None
@@ -188,8 +171,7 @@ class Device:
             return None, ValueError("Couldn't retrieve device data for status")
 
         locations = device.get("locations")
-        deltaTime = datetime.datetime.now(
-        ) - locations[len(locations) - 1]["time"]
+        deltaTime = datetime.datetime.now() - locations[len(locations) - 1]["time"]
         if deltaTime > maxDeltaTime:
             # return status active -> is being stolen or moved!
             return "active", None

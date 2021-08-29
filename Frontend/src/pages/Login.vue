@@ -140,6 +140,8 @@ export default {
     onLogin(event) {
       event.preventDefault();
 
+      this.$bvModal.show("loading-modal");
+
       var userModel = new Client.User();
       userModel.name = this.form.name;
       userModel.password = this.form.pwd;
@@ -152,9 +154,13 @@ export default {
           console.log("Login successeded");
           localStorage.setItem("username", data.name);
           localStorage.setItem("phonenumber", data.phoneNumber);
+          this.$bvModal.hide("loading-modal");
+
           this.$router.push(`/users/${data.name}`);
         })
         .catch((error) => {
+          this.$bvModal.hide("loading-modal");
+
           if (error.response.status == 401) {
             console.log(error.response.text);
             this.$bvToast.show("login-error-credentials-toast");

@@ -176,6 +176,7 @@
         id="deleteDeviceModal"
         title="Do you really want to delete thid Device?"
         hide-footer
+        size="sm"
       >
         <!--Download Config file-->
         <b-button class="mt-3" variant="danger" block @click="deleteDevice">
@@ -191,6 +192,90 @@
           Cancel
         </b-button>
       </b-modal>
+    </div>
+
+    <div class="toasts">
+      <!--Toast delete Deivce error-->
+      <b-toast
+        id="delete-device-error-toast"
+        variant="warning"
+        solid
+        toaster="b-toaster-bottom-center"
+        title="Login error"
+      >
+        <template #toast-title>
+          <div class="d-flex flex-grow-1 align-items-baseline">
+            <strong class="mr-auto">Deletion failed</strong>
+          </div>
+        </template>
+        Ther was an error when trying to delete Devicedata from your account
+      </b-toast>
+
+      <!--Toast delete Device success-->
+      <b-toast
+        id="delete-device-toast"
+        variant="success"
+        solid
+        toaster="b-toaster-bottom-center"
+        title="Login error"
+      >
+        <template #toast-title>
+          <div class="d-flex flex-grow-1 align-items-baseline">
+            <strong class="mr-auto">Deletion complete</strong>
+          </div>
+        </template>
+        The Device has been deleted successfully from your account
+      </b-toast>
+
+      <!--Toast update device error-->
+      <b-toast
+        id="update-device-error-toast"
+        variant="warning"
+        solid
+        toaster="b-toaster-bottom-center"
+        title="Login error"
+      >
+        <template #toast-title>
+          <div class="d-flex flex-grow-1 align-items-baseline">
+            <strong class="mr-auto">Updated Device data failed</strong>
+          </div>
+        </template>
+        An error occured when updating Devicedata. IMEI shall be unique. Device
+        name as well.
+      </b-toast>
+
+      <!--Toast update device success-->
+      <b-toast
+        id="update-device-toast"
+        variant="success"
+        solid
+        toaster="b-toaster-bottom-center"
+        title="Login error"
+      >
+        <template #toast-title>
+          <div class="d-flex flex-grow-1 align-items-baseline">
+            <strong class="mr-auto">Updated Device data successfully</strong>
+          </div>
+        </template>
+        Your Device data is now saved within the Database. To complete
+        Configuration update your device in deviceoverview!
+      </b-toast>
+
+      <!--Toast update device success-->
+      <b-toast
+        id="update-device-image-toast"
+        variant="success"
+        solid
+        toaster="b-toaster-bottom-center"
+        title="Login error"
+      >
+        <template #toast-title>
+          <div class="d-flex flex-grow-1 align-items-baseline">
+            <strong class="mr-auto">Updated Device image successfully</strong>
+          </div>
+        </template>
+        You successfully updated the device image
+      </b-toast>
     </div>
   </div>
 </template>
@@ -221,11 +306,16 @@ export default {
      */
     onReset() {
       // Reset our form values
-      this.form.name = "";
-      this.form.imei = "";
-      this.form.pin = "";
-      this.form.deviceTel = "";
-      this.form.apn = "";
+      this.form = {
+        name: "",
+        imei: "",
+        deviceTel: "",
+        image: "",
+        apn: "",
+        apnUser: "",
+        apnPassword: "",
+        pin: "",
+      };
 
       // Trick to reset/clear native browser form validation state
       this.show = false;
@@ -256,6 +346,7 @@ export default {
       reader.readAsDataURL(image);
       reader.onload = (event) => {
         this.previewImage = event.target.result;
+        this.$bvToast.show("update-device-image-toast");
         localStorage.setItem(
           `devices/${self.form.imei}/image`,
           event.target.result
@@ -272,6 +363,7 @@ export default {
     onUpdateDeviceSettings(event) {
       event.preventDefault();
       // No Function is API / Server
+      this.$bvModal.show("loading-modal");
 
       //Create Device Object
       var device = new Client.Device();
@@ -287,17 +379,36 @@ export default {
         locations: [],
         ownerPhoneNumber: localStorage.getItem("phonenumber"),
       };
+
+      this.$bvModal.hide("loading-modal");
     },
 
     /**
      *
      */
     deleteDevice(event) {
-      console.log("delete this device");
+      console.log("Try deleting this device...");
+      this.$bvModal.show("loading-modal");
+
       event.preventDefault();
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiDelete(this.$route.params.id);
+      apiInstance
+        .devicesImeiDelete(this.$route.params.id)
+        .then((data) => {
+          this.$bvModal.hide("loading-modal");
+          console.log("Try deleting this device...Succussful");
+          this.$bvToast.show("delete-device-toast");
+          setTimeout(
+            this.$router.push(`/users/${localStorage.getItem("username")}`),
+            2000
+          );
+        })
+        .catch((err) => {
+          this.$bvModal.hide("loading-modal");
+          console.log("Try deleting this device...Failed");
+          this.$bvToast.show("delete-device-error-toast");
+        });
     },
 
     /**
@@ -305,27 +416,29 @@ export default {
      * the local form model of this component
      */
     getCurrentDeviceData() {
+      console.log("Getting current deivcedata...");
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
-        self.form.name = data.name;
-        self.form.imei = data.imei;
-        self.form.deviceTel = data.devicePhoneNumber;
-        self.form.pin = localStorage.getItem(`devices/${data.imei}/pin`);
-        self.form.image = localStorage.getItem(`devices/${data.imei}/image`);
-        self.form.apnPassword = data.apnPassword;
-        self.form.apnUser = data.apnUser;
+      apiInstance
+        .devicesImeiGet(this.$route.params.id)
+        .then((data) => {
+          self.form = {
+            image: localStorage.getItem(`devices/${data.imei}/image`),
 
-        self.form = {
-          name: data.name,
-          imei: data.imei,
-          deviceTel: data.devicePhoneNumber,
-          pin: data.pin,
-          image: localStorage.getItem(`devices/${data.imei}/image`),
-          apnPassword: data.apnPassword,
-          apnUser: data.apnUser,
-        };
-      });
+            name: data.name,
+            imei: data.imei,
+            deviceTel: data.devicePhoneNumber,
+            pin: data.pin,
+            apn: data.apn,
+            apnPassword: data.apnPassword,
+            apnUser: data.apnUser,
+          };
+
+          console.log("Getting current deivcedata...Successful");
+        })
+        .catch((err) => {
+          console.log("Getting current deivcedata...Failed");
+        });
     },
   },
   mounted: function () {
@@ -334,4 +447,5 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+</style>
