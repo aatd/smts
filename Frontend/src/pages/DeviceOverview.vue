@@ -301,7 +301,7 @@ export default {
     downloadConfigFile() {
       var apiInstance = new Client.ApiClient();
       var data = `
-      #define APN      "${this.mythief.name}"
+      #define APN      "${this.mythief.apn}"
       #define USER     "${this.mythief.apnUser}"
       #define PASSWORD "${this.mythief.apnPassword}"
       #define PIN      {
@@ -329,7 +329,7 @@ export default {
       var apiInstance = new Client.ApiClient();
 
       var data = `
-      #define APN      "${this.mythief.name}"
+      #define APN      "${this.mythief.apn}"
       #define USER     "${this.mythief.apnUser}"
       #define PASSWORD "${this.mythief.apnPassword}"
       #define PIN      {
