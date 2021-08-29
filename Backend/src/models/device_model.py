@@ -91,8 +91,8 @@ class Device:
         time: str,
         latitude: float,
         longitude: float,
-        height: float,
         velocity: float,
+        battery: float,
     ):
 
         coll = db["devices"]
@@ -103,24 +103,11 @@ class Device:
         if device is None:
             return None, ValueError("Couldn't retrieve device data from DB")
 
-        # Check and convert timestring into time.isoformat
-        try:
-            year = 2000 + int(time[1:3])
-            month = int(time[4:6])
-            day = int(time[7:9])
-            h = int(time[10:12])
-            m = int(time[13:15])
-            s = int(time[16:18])
-            ms = int(time[19:21])
-            datetime_object = datetime.datetime(year, month, day, h, m, s, ms)
-        except:
-            return None, ValueError("Time string couldn't be parsed.")
-
         # Add all other data
-        location["time"] = datetime_object
+        location["time"] = time
         location["latitude"] = latitude
         location["longitude"] = longitude
-        location["height"] = height
+        location["battery"] = battery
         location["velocity"] = velocity
 
         # Try update the deivce object with it's new location

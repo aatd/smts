@@ -341,15 +341,15 @@ def create_locations(imei):
     lng = json.get("longitude")
     time = json.get("time")
     vel = json.get("velocity")
-    height = json.get("height")
+    bat = json.get("battery")
 
     # Check if all data are aquired
-    if None in (lat, imei, lng):
+    if None in (lat, imei, lng, time):
         return "There are some information missing!", 409
 
     # Try create new Locations on device
     new_location, error = Device().create_device_location(
-        imei, time, lat, lng, height, vel
+        imei, time, lat, lng, vel, bat
     )
 
     if (new_location is None) or (error is not None):
