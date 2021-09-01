@@ -131,14 +131,34 @@ export default {
         apiInstance
           .devicesImeiLocationsGet(self.$route.params.id)
           .then((data) => {
-            if (data == null) {
+            if (data == null || data == undefined) {
               console.log("No new Locations found!");
               return;
             }
+
+            var currente_location = data[data.length - 1];
             let location = new Client.GPSPosition();
-            location.longitude = data.longitude;
-            location.latitude = data.latitude;
-            self.addMarker(location.latitude, location.longitude);
+            location.longitude = currente_location.longitude;
+            location.latitude = currente_location.latitude;
+
+            if (self.markers.positions.length !== 0) {
+              var isLastLat =
+                self.markers.positions[self.markers.positions.length - 1]
+                  .position.lat == location.latitude;
+              var isLastLng =
+                self.markers.positions[self.markers.positions.length - 1]
+                  .position.lng == location.longitude;
+
+              if (isLastLat && isLastLng) {
+                console.log("The server responed with the last known Location");
+                return;
+              }
+            }
+
+            self.addMarker(
+              currente_location.latitude,
+              currente_location.longitude
+            );
           })
           .catch((error) => {
             console.log("Retrieving locations failed.");

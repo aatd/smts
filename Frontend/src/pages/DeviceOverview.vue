@@ -55,11 +55,7 @@
       </b-button>
 
       <!--Time interval selector-->
-      <b-form-select
-        v-model="timeInterval"
-        class="mb-3"
-        v-if="mythief.status == 'active' || $IsDebug"
-      >
+      <b-form-select v-model="timeInterval" class="mb-3">
         <b-form-select-option value="0"
           >Show only recent data</b-form-select-option
         >
