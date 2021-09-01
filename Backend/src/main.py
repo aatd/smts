@@ -145,13 +145,13 @@ def update_user(userID):
 
     # Get required data
     json = request.json
-    name = json.get("name")
-    password = json.get("password")
-    phone_number = json.get("phoneNumber")
-    user_id = session["user"]["_id"]
+    session_user_id = session["user"]["_id"]
+    name = json["name"]
+    pwd = json["password"]
+    if userID != session_user_id:
+        return "Not allowed", 405
 
-    # Try updating user
-    updated_user, err = User().user_update(user_id, name, password, phone_number)
+    updated_user, err = User().user_update(userID, json)
 
     # Error check
     if (updated_user is None) or (err is not None):
@@ -182,12 +182,16 @@ def get_user(userID):
 
 @app.route(f"{version}/users/<userID>", methods=["DELETE"])
 @login_required
-def delete_user():
+def delete_user(userID):
     "Delete a speciif user based on a current valid session. Return"
 
     # Get data from session
     username = session["user"]["name"]
-    userID = session["user"]["_id"]
+    session_userID = session["user"]["_id"]
+
+    # Check if user is permitted
+    if session_userID != userID:
+        return "Not allowed", 405
 
     # Try deleting from Database
     deleted, err = User().user_delete(username, userID)
@@ -267,6 +271,29 @@ def get_device(imei):
 
     # return data
     return deviceData, 200
+
+
+@app.route(f"{version}/devices/<imei>", methods=["PUT"])
+@login_required
+def update_device(imei):
+    "Updates the device, if the imei belongs to the current user"
+
+    # get the session id to check if device belongs to current user
+    session_id = session["user"]["_id"]
+    # The changes are stored in the json data of the request
+    json = request.json
+
+    # Try updating the device by passing the new settings
+    updated_device = Device().device_update(json, session_id, imei)
+
+   # Error check
+   # if (updated_device is None) or (error is not None):
+#    if type(update_device) ==
+#           return "Could not update device", 404
+    if (type(updated_device) is ValueError):
+        return updated_device, 400
+    # return updated device
+    return updated_device, 200
 
 
 @app.route(f"{version}/devices/<imei>", methods=["DELETE"])

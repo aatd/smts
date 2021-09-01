@@ -18,7 +18,7 @@ try:
     mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
     db = mongo.smts
     print("Trying to connect to DB located at: " + db_location + "...Successful")
-
+    print(db.last_status)
 
 except pymongo.errors.ConnectionFailure as err:
 
@@ -111,7 +111,8 @@ class Device:
         location["velocity"] = velocity
 
         # Try update the deivce object with it's new location
-        updated = coll.update_one({"imei": imei}, {"$push": {"locations": location}})
+        updated = coll.update_one(
+            {"imei": imei}, {"$push": {"locations": location}})
 
         if not updated.acknowledged:
             return None, ValueError("Location couldn't be added to DB")
@@ -130,6 +131,39 @@ class Device:
         del device["locations"]
 
         return device, None
+
+    def device_update(self, json, current_user, imei):
+        "Updates a user based on his/hers session and rewrites all its property data. Does not change the device information"
+
+        # Get required information
+        coll = db["devices"]
+        device = json
+
+        # remove locations and battery, they should not be changed here
+        del device["locations"]
+        del device["battery"]
+
+        x = coll.find_one({"imei": imei})
+
+        # Check if device with specified id, belongs to current user
+        if not x or x["owner"] != current_user:
+            return ValueError("Device not updateable")
+            # return None, ValueError("Device not updateable")
+
+        device["owner"] = current_user
+        # Try Updating
+        cursor = coll.update_one({"imei": device["imei"]}, {"$set": device})
+        if not cursor.acknowledged:
+            # return None, ValueError("Couldn't update the device object")
+            return ValueError("Couldn't update the device object")
+
+        # Get new updated Object
+        updated_device = coll.find_one({"imei": device["imei"]})
+        if updated_device is None:
+            # return None, ValueError("Couldn't get the new device object")
+            return ValueError("Couldn't get the new device object")
+
+        return updated_device
 
     def delete_device(self, imei: str):
         devices_coll = db["devices"]
@@ -158,7 +192,8 @@ class Device:
             return None, ValueError("Couldn't retrieve device data for status")
 
         locations = device.get("locations")
-        deltaTime = datetime.datetime.now() - locations[len(locations) - 1]["time"]
+        deltaTime = datetime.datetime.now(
+        ) - locations[len(locations) - 1]["time"]
         if deltaTime > maxDeltaTime:
             # return status active -> is being stolen or moved!
             return "active", None
