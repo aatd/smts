@@ -83,29 +83,18 @@ class User:
 
         return False
 
-    def user_update(self, userID, name=None, password=None, phonenumber=None):
+    def user_update(self, userID, json):
         "Updates a user based on his/hers session and rewrites all its property data. Does not change the device information"
 
         # Get required information
         coll = db["users"]
-        user = {}
+        user = json
+        # delete userid and devicelist from json as they can not be updated here
+        del user["id"]
+        del user["devices"]
 
-        # Try checking each property
-        if name is not None:
-            user["name"] = name
-
-        if password is not None:
-            user["password"] = pbkdf2_sha256.encrypt(password)
-
-        if phonenumber is not None:
-            user["phoneNumber"] = phonenumber
-
-        # Sanity check of properties
-        if (
-            coll.find_one({"name": user["name"]})
-            and coll.find_one({"_id": userID})["name"] != user["name"]
-        ):  # Does User already exists?
-            return None, ValueError("User already exisits")
+        # if user changes password, hash it
+        user["password"] = pbkdf2_sha256.encrypt(user["password"])
 
         # Try Updating
         cursor = coll.update_one({"_id": userID}, {"$set": user})
