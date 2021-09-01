@@ -135,7 +135,7 @@ class Device:
         return device, None
 
     def device_update(self, json, current_user, imei):
-        "Updates a user based on his/hers session and rewrites all its property data. Does not change the device information"
+        "updates a device with the given data, only if device owner and current session user are the same"
 
         # Get required information
         coll = db["devices"]

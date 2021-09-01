@@ -291,7 +291,7 @@ def update_device(imei):
 #    if type(update_device) ==
 #           return "Could not update device", 404
     if (type(updated_device) is ValueError):
-        return updated_device, 400
+        return "Could not update device", 400
     # return updated device
     return updated_device, 200
 
