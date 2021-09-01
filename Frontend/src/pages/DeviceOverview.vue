@@ -286,7 +286,7 @@ export default {
         self.mythief.apnUser = data.apnUser;
         self.mythief.apnPassword = data.apnPassword;
         self.mythief.image = localStorage.getItem(`devices/${data.imei}/image`);
-        self.setBatteryIndicator(Math.floor(data.battery));
+        self.setBatteryIndicator(Math.floor(data.battery / 100.0));
         console.log("Got device data");
       });
     },
