@@ -28,7 +28,7 @@ import {
   LTileLayer,
   LControl,
   LPolyline,
-  LLayerGroup,
+  LLayerGroup
 } from "vue2-leaflet";
 import { BModal } from "bootstrap-vue";
 import * as Client from "../api/wheresMyThiefClient/index";
@@ -41,10 +41,10 @@ export default {
     LControl,
     BModal,
     LPolyline,
-    LLayerGroup,
+    LLayerGroup
   },
   props: {
-    deltaTime: String,
+    deltaTime: String
   },
   data() {
     return {
@@ -55,8 +55,8 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       markers: {
         positions: [],
-        points: [],
-      },
+        points: []
+      }
     };
   },
   methods: {
@@ -69,13 +69,13 @@ export default {
      * @param {Number} latitude
      * @param {Number} longitude
      */
-    addMarker: function (latitude, longitude) {
+    addMarker: function(latitude, longitude) {
       //Create new Marker object
       const newMarker = {
         position: { lat: latitude, lng: longitude },
         draggable: false,
         visible: true,
-        tooltip: "",
+        tooltip: ""
       };
 
       var self = this;
@@ -83,8 +83,8 @@ export default {
       fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
       )
-        .then((res) => res.json())
-        .then((obj) => {
+        .then(res => res.json())
+        .then(obj => {
           console.log(obj);
           newMarker.tooltip = `
             <b>Road: </b>${obj.address.road} ${obj.address.house_number}<br />
@@ -112,14 +112,14 @@ export default {
             });
           }
         });
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     var self = this;
 
     var updateTime = this.$IsDebug ? 5000 : 20000;
 
-    self.addMarkerCallback = window.setInterval(function () {
+    self.addMarkerCallback = window.setInterval(function() {
       if (self.$IsDebug) {
         self.addMarker(
           50.93393 + 0.001 * Math.random(),
@@ -129,8 +129,8 @@ export default {
         var apiInstance = new Client.DevicesApi();
 
         apiInstance
-          .devicesImeiLocationsGet(self.$route.params.id)
-          .then((data) => {
+          .devicesImeiLocationsGet(self.$route.params.id) // Start End Zeit
+          .then(data => {
             if (data == null || data == undefined) {
               console.log("No new Locations found!");
               return;
@@ -160,7 +160,7 @@ export default {
               currente_location.longitude
             );
           })
-          .catch((error) => {
+          .catch(error => {
             console.log("Retrieving locations failed.");
           });
       }
@@ -168,7 +168,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.addMarkerCallback);
-  },
+  }
 };
 </script>
 

@@ -296,8 +296,8 @@ export default {
         apn: "",
         apnUser: "",
         apnPassword: "",
-        pin: "",
-      },
+        pin: ""
+      }
     };
   },
   methods: {
@@ -314,7 +314,7 @@ export default {
         apn: "",
         apnUser: "",
         apnPassword: "",
-        pin: "",
+        pin: ""
       };
 
       // Trick to reset/clear native browser form validation state
@@ -344,7 +344,7 @@ export default {
       const image = event.target.files[0];
       const reader = new FileReader();
       reader.readAsDataURL(image);
-      reader.onload = (event) => {
+      reader.onload = event => {
         this.previewImage = event.target.result;
         this.$bvToast.show("update-device-image-toast");
         localStorage.setItem(
@@ -361,8 +361,8 @@ export default {
      * Attempts a update of the Server Device object
      */
     onUpdateDeviceSettings(event) {
-      event.preventDefault();
-      // No Function is API / Server
+      //event.preventDefault();
+
       this.$bvModal.show("loading-modal");
 
       //Create Device Object
@@ -377,7 +377,7 @@ export default {
         owner: localStorage.getItem("username"),
         name: this.form.name,
         locations: [],
-        ownerPhoneNumber: localStorage.getItem("phonenumber"),
+        ownerPhoneNumber: localStorage.getItem("phonenumber")
       };
 
       this.$bvModal.hide("loading-modal");
@@ -395,7 +395,7 @@ export default {
       let apiInstance = new Client.DevicesApi();
       apiInstance
         .devicesImeiDelete(this.$route.params.id)
-        .then((data) => {
+        .then(data => {
           this.$bvModal.hide("loading-modal");
           console.log("Try deleting this device...Succussful");
           this.$bvToast.show("delete-device-toast");
@@ -404,7 +404,7 @@ export default {
             2000
           );
         })
-        .catch((err) => {
+        .catch(err => {
           this.$bvModal.hide("loading-modal");
           console.log("Try deleting this device...Failed");
           this.$bvToast.show("delete-device-error-toast");
@@ -421,7 +421,7 @@ export default {
       let apiInstance = new Client.DevicesApi();
       apiInstance
         .devicesImeiGet(this.$route.params.id)
-        .then((data) => {
+        .then(data => {
           self.form = {
             image: localStorage.getItem(`devices/${data.imei}/image`),
 
@@ -431,21 +431,20 @@ export default {
             pin: data.pin,
             apn: data.apn,
             apnPassword: data.apnPassword,
-            apnUser: data.apnUser,
+            apnUser: data.apnUser
           };
 
           console.log("Getting current deivcedata...Successful");
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Getting current deivcedata...Failed");
         });
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getCurrentDeviceData();
-  },
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -182,7 +182,7 @@ def get_user(userID):
 
 @app.route(f"{version}/users/<userID>", methods=["DELETE"])
 @login_required
-def delete_user():
+def delete_user(userID):
     "Delete a speciif user based on a current valid session. Return"
 
     # Get data from session

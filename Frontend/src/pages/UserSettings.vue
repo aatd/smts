@@ -143,8 +143,8 @@ export default {
         image: "",
         pwdOld: "",
         pwdNew: "",
-        pwdNewCheck: "",
-      },
+        pwdNewCheck: ""
+      }
     };
   },
   methods: {
@@ -194,7 +194,7 @@ export default {
 
       apiInstance
         .updateUser(localStorage.getItem("username"), { user: userModel })
-        .then((data) => {
+        .then(data => {
           // get all old local stuff
           var oldUsername = localStorage.getItem("username");
           var image = localStorage.getItem(`users/${oldUsername}/image`);
@@ -211,14 +211,16 @@ export default {
           this.$router.push(`/users/${data.name}`);
           console.log("Successfull updated user");
         })
-        .catch((error) => {});
+        .catch(error => {});
     },
 
     /**
      * Attempts to delete the current user on the server
      */
     deleteUser() {
-      //TODO
+      var apiInstance = new Client.UsersApi();
+      apiInstance.usersUserIdDelete(this.$route.params.id).then;
+      this.$router.push(`/users/login`);
     },
 
     /**
@@ -241,7 +243,7 @@ export default {
       const image = event.target.files[0];
       const reader = new FileReader();
       reader.readAsDataURL(image);
-      reader.onload = (event) => {
+      reader.onload = event => {
         this.previewImage = event.target.result;
         var username = localStorage.getItem("username");
         localStorage.setItem(`users/${username}/image`, event.target.result);
@@ -257,19 +259,18 @@ export default {
       let self = this;
       let apiInstance = new Client.UsersApi();
       let username = localStorage.getItem("username");
-      apiInstance.getUserbyId(this.$route.params.id).then((data) => {
+      apiInstance.getUserbyId(this.$route.params.id).then(data => {
         console.log(data);
         self.form.username = data.name;
         self.form.tel = data.phoneNumber;
         self.form.image = localStorage.getItem(`users/${username}/image`);
       });
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getCurrentUserData();
-  },
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
