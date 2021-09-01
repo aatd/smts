@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "b553d32e2dbd6c851fbf",
-    "url": "/css/app.27be58c5.css"
+    "revision": "14f547542a6b310825ff",
+    "url": "/css/app.459ef1da.css"
   },
   {
-    "revision": "b553d32e2dbd6c851fbf",
-    "url": "/js/app.9ae02b95.js"
+    "revision": "14f547542a6b310825ff",
+    "url": "/js/app.3c3d42a6.js"
   },
   {
     "revision": "e487c67aeccbd1d41e41",
@@ -20,60 +20,60 @@ self.__precacheManifest = [
     "url": "/fonts/nucleo-icons.8224e016.eot"
   },
   {
-    "revision": "b0dc05d015e91e7d28d79cd0056fe555",
-    "url": "/fonts/nucleo-icons.b0dc05d0.ttf"
-  },
-  {
     "revision": "ff208b8d733e61a630992ee2b72c9c1c",
     "url": "/fonts/nucleo-icons.ff208b8d.woff2"
+  },
+  {
+    "revision": "b0dc05d015e91e7d28d79cd0056fe555",
+    "url": "/fonts/nucleo-icons.b0dc05d0.ttf"
   },
   {
     "revision": "dc0cdfac3187d5fe800b249201cdf9b0",
     "url": "/img/nucleo-icons.dc0cdfac.svg"
   },
   {
-    "revision": "ec967dbc19d61b3e94ed32cb205220f7",
+    "revision": "5e3d0eddb265dad6c3a87bec60265787",
     "url": "/index.html"
-  },
-  {
-    "revision": "996d8248f580f8e26e6c45c67da9b5a6",
-    "url": "/favicon.png"
   },
   {
     "revision": "a9615bac158705203261e8348f574cc8",
     "url": "/img/default-avatar.png"
   },
   {
+    "revision": "996d8248f580f8e26e6c45c67da9b5a6",
+    "url": "/favicon.png"
+  },
+  {
     "revision": "be74132f42ae1d3502f9a9b9fff68ac1",
     "url": "/Dashboard.PNG"
-  },
-  {
-    "revision": "b985ae9ede51b8d67459c8bfc9086546",
-    "url": "/img/bicycles/b-1.jpg"
-  },
-  {
-    "revision": "99e58416b89637502b40ac8350eed85a",
-    "url": "/img/faces/face-1.jpg"
-  },
-  {
-    "revision": "ce7a6b79aa55041f7ae36f6ce22231fe",
-    "url": "/img/faces/face-3.jpg"
-  },
-  {
-    "revision": "0b68eb8f1cde1fc9987a9196df05b96a",
-    "url": "/img/faces/face-4.jpg"
   },
   {
     "revision": "a9615bac158705203261e8348f574cc8",
     "url": "/img/faces/face-0.jpg"
   },
   {
+    "revision": "99e58416b89637502b40ac8350eed85a",
+    "url": "/img/faces/face-1.jpg"
+  },
+  {
     "revision": "0e953b1ea6d6e3addd7210e9c7c420a7",
     "url": "/img/faces/face-2.jpg"
   },
   {
+    "revision": "0b68eb8f1cde1fc9987a9196df05b96a",
+    "url": "/img/faces/face-4.jpg"
+  },
+  {
+    "revision": "ce7a6b79aa55041f7ae36f6ce22231fe",
+    "url": "/img/faces/face-3.jpg"
+  },
+  {
     "revision": "4ab22eca4053c14a34e4bdb6390deae9",
     "url": "/img/faces/face-5.jpg"
+  },
+  {
+    "revision": "b985ae9ede51b8d67459c8bfc9086546",
+    "url": "/img/bicycles/b-1.jpg"
   },
   {
     "revision": "4b87e628f4ef9988718860890b2a682f",

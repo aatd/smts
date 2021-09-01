@@ -1,6 +1,8 @@
 import datetime
 import os
 import uuid
+from dateutil import parser
+
 
 import pymongo
 
@@ -201,12 +203,12 @@ class Device:
             # return status inactive -> tracker is not sending anything the past maxDelta time.
             return "inactive", None
 
-    def get_device_locations(self, imei, start_time, end_time):
+    def get_device_locations(self, imei, start_time: datetime.datetime, end_time: datetime.datetime):
 
         computed_start = None
         computed_end = None
-        early_date = datetime.datetime(2019, 12, 23)
-        now = datetime.datetime.now()
+        early_date = datetime.datetime(2019, 12, 23).timestamp() * 1000
+        now = datetime.datetime.now().timestamp() * 1000
 
         # Get devices
         coll = db["devices"]
@@ -221,31 +223,35 @@ class Device:
         if locations is None or len(locations) == 0:
             return None, ValueError("No locations in device found")
 
-        # Return location if no further computation is needed
-        if (start_time is None) and (end_time is None):
-            computed_start = early_date
-            computed_end = now
         # Compute all locations from start to now
         if (start_time is not None) and (end_time is None):
-            computed_start = start_time
-            computed_end = now
+            computed_start = start_time.timestamp() * 1000
+            computed_end = end_time.timstamp() * 1000
 
         # Compute all locations from the first entry to the endTime
         if (start_time is None) and (end_time is not None):
             computed_start = early_date
-            computed_end = end_time
+            computed_end = end_time.timestamp() * 1000
 
         # Compute all locations in the interval [star_time, end_time]
         if (start_time is not None) and (end_time is not None):
-            computed_start = start_time
+            computed_start = start_time.timestamp() * 1000
             computed_end = end_time
+
+            # Return location if no further computation is needed
+        if (start_time is None) and (end_time is None):
+            computed_start = early_date
+            computed_end = now
 
         # Fill the locations based on the demanded set
         retLocations = []
         for locaction in locations:
+
+            location_date = parser.parse(locaction["time"]).timestamp() * 1000
+
             is_location_in_set = (
-                locaction["time"] >= computed_start
-                and locaction["time"] <= computed_end
+                location_date >= computed_start
+                and location_date <= computed_end
             )
             if is_location_in_set:
                 retLocations.append(locaction)
