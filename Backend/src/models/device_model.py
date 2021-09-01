@@ -105,6 +105,14 @@ class Device:
         if device is None:
             return None, ValueError("Couldn't retrieve device data from DB")
 
+        # Set current Battery-Status of Device
+        device["battery"] = battery
+
+        # Try Updating device Battery status
+        cursor = coll.update_one({"imei": imei}, {"$set": device})
+        if not cursor.acknowledged:
+            return None, ValueError("Couldn't update Device Battery Status")
+
         # Add all other data
         location["time"] = time
         location["latitude"] = latitude
