@@ -215,9 +215,10 @@ import { saveAs } from "file-saver";
 
 export default {
   name: "device-overview-page",
+
   components: {
     StatsCard,
-    MapCard,
+    MapCard
   },
   data() {
     return {
@@ -230,16 +231,16 @@ export default {
         pin: "",
         apn: "",
         apnUser: "",
-        apnPassword: "",
+        apnPassword: ""
       },
-      timeInterval: "0",
+      timeInterval: "0"
     };
   },
   methods: {
     /**
      * Calls the Police (only german one for now. Later localized!)
      */
-    callPolice: function () {
+    callPolice: function() {
       console.log("Invoking police call");
       window.location.href = "tel:110";
     },
@@ -277,7 +278,7 @@ export default {
     getDeviceData() {
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
+      apiInstance.devicesImeiGet(this.$route.params.id).then(data => {
         self.mythief.name = data.name;
         self.mythief.imei = data.imei;
         self.mythief.deviceTel = data.devicePhoneNumber;
@@ -311,7 +312,7 @@ export default {
       `;
 
       var file = new File([data], "config.h", {
-        type: "text/plain;charset=utf-8",
+        type: "text/plain;charset=utf-8"
       });
 
       console.log("Invoking 'config.h' download");
@@ -345,11 +346,11 @@ export default {
      */
     updateViaSMS() {
       window.location.href = `sms:${this.mythief.deviceTel}?body=update`;
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getDeviceData();
-  },
+  }
 };
 </script>
 

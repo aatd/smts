@@ -28,7 +28,8 @@ import {
   LTileLayer,
   LControl,
   LPolyline,
-  LLayerGroup
+  LLayerGroup,
+  propsBinder
 } from "vue2-leaflet";
 import { BModal } from "bootstrap-vue";
 import * as Client from "../api/wheresMyThiefClient/index";
@@ -44,7 +45,11 @@ export default {
     LLayerGroup
   },
   props: {
-    deltaTime: String
+    deltaTime: {
+      type: String,
+      required: false
+      //default: "100"
+    }
   },
   data() {
     return {
@@ -58,6 +63,7 @@ export default {
         points: []
       }
     };
+    this.deltaTime;
   },
   methods: {
     /**
@@ -68,8 +74,9 @@ export default {
      *
      * @param {Number} latitude
      * @param {Number} longitude
+     * @param {boolean} fetchAdress
      */
-    addMarker: function(latitude, longitude) {
+    addMarker: function(latitude, longitude, fetchAdress) {
       //Create new Marker object
       const newMarker = {
         position: { lat: latitude, lng: longitude },
@@ -79,7 +86,7 @@ export default {
       };
 
       var self = this;
-
+      // nur letzte position
       fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
       )
@@ -128,8 +135,21 @@ export default {
       } else {
         var apiInstance = new Client.DevicesApi();
 
+        var startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - self.deltaTime);
+        startTime.setHours(startTime.getHours() + 2);
+        startTime = startTime.toISOString();
+
+        var endTime = new Date();
+        endTime.setHours(endTime.getHours() + 2);
+        endTime = endTime.toISOString();
+
         apiInstance
-          .devicesImeiLocationsGet(self.$route.params.id) // Start End Zeit
+
+          .devicesImeiLocationsGet(self.$route.params.id, {
+            start: startTime,
+            end: endTime
+          }) // Start End Zeit
           .then(data => {
             if (data == null || data == undefined) {
               console.log("No new Locations found!");

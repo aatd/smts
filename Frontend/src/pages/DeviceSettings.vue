@@ -362,6 +362,7 @@ export default {
      */
     onUpdateDeviceSettings(event) {
       //event.preventDefault();
+      let apiInstance = new Client.DevicesApi();
 
       this.$bvModal.show("loading-modal");
 
@@ -377,8 +378,19 @@ export default {
         owner: localStorage.getItem("username"),
         name: this.form.name,
         locations: [],
-        ownerPhoneNumber: localStorage.getItem("phonenumber")
+        ownerPhoneNumber: localStorage.getItem("phonenumber"),
+        battery: localStorage.getItem("battery")
       };
+      apiInstance
+        .updateDevice(this.$route.params.id, { device: device })
+        .then(() => {
+          console.log("update completed");
+          console.log("data,imei ", this.$route.params.id);
+          this.getCurrentDeviceData();
+
+          this.$router.push(`/devices/${this.$route.params.id}`);
+          this.$bvModal.hide("loading-modal");
+        });
 
       this.$bvModal.hide("loading-modal");
     },

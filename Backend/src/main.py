@@ -277,12 +277,14 @@ def get_device(imei):
 @login_required
 def update_device(imei):
     "Updates the device, if the imei belongs to the current user"
-
+    
     # get the session id to check if device belongs to current user
     session_id = session["user"]["_id"]
     # The changes are stored in the json data of the request
     json = request.json
-
+    
+    
+    
     # Try updating the device by passing the new settings
     updated_device = Device().device_update(json, session_id, imei)
 
@@ -291,6 +293,7 @@ def update_device(imei):
 #    if type(update_device) ==
 #           return "Could not update device", 404
     if (type(updated_device) is ValueError):
+       
         return "Could not update device", 400
     # return updated device
     return updated_device, 200
@@ -337,10 +340,13 @@ def get_locations(imei):
     # Get requried data from request
     start_value = request.args.get("start")
     end_value = request.args.get("end")
-
+   
     # Get datetime minima/maxima
     try:
+        
         start_time = datetime.datetime.fromisoformat(start_value)
+       
+       
     except:
         start_time = None
     try:

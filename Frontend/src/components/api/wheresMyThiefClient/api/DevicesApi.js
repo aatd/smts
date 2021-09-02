@@ -13,456 +13,503 @@
  *
  */
 
-import {ApiClient} from "../ApiClient";
-import {Device} from '../model/Device';
-import {GPSPosition} from '../model/GPSPosition';
+import { ApiClient } from "../ApiClient";
+import { Device } from "../model/Device";
+import { GPSPosition } from "../model/GPSPosition";
 
 /**
-* Devices service.
-* @module api/DevicesApi
-* @version 1.0
-*/
+ * Devices service.
+ * @module api/DevicesApi
+ * @version 1.0
+ */
 export class DevicesApi {
+  /**
+   * Constructs a new DevicesApi.
+   * @alias module:api/DevicesApi
+   * @class
+   * @param {module:ApiClient} [apiClient] Optional API client implementation to use,
+   * default to {@link module:ApiClient#instance} if unspecified.
+   */
+  constructor(apiClient) {
+    this.apiClient = apiClient || ApiClient.instance;
+  }
 
-    /**
-    * Constructs a new DevicesApi. 
-    * @alias module:api/DevicesApi
-    * @class
-    * @param {module:ApiClient} [apiClient] Optional API client implementation to use,
-    * default to {@link module:ApiClient#instance} if unspecified.
-    */
-    constructor(apiClient) {
-        this.apiClient = apiClient || ApiClient.instance;
-    }
+  /**
+   * add a new device
+   * Function to add a new Device to the database. The logged in users information will be inserted as owner and ownerphonenumber. Requires device parameters: 'name', 'imei', 'devicePhoneNumber'.
+   * @param {module:model/Device} device
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
+   */
+  addDeviceWithHttpInfo(device) {
+    let postBody = device;
 
-
-
-    /**
-     * add a new device
-     * Function to add a new Device to the database. The logged in users information will be inserted as owner and ownerphonenumber. Requires device parameters: 'name', 'imei', 'devicePhoneNumber'.
-     * @param {module:model/Device} device 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
-     */
-    addDeviceWithHttpInfo(device) {
-      let postBody = device;
-
-      // verify the required parameter 'device' is set
-      if (device === undefined || device === null) {
-        throw new Error("Missing the required parameter 'device' when calling addDevice");
-      }
-
-
-      let pathParams = {
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = ['application/json'];
-      let accepts = ['application/json'];
-      let returnType = null;
-
-      return this.apiClient.callApi(
-        '/devices', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'device' is set
+    if (device === undefined || device === null) {
+      throw new Error(
+        "Missing the required parameter 'device' when calling addDevice"
       );
     }
 
-    /**
-     * add a new device
-     * Function to add a new Device to the database. The logged in users information will be inserted as owner and ownerphonenumber. Requires device parameters: 'name', 'imei', 'devicePhoneNumber'.
-     * @param {module:model/Device} device 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}
-     */
-    addDevice(device) {
-      return this.addDeviceWithHttpInfo(device)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {};
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = ["application/json"];
+    let accepts = ["application/json"];
+    let returnType = null;
 
-    /**
-     * delete a device
-     * Function to delete a single device from the database. 
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
-     */
-    devicesImeiDeleteWithHttpInfo(imei) {
-      let postBody = null;
+    return this.apiClient.callApi(
+      "/devices",
+      "POST",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiDelete");
-      }
+  /**
+   * add a new device
+   * Function to add a new Device to the database. The logged in users information will be inserted as owner and ownerphonenumber. Requires device parameters: 'name', 'imei', 'devicePhoneNumber'.
+   * @param {module:model/Device} device
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}
+   */
+  addDevice(device) {
+    return this.addDeviceWithHttpInfo(device).then(function(response_and_data) {
+      return response_and_data.data;
+    });
+  }
 
+  /**
+   * delete a device
+   * Function to delete a single device from the database.
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
+   */
+  devicesImeiDeleteWithHttpInfo(imei) {
+    let postBody = null;
 
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = [];
-      let accepts = [];
-      let returnType = null;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}', 'DELETE',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiDelete"
       );
     }
 
-    /**
-     * delete a device
-     * Function to delete a single device from the database. 
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}
-     */
-    devicesImeiDelete(imei) {
-      return this.devicesImeiDeleteWithHttpInfo(imei)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = [];
+    let accepts = [];
+    let returnType = null;
 
-    /**
-     * get Device by ID
-     * Function to get an specific device by its unique 'imei' as a parameter. Returns the 'Device'
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link module:model/Device} and HTTP response
-     */
-    devicesImeiGetWithHttpInfo(imei) {
-      let postBody = null;
+    return this.apiClient.callApi(
+      "/devices/{imei}",
+      "DELETE",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiGet");
-      }
+  /**
+   * delete a device
+   * Function to delete a single device from the database.
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}
+   */
+  devicesImeiDelete(imei) {
+    return this.devicesImeiDeleteWithHttpInfo(imei).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
 
+  /**
+   * get Device by ID
+   * Function to get an specific device by its unique 'imei' as a parameter. Returns the 'Device'
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link module:model/Device} and HTTP response
+   */
+  devicesImeiGetWithHttpInfo(imei) {
+    let postBody = null;
 
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = [];
-      let accepts = ['application/json'];
-      let returnType = Device;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiGet"
       );
     }
 
-    /**
-     * get Device by ID
-     * Function to get an specific device by its unique 'imei' as a parameter. Returns the 'Device'
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link module:model/Device}
-     */
-    devicesImeiGet(imei) {
-      return this.devicesImeiGetWithHttpInfo(imei)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = [];
+    let accepts = ["application/json"];
+    let returnType = Device;
 
-    /**
-     * delete GPSPositions of device
-     * delete all stored GPSPositions of a device from the Database
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
-     */
-    devicesImeiLocationsDeleteWithHttpInfo(imei) {
-      let postBody = null;
+    return this.apiClient.callApi(
+      "/devices/{imei}",
+      "GET",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiLocationsDelete");
-      }
+  /**
+   * get Device by ID
+   * Function to get an specific device by its unique 'imei' as a parameter. Returns the 'Device'
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link module:model/Device}
+   */
+  devicesImeiGet(imei) {
+    return this.devicesImeiGetWithHttpInfo(imei).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
 
+  /**
+   * delete GPSPositions of device
+   * delete all stored GPSPositions of a device from the Database
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
+   */
+  devicesImeiLocationsDeleteWithHttpInfo(imei) {
+    let postBody = null;
 
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = [];
-      let accepts = [];
-      let returnType = null;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}/locations', 'DELETE',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiLocationsDelete"
       );
     }
 
-    /**
-     * delete GPSPositions of device
-     * delete all stored GPSPositions of a device from the Database
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}
-     */
-    devicesImeiLocationsDelete(imei) {
-      return this.devicesImeiLocationsDeleteWithHttpInfo(imei)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = [];
+    let accepts = [];
+    let returnType = null;
 
-    /**
-     * Get Locations of device
-     * Function to return all saved locations for a specific timespan from an device as a GPSPosition array. Requires start and (optional) end of desired timespan.
-     * @param {String} imei 
-     * @param {Object} opts Optional parameters
-     * @param {String} opts.start If only start value is given, the locations from this date until now are returned. Formatted as specified in ISO 8601
-     * @param {String} opts.end If end parameter is given, the locations in between this time frame will be returned.
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link Array.<module:model/GPSPosition>} and HTTP response
-     */
-    devicesImeiLocationsGetWithHttpInfo(imei, opts) {
-      opts = opts || {};
-      let postBody = null;
+    return this.apiClient.callApi(
+      "/devices/{imei}/locations",
+      "DELETE",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiLocationsGet");
-      }
+  /**
+   * delete GPSPositions of device
+   * delete all stored GPSPositions of a device from the Database
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}
+   */
+  devicesImeiLocationsDelete(imei) {
+    return this.devicesImeiLocationsDeleteWithHttpInfo(imei).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
 
+  /**
+   * Get Locations of device
+   * Function to return all saved locations for a specific timespan from an device as a GPSPosition array. Requires start and (optional) end of desired timespan.
+   * @param {String} imei
+   * @param {Object} opts Optional parameters
+   * @param {String} opts.start If only start value is given, the locations from this date until now are returned. Formatted as specified in ISO 8601
+   * @param {String} opts.end If end parameter is given, the locations in between this time frame will be returned.
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link Array.<module:model/GPSPosition>} and HTTP response
+   */
+  devicesImeiLocationsGetWithHttpInfo(imei, opts) {
+    opts = opts || {};
+    let postBody = null;
 
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-        'start': opts['start'],
-        'end': opts['end']
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = [];
-      let accepts = [];
-      let returnType = [GPSPosition];
-
-      return this.apiClient.callApi(
-        '/devices/{imei}/locations', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiLocationsGet"
       );
     }
 
-    /**
-     * Get Locations of device
-     * Function to return all saved locations for a specific timespan from an device as a GPSPosition array. Requires start and (optional) end of desired timespan.
-     * @param {String} imei 
-     * @param {Object} opts Optional parameters
-     * @param {String} opts.start If only start value is given, the locations from this date until now are returned. Formatted as specified in ISO 8601
-     * @param {String} opts.end If end parameter is given, the locations in between this time frame will be returned.
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link Array.<module:model/GPSPosition>}
-     */
-    devicesImeiLocationsGet(imei, opts) {
-      return this.devicesImeiLocationsGetWithHttpInfo(imei, opts)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {
+      start: opts["start"],
+      end: opts["end"]
+    };
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = [];
+    let accepts = [];
+    let returnType = [GPSPosition];
 
-    /**
-     * add GPS-Position to Device
-     * Function to add a GPSPosition element, recieved from the device, to its database GPSPosition array.
-     * @param {String} imei 
-     * @param {Array.<module:model/GPSPosition>} gpsPosition 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
-     */
-    devicesImeiLocationsPostWithHttpInfo(imei, gpsPosition) {
-      let postBody = gpsPosition;
+    return this.apiClient.callApi(
+      "/devices/{imei}/locations",
+      "GET",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiLocationsPost");
-      }
+  /**
+   * Get Locations of device
+   * Function to return all saved locations for a specific timespan from an device as a GPSPosition array. Requires start and (optional) end of desired timespan.
+   * @param {String} imei
+   * @param {Object} opts Optional parameters
+   * @param {String} opts.start If only start value is given, the locations from this date until now are returned. Formatted as specified in ISO 8601
+   * @param {String} opts.end If end parameter is given, the locations in between this time frame will be returned.
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link Array.<module:model/GPSPosition>}
+   */
+  devicesImeiLocationsGet(imei, opts) {
+    return this.devicesImeiLocationsGetWithHttpInfo(imei, opts).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
 
-      // verify the required parameter 'gpsPosition' is set
-      if (gpsPosition === undefined || gpsPosition === null) {
-        throw new Error("Missing the required parameter 'gpsPosition' when calling devicesImeiLocationsPost");
-      }
+  /**
+   * add GPS-Position to Device
+   * Function to add a GPSPosition element, recieved from the device, to its database GPSPosition array.
+   * @param {String} imei
+   * @param {Array.<module:model/GPSPosition>} gpsPosition
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
+   */
+  devicesImeiLocationsPostWithHttpInfo(imei, gpsPosition) {
+    let postBody = gpsPosition;
 
-
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = ['application/json', 'application/x-www-form-urlencoded'];
-      let accepts = ['application/json'];
-      let returnType = null;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}/locations', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiLocationsPost"
       );
     }
 
-    /**
-     * add GPS-Position to Device
-     * Function to add a GPSPosition element, recieved from the device, to its database GPSPosition array.
-     * @param {String} imei 
-     * @param {Array.<module:model/GPSPosition>} gpsPosition 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}
-     */
-    devicesImeiLocationsPost(imei, gpsPosition) {
-      return this.devicesImeiLocationsPostWithHttpInfo(imei, gpsPosition)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
-
-
-    /**
-     * get status of device (!)
-     * Function to check if the device is active??? return json status: stolen or not
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
-     */
-    devicesImeiStatusGetWithHttpInfo(imei) {
-      let postBody = null;
-
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling devicesImeiStatusGet");
-      }
-
-
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = [];
-      let accepts = ['application/json'];
-      let returnType = null;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}/status', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'gpsPosition' is set
+    if (gpsPosition === undefined || gpsPosition === null) {
+      throw new Error(
+        "Missing the required parameter 'gpsPosition' when calling devicesImeiLocationsPost"
       );
     }
 
-    /**
-     * get status of device (!)
-     * Function to check if the device is active??? return json status: stolen or not
-     * @param {String} imei 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}
-     */
-    devicesImeiStatusGet(imei) {
-      return this.devicesImeiStatusGetWithHttpInfo(imei)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
-    }
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = [
+      "application/json",
+      "application/x-www-form-urlencoded"
+    ];
+    let accepts = ["application/json"];
+    let returnType = null;
 
-    /**
-     * Update Device
-     * Function to update device information. Updated information will be overwritten in the database. Returns the changed 'Device'
-     * @param {String} imei 
-     * @param {Object} opts Optional parameters
-     * @param {module:model/Device} opts.device 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link module:model/Device} and HTTP response
-     */
-    updateDeviceWithHttpInfo(imei, opts) {
-      opts = opts || {};
-      let postBody = opts['device'];
+    return this.apiClient.callApi(
+      "/devices/{imei}/locations",
+      "POST",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
 
-      // verify the required parameter 'imei' is set
-      if (imei === undefined || imei === null) {
-        throw new Error("Missing the required parameter 'imei' when calling updateDevice");
+  /**
+   * add GPS-Position to Device
+   * Function to add a GPSPosition element, recieved from the device, to its database GPSPosition array.
+   * @param {String} imei
+   * @param {Array.<module:model/GPSPosition>} gpsPosition
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}
+   */
+  devicesImeiLocationsPost(imei, gpsPosition) {
+    return this.devicesImeiLocationsPostWithHttpInfo(imei, gpsPosition).then(
+      function(response_and_data) {
+        return response_and_data.data;
       }
+    );
+  }
 
+  /**
+   * get status of device (!)
+   * Function to check if the device is active??? return json status: stolen or not
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing HTTP response
+   */
+  devicesImeiStatusGetWithHttpInfo(imei) {
+    let postBody = null;
 
-      let pathParams = {
-        'imei': imei
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = [];
-      let contentTypes = ['application/json'];
-      let accepts = ['application/json'];
-      let returnType = Device;
-
-      return this.apiClient.callApi(
-        '/devices/{imei}', 'PUT',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling devicesImeiStatusGet"
       );
     }
 
-    /**
-     * Update Device
-     * Function to update device information. Updated information will be overwritten in the database. Returns the changed 'Device'
-     * @param {String} imei 
-     * @param {Object} opts Optional parameters
-     * @param {module:model/Device} opts.device 
-     * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link module:model/Device}
-     */
-    updateDevice(imei, opts) {
-      return this.updateDeviceWithHttpInfo(imei, opts)
-        .then(function(response_and_data) {
-          return response_and_data.data;
-        });
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
+
+    let authNames = [];
+    let contentTypes = [];
+    let accepts = ["application/json"];
+    let returnType = null;
+
+    return this.apiClient.callApi(
+      "/devices/{imei}/status",
+      "GET",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
+
+  /**
+   * get status of device (!)
+   * Function to check if the device is active??? return json status: stolen or not
+   * @param {String} imei
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}
+   */
+  devicesImeiStatusGet(imei) {
+    return this.devicesImeiStatusGetWithHttpInfo(imei).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
+
+  /**
+   * Update Device
+   * Function to update device information. Updated information will be overwritten in the database. Returns the changed 'Device'
+   * @param {String} imei
+   * @param {Object} opts Optional parameters
+   * @param {module:model/Device} opts.device
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with an object containing data of type {@link module:model/Device} and HTTP response
+   */
+  updateDeviceWithHttpInfo(imei, opts) {
+    opts = opts || {};
+    let postBody = opts["device"];
+
+    // verify the required parameter 'imei' is set
+    if (imei === undefined || imei === null) {
+      throw new Error(
+        "Missing the required parameter 'imei' when calling updateDevice"
+      );
     }
 
+    let pathParams = {
+      imei: imei
+    };
+    let queryParams = {};
+    let headerParams = {};
+    let formParams = {};
 
+    let authNames = [];
+    let contentTypes = ["application/json"];
+    let accepts = ["application/json"];
+    let returnType = Device;
+
+    return this.apiClient.callApi(
+      "/devices/{imei}",
+      "PUT",
+      pathParams,
+      queryParams,
+      headerParams,
+      formParams,
+      postBody,
+      authNames,
+      contentTypes,
+      accepts,
+      returnType
+    );
+  }
+
+  /**
+   * Update Device
+   * Function to update device information. Updated information will be overwritten in the database. Returns the changed 'Device'
+   * @param {String} imei
+   * @param {Object} opts Optional parameters
+   * @param {module:model/Device} opts.device
+   * @return {Promise} a {@link https://www.promisejs.org/|Promise}, with data of type {@link module:model/Device}
+   */
+  updateDevice(imei, opts) {
+    return this.updateDeviceWithHttpInfo(imei, opts).then(function(
+      response_and_data
+    ) {
+      return response_and_data.data;
+    });
+  }
 }
