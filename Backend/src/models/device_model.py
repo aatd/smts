@@ -234,7 +234,7 @@ class Device:
         # Compute all locations from start to now
         if (start_time is not None) and (end_time is None):
             computed_start = start_time.timestamp() * 1000
-            computed_end = end_time.timstamp() * 1000
+            computed_end = now
 
         # Compute all locations from the first entry to the endTime
         if (start_time is None) and (end_time is not None):
@@ -244,12 +244,14 @@ class Device:
         # Compute all locations in the interval [star_time, end_time]
         if (start_time is not None) and (end_time is not None):
             computed_start = start_time.timestamp() * 1000
-            computed_end = end_time
+            computed_end = end_time.timestamp() * 1000
 
-            # Return location if no further computation is needed
+        # Return only last location if no further no timeinterval is given!
         if (start_time is None) and (end_time is None):
-            computed_start = early_date
-            computed_end = now
+            lastloc = locations[-1]
+            result = []
+            result.append(lastloc)
+            return result, None
 
         # Fill the locations based on the demanded set
         retLocations = []
@@ -258,7 +260,7 @@ class Device:
             location_date = parser.parse(locaction["time"]).timestamp() * 1000
 
             is_location_in_set = (
-                location_date >= computed_start
+                location_date > computed_start
                 and location_date <= computed_end
             )
             if is_location_in_set:

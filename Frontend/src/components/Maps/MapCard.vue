@@ -29,9 +29,7 @@ import {
   LControl,
   LPolyline,
   LLayerGroup,
-  propsBinder
 } from "vue2-leaflet";
-import { BModal } from "bootstrap-vue";
 import * as Client from "../api/wheresMyThiefClient/index";
 
 export default {
@@ -40,16 +38,15 @@ export default {
     LMap,
     LTileLayer,
     LControl,
-    BModal,
     LPolyline,
-    LLayerGroup
+    LLayerGroup,
   },
   props: {
     deltaTime: {
       type: String,
-      required: false
+      required: false,
       //default: "100"
-    }
+    },
   },
   data() {
     return {
@@ -60,8 +57,8 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       markers: {
         positions: [],
-        points: []
-      }
+        points: [],
+      },
     };
     this.deltaTime;
   },
@@ -76,57 +73,61 @@ export default {
      * @param {Number} longitude
      * @param {boolean} fetchAdress
      */
-    addMarker: function(latitude, longitude, fetchAdress) {
+    addMarker: function (latitude, longitude, fetchAdress) {
       //Create new Marker object
       const newMarker = {
         position: { lat: latitude, lng: longitude },
         draggable: false,
         visible: true,
-        tooltip: ""
+        tooltip: "",
       };
 
       var self = this;
-      // nur letzte position
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
-      )
-        .then(res => res.json())
-        .then(obj => {
-          console.log(obj);
-          newMarker.tooltip = `
+
+      if (fetchAdress) {
+        fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+        )
+          .then((res) => res.json())
+          .then((obj) => {
+            newMarker.tooltip = `
             <b>Road: </b>${obj.address.road} ${obj.address.house_number}<br />
             <b>City: </b>${obj.address.city_district} <br />
             <b>State: </b>${obj.address.state} <br />
             <b>Postal: </b>${obj.address.postcode}`;
-          self.markers.positions.push(newMarker);
-          self.markers.points.push(newMarker.position);
-          self.center = latLng(
-            newMarker.position.lat,
-            newMarker.position.lng - 0.001
-          );
+            self.markers.positions.push(newMarker);
+            self.markers.points.push(newMarker.position);
+            self.center = latLng(
+              newMarker.position.lat,
+              newMarker.position.lng - 0.001
+            );
 
-          if (self.markers.positions.length > 1) {
-            this.$nextTick(() => {
-              //Current Marker
-              this.$refs.marker[
-                this.$refs.marker.length - 1
-              ].mapObject.openTooltip();
+            if (self.markers.positions.length > 1) {
+              this.$nextTick(() => {
+                //Current Marker
+                this.$refs.marker[
+                  this.$refs.marker.length - 1
+                ].mapObject.openTooltip();
 
-              //Last Marker
-              this.$refs.marker[
-                this.$refs.marker.length - 2
-              ].mapObject.closeTooltip();
-            });
-          }
-        });
-    }
-  },
-  mounted: function() {
-    var self = this;
+                //Last Marker
+                this.$refs.marker[
+                  this.$refs.marker.length - 2
+                ].mapObject.closeTooltip();
+              });
+            }
+          });
+      } else {
+        self.markers.positions.push(newMarker);
+        self.markers.points.push(newMarker.position);
+        self.center = latLng(
+          newMarker.position.lat,
+          newMarker.position.lng - 0.001
+        );
+      }
+    },
+    receiveDevicePositions() {
+      var self = this;
 
-    var updateTime = this.$IsDebug ? 5000 : 20000;
-
-    self.addMarkerCallback = window.setInterval(function() {
       if (self.$IsDebug) {
         self.addMarker(
           50.93393 + 0.001 * Math.random(),
@@ -134,34 +135,40 @@ export default {
         );
       } else {
         var apiInstance = new Client.DevicesApi();
+        var opts = undefined;
 
-        var startTime = new Date();
-        startTime.setMinutes(startTime.getMinutes() - self.deltaTime);
-        startTime.setHours(startTime.getHours() + 2);
-        startTime = startTime.toISOString();
+        if (this.deltaTime !== "0") {
+          var startTime = new Date();
+          startTime.setMinutes(startTime.getMinutes() - self.deltaTime);
+          startTime.setHours(startTime.getHours() + 2);
+          startTime = startTime.getTime();
 
-        var endTime = new Date();
-        endTime.setHours(endTime.getHours() + 2);
-        endTime = endTime.toISOString();
+          var endTime = new Date();
+          endTime.setHours(endTime.getHours() + 2);
+          endTime = endTime.getTime();
+
+          opts = {
+            start: startTime,
+            end: endTime,
+          };
+        }
 
         apiInstance
-
-          .devicesImeiLocationsGet(self.$route.params.id, {
-            start: startTime,
-            end: endTime
-          }) // Start End Zeit
-          .then(data => {
+          .devicesImeiLocationsGet(self.$route.params.id, opts)
+          .then((data) => {
+            // Check if locations are empty
             if (data == null || data == undefined) {
               console.log("No new Locations found!");
               return;
             }
 
-            var currente_location = data[data.length - 1];
+            // check wether last locations is the same as the location before
+            var last_location = data[data.length - 1];
             let location = new Client.GPSPosition();
-            location.longitude = currente_location.longitude;
-            location.latitude = currente_location.latitude;
+            location.longitude = last_location.longitude;
+            location.latitude = last_location.latitude;
 
-            if (self.markers.positions.length !== 0) {
+            if (self.markers.positions.length !== 0 && self.deltaTime === "0") {
               var isLastLat =
                 self.markers.positions[self.markers.positions.length - 1]
                   .position.lat == location.latitude;
@@ -175,20 +182,60 @@ export default {
               }
             }
 
-            self.addMarker(
-              currente_location.latitude,
-              currente_location.longitude
-            );
+            self.markers.positions = [];
+            self.markers.points = [];
+
+            for (let i = 0; i < data.length; i++) {
+              const currente_location = data[i];
+              const isLastLocation = i === data.length - 1;
+              let location = new Client.GPSPosition();
+              location.longitude = currente_location.longitude;
+              location.latitude = currente_location.latitude;
+
+              self.addMarker(
+                currente_location.latitude,
+                currente_location.longitude,
+                isLastLocation
+              );
+            }
           })
-          .catch(error => {
+          .catch((error) => {
             console.log("Retrieving locations failed.");
           });
       }
-    }, updateTime);
+    },
+  },
+  mounted: function () {
+    var self = this;
+    self.receiveDevicePositions();
+    self.addMarkerCallback = window.setInterval(
+      function () {
+        self.receiveDevicePositions();
+      },
+      this.$IsDebug ? 5000 : 20000
+    );
   },
   beforeDestroy() {
     clearInterval(this.addMarkerCallback);
-  }
+  },
+  watch: {
+    deltaTime: function (newVal, oldVal) {
+      var self = this;
+      clearInterval(this.addMarkerCallback);
+
+      if (oldVal === "0") {
+        clearInterval(this.addMarkerCallback);
+        this.addMarkerCallback = window.setInterval(
+          function () {
+            self.receiveDevicePositions();
+          },
+          this.$IsDebug ? 5000 : 20000
+        );
+      } else {
+        this.receiveDevicePositions();
+      }
+    },
+  },
 };
 </script>
 

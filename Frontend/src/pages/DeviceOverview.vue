@@ -64,6 +64,7 @@
         <b-form-select-option value="60">60min</b-form-select-option>
         <b-form-select-option value="120">120min</b-form-select-option>
         <b-form-select-option value="180">180min</b-form-select-option>
+        <b-form-select-option value="6307200">Last Year</b-form-select-option>
       </b-form-select>
 
       <!--Device Location Map-->
@@ -218,7 +219,7 @@ export default {
 
   components: {
     StatsCard,
-    MapCard
+    MapCard,
   },
   data() {
     return {
@@ -231,16 +232,16 @@ export default {
         pin: "",
         apn: "",
         apnUser: "",
-        apnPassword: ""
+        apnPassword: "",
       },
-      timeInterval: "0"
+      timeInterval: "0",
     };
   },
   methods: {
     /**
      * Calls the Police (only german one for now. Later localized!)
      */
-    callPolice: function() {
+    callPolice: function () {
       console.log("Invoking police call");
       window.location.href = "tel:110";
     },
@@ -278,7 +279,7 @@ export default {
     getDeviceData() {
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then(data => {
+      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
         self.mythief.name = data.name;
         self.mythief.imei = data.imei;
         self.mythief.deviceTel = data.devicePhoneNumber;
@@ -312,7 +313,7 @@ export default {
       `;
 
       var file = new File([data], "config.h", {
-        type: "text/plain;charset=utf-8"
+        type: "text/plain;charset=utf-8",
       });
 
       console.log("Invoking 'config.h' download");
@@ -346,11 +347,11 @@ export default {
      */
     updateViaSMS() {
       window.location.href = `sms:${this.mythief.deviceTel}?body=update`;
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.getDeviceData();
-  }
+  },
 };
 </script>
 
