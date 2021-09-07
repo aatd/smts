@@ -77,7 +77,12 @@ def create_user():
 
     # Check if all data are aquired
     if None in (name, pwd, tel):
-        return "There are some information missing!", 409
+        return "There is some information missing!", 409
+
+    # Check if username already taken
+    tmp_user = User().user_get_data(name)
+    if tmp_user is not None:
+        return "Username already taken!", 409
 
     # Attemp user creation
     userData, err = User().create_user(name, pwd, tel)
@@ -119,12 +124,9 @@ def login_user():
 
 
 @app.route(f"{version}/users/logout", methods=["POST"])
+@login_required
 def logout_user():
     "Apptemps a Logut by clearing the session-cookie. HTTP 200 when successful, else 401."
-
-    # Check if you are logged in with your session-cookie
-    if not session["logged_in"]:
-        return "You were never authorized", 401
 
     # You have a valid sesion. So we ca nnow log you out
     stop_session()
@@ -144,13 +146,14 @@ def update_user(userID):
     name = json["name"]
     pwd = json["password"]
     if userID != session_user_id:
+
         return "Not allowed", 405
 
     updated_user, err = User().user_update(userID, json)
 
     # Error check
     if (updated_user is None) or (err is not None):
-        return "Couldn't update user", 400
+        return str(err), 400
 
     # Return
     return jsonify(updated_user), 201
@@ -162,10 +165,13 @@ def get_user(userID):
     "Return the User Object based on the requested session. Return 404 else."
 
     # Get required data
-    session_id = session["user"]["_id"]
+    session_user_id = session["user"]["_id"]
 
-    # Try get user from DB
-    userData, err = User().user_get(session_id, userID)
+    # Try get user from DB if requested user is logged in
+    if session_user_id != userID:
+        return "Not allowed", 405
+
+    userData, err = User().user_get(userID)
 
     # Error check
     if (err is not None) or (userData is None):
@@ -194,6 +200,7 @@ def delete_user(userID):
         return "Couldn't delete User.", 401
 
     # Return ok
+    session.clear()
     return "User deleted", 200
 
 
@@ -238,7 +245,7 @@ def create_device():
 
     # Check if all data are aquired
     if None in (name, imei, tel, pin, apn, apnUser, apnPassword, owner):
-        return "There are some information missing!", 409
+        return "There is some information missing!", 409
 
     # Attemp user creation
     deviceData, err = Device().create_device(
@@ -247,7 +254,7 @@ def create_device():
 
     # Error check
     if (err is not None) or (deviceData is None):
-        return "DB error", 409
+        return str(err), 409
 
     return deviceData, 201
 
@@ -264,6 +271,9 @@ def get_device(imei):
     if (err is not None) or (deviceData is None):
         return "Couldn't get Userdata", 404
 
+    if session["user"]["_id"] != deviceData["owner"]:
+        return "Not allowed", 405
+
     # return data
     return deviceData, 200
 
@@ -279,15 +289,13 @@ def update_device(imei):
     json = request.json
 
     # Try updating the device by passing the new settings
-    updated_device = Device().device_update(json, session_id, imei)
+    updated_device, err = Device().device_update(json, session_id, imei)
 
-   # Error check
-   # if (updated_device is None) or (error is not None):
-#    if type(update_device) ==
-#           return "Could not update device", 404
-    if (type(updated_device) is ValueError):
+    if (err is not None) or (update_device is None):
+        if "Not allowed" in str(err):
+            return str(err), 405
+        return str(err), 404
 
-        return "Could not update device", 400
     # return updated device
     return updated_device, 200
 
@@ -295,14 +303,18 @@ def update_device(imei):
 @app.route(f"{version}/devices/<imei>", methods=["DELETE"])
 @login_required
 def delete_device(imei):
-    "TODO"
 
+    user_id = session["user"]["_id"]
     # Try deletion
-    deleted, error = Device().delete_device(imei)
+    deleted, error = Device().delete_device(imei, user_id)
 
     # Check wethe deletion was successful
     if (deleted is not True) or (error is not None):
-        return "Deletion of device failed", 400
+
+        if "Not allowed" in str(error):
+            return str(error), 405
+
+        return str(error), 400
 
     # Return data
     return "Device deleted successfully", 200
@@ -323,7 +335,7 @@ def get_device_status(imei):
         return "Status cannot be found", 404
 
     # return data
-    return status, 200
+    return jsonify(status), 200
 
 
 @app.route(f"{version}/devices/<imei>/locations", methods=["GET"])
@@ -342,13 +354,18 @@ def get_locations(imei):
     except:
         end_time = None
 
+    # Get userid from session
+    user_id = session["user"]["_id"]
+
     # Attempt get data from database
-    locations, error = Device().get_device_locations(imei, start_time, end_time)
+    locations, error = Device().get_device_locations(
+        user_id, imei, start_time, end_time)
 
     # Check for error
-    if (locations is None) or (len(locations) == 0) or (error is not None):
-        return "No locations found for specific device wihtin desired range", 204
-
+    if (error is not None) or (len(locations) == 0):
+        if "Not allowed" in str(error):
+            return str(error), 405
+        return str(error), 204
     # Return data
     return jsonify(locations), 200
 
@@ -366,7 +383,7 @@ def create_locations(imei):
 
     # Check if all data are aquired
     if None in (lat, imei, lng, time):
-        return "There are some information missing!", 409
+        return "There are some informations missing!", 409
 
     # Try create new Locations on device
     new_location, error = Device().create_device_location(
@@ -374,7 +391,7 @@ def create_locations(imei):
     )
 
     if (new_location is None) or (error is not None):
-        return "Couldn't create new location", 409
+        return str(error), 409
 
     return new_location, 201
 
@@ -383,12 +400,15 @@ def create_locations(imei):
 @login_required
 def delete_locations(imei):
 
+    user_id = session["user"]["_id"]
     # Attempt deletion
-    deleted, error = Device().delete_locations_v2(imei)
+    deleted, error = Device().delete_locations(imei, user_id)
 
     # Check wethe deletion was successful
-    if not deleted | error is not None:
-        return "Deletion of device locations failed", 400
+    if not deleted or error is not None:
+        if "Not allowed" in str(error):
+            return str(error), 405
+        return str(error), 400
 
     # Return data
     return "All device locations deleted successfully", 200

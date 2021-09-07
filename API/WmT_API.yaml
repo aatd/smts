@@ -280,9 +280,7 @@ paths:
           name: "gpsPosition"
           required: true
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/GPSPosition"
+            $ref: "#/definitions/GPSPosition"
 
       responses:
         200:
@@ -399,9 +397,9 @@ definitions:
       longitude:
         type: "number"
         format: "float"
-      height:
+      battery:
         type: "number"
-        format: "float"
+        format: "int"
       time:
         type: "string"
         format: "date-time"
