@@ -83,20 +83,20 @@
       <b-button
         block
         v-if="mythief.status === '' || $IsDebug"
-        v-b-modal.updateConfigSMSModal
-        variant="warning"
-      >
-        Update My-Thief when already setup before<b-icon icon="pencil"></b-icon>
-      </b-button>
-
-      <!--Device Init Config Download-->
-      <b-button
-        block
-        v-if="mythief.status === '' || $IsDebug"
         v-b-modal.createConfigFileModal
         variant="warning"
       >
         Configuration for first use<b-icon icon="pencil"></b-icon>
+      </b-button>
+
+      <!--Delete Locations-->
+      <b-button
+        block
+        v-if="mythief.status === '' || $IsDebug"
+        v-b-modal.deleteLocations
+        variant="danger"
+      >
+        Delete saved Locations<b-icon icon="pencil"></b-icon>
       </b-button>
     </card>
 
@@ -151,23 +151,19 @@
         </b-button>
       </b-modal>
 
-      <!--Update Config Modal by SMS-->
+      <!--DeleteLocations-->
       <b-modal
-        id="updateConfigSMSModal"
-        title="Update your 'My-Thief'-Device when is is already setup by SMS!"
+        id="deleteLocations"
+        title="Deleted Locations cant be resored. Only proceed if you found your vehicle. Do you really want to delete all Locations?"
         hide-footer
       >
         <!--Send Config sms-->
-        <b-button class="mt-3" variant="success" block @click="updateViaSMS">
-          Update
+        <b-button class="mt-3" variant="danger" block @click="deleteLocations">
+          Delete
         </b-button>
 
         <!--Close Modal-->
-        <b-button
-          class="mt-3"
-          block
-          @click="$bvModal.hide('updateConfigSMSModal')"
-        >
+        <b-button class="mt-3" block @click="$bvModal.hide('deleteLocations')">
           Cancel
         </b-button>
       </b-modal>
@@ -219,7 +215,7 @@ export default {
 
   components: {
     StatsCard,
-    MapCard,
+    MapCard
   },
   data() {
     return {
@@ -232,16 +228,16 @@ export default {
         pin: "",
         apn: "",
         apnUser: "",
-        apnPassword: "",
+        apnPassword: ""
       },
-      timeInterval: "0",
+      timeInterval: "0"
     };
   },
   methods: {
     /**
      * Calls the Police (only german one for now. Later localized!)
      */
-    callPolice: function () {
+    callPolice: function() {
       console.log("Invoking police call");
       window.location.href = "tel:110";
     },
@@ -279,7 +275,7 @@ export default {
     getDeviceData() {
       var self = this;
       let apiInstance = new Client.DevicesApi();
-      apiInstance.devicesImeiGet(this.$route.params.id).then((data) => {
+      apiInstance.devicesImeiGet(this.$route.params.id).then(data => {
         self.mythief.name = data.name;
         self.mythief.imei = data.imei;
         self.mythief.deviceTel = data.devicePhoneNumber;
@@ -313,7 +309,7 @@ export default {
       `;
 
       var file = new File([data], "config.h", {
-        type: "text/plain;charset=utf-8",
+        type: "text/plain;charset=utf-8"
       });
 
       console.log("Invoking 'config.h' download");
@@ -348,10 +344,17 @@ export default {
     updateViaSMS() {
       window.location.href = `sms:${this.mythief.deviceTel}?body=update`;
     },
+    deleteLocations(event) {
+      console.log("deleteLocations");
+      let apiInstance = new Client.DevicesApi();
+      apiInstance.devicesImeiLocationsDelete(this.$route.params.id).then(() => {
+        this.$bvModal.hide("deleteLocations");
+      });
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getDeviceData();
-  },
+  }
 };
 </script>
 
