@@ -56,15 +56,20 @@
 
       <!--Time interval selector-->
       <b-form-select v-model="timeInterval" class="mb-3">
-        <b-form-select-option value="0"
-          >Show only recent data</b-form-select-option
-        >
+        <b-form-select-option value="0">
+          Show only recent data
+        </b-form-select-option>
         <b-form-select-option value="10">10min</b-form-select-option>
         <b-form-select-option value="30">30min</b-form-select-option>
         <b-form-select-option value="60">60min</b-form-select-option>
         <b-form-select-option value="120">120min</b-form-select-option>
         <b-form-select-option value="180">180min</b-form-select-option>
+        <b-form-select-option value="360">last 6 Hours</b-form-select-option>
+        <b-form-select-option value="720">last 12 Hours</b-form-select-option>
+        <b-form-select-option value="1440">last 24Hours</b-form-select-option>
+        <b-form-select-option value="8640">last Month</b-form-select-option>
         <b-form-select-option value="6307200">Last Year</b-form-select-option>
+        <b-form-select-option value="-1">Empty</b-form-select-option>
       </b-form-select>
 
       <!--Device Location Map-->
