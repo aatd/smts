@@ -52,8 +52,8 @@ class User:
         coll = db["users"]
         user = json
         # delete userid and devicelist from json as they can not be updated here
-        del user["_id"]
-        del user["devices"]
+        #del user["id"]
+        #del user["devices"]
 
         # if user changes password, hash it
         user["password"] = pbkdf2_sha256.hash(user["password"])

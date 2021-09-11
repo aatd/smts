@@ -59,7 +59,7 @@ import * as Client from "../components/api/wheresMyThiefClient/index";
 export default {
   name: "user-overview-page",
   components: {
-    StatsCard,
+    StatsCard
   },
   data() {
     return {
@@ -68,9 +68,9 @@ export default {
         email: "",
         tel: "",
         image: "",
-        qod: "",
+        qod: ""
       },
-      mythieves: [],
+      mythieves: []
     };
   },
   methods: {
@@ -80,8 +80,8 @@ export default {
     setQuoteOfTheUpdate() {
       const self = this;
       fetch("https://api.quotable.io/random")
-        .then((response) => response.json())
-        .then((data) => (self.user.qod = data.content));
+        .then(response => response.json())
+        .then(data => (self.user.qod = data.content));
     },
 
     /**
@@ -89,10 +89,9 @@ export default {
      */
     getUserData() {
       var apiInstance = new Client.UsersApi();
-
       apiInstance
-        .getUserbyId(localStorage.getItem("username"))
-        .then((data) => {
+        .getUserbyId(localStorage.getItem("id"))
+        .then(data => {
           console.log(
             "Got userdata succesfully to fill userinformation to overview page"
           );
@@ -103,7 +102,7 @@ export default {
           localStorage.setItem("deviceids", JSON.stringify(data.devices));
           this.user.image = localStorage.getItem(`users/${data.name}/image`);
         })
-        .catch((error) => {
+        .catch(error => {
           if (error.response.status == 401) {
             console.log(error.response.text);
             this.$bvToast.show("login-error-credentials-toast");
@@ -120,24 +119,24 @@ export default {
       var apiInstance = new Client.UsersApi();
       var username = localStorage.getItem("username");
 
-      apiInstance.findAllDevices(username).then((data) => {
+      apiInstance.findAllDevices(localStorage.getItem("id")).then(data => {
         console.log("Got Device Object");
-        data.forEach((device) => {
+        data.forEach(device => {
           this.mythieves.push({
             name: device.name,
             deviceTel: device.devicePhoneNumber,
             imei: device.imei,
-            deviceImage: localStorage.getItem(`devices/${device.imei}/image`),
+            deviceImage: localStorage.getItem(`devices/${device.imei}/image`)
           });
         });
       });
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.setQuoteOfTheUpdate();
     this.getUserData();
     this.getDevices();
-  },
+  }
 };
 </script>
 

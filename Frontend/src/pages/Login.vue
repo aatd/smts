@@ -129,8 +129,8 @@ export default {
       form: {
         name: "",
         pwd: "",
-        checked: [],
-      },
+        checked: []
+      }
     };
   },
   methods: {
@@ -150,15 +150,17 @@ export default {
 
       apiInstance
         .loginUser({ user: userModel })
-        .then((data) => {
+        .then(data => {
+          console.log(data);
           console.log("Login successeded");
           localStorage.setItem("username", data.name);
           localStorage.setItem("phonenumber", data.phoneNumber);
+          localStorage.setItem("id", data.id);
           this.$bvModal.hide("loading-modal");
 
-          this.$router.push(`/users/${data.name}`);
+          this.$router.push(`/users/${data.id}`);
         })
-        .catch((error) => {
+        .catch(error => {
           this.$bvModal.hide("loading-modal");
 
           if (error.response.status == 401) {
@@ -183,10 +185,9 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>

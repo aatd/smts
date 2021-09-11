@@ -13,7 +13,7 @@
  *
  */
 
-import {ApiClient} from '../ApiClient';
+import { ApiClient } from "../ApiClient";
 
 /**
  * The User model module.
@@ -26,8 +26,7 @@ export class User {
    * @alias module:model/User
    * @class
    */
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Constructs a <code>User</code> from a plain JavaScript object, optionally creating a new instance.
@@ -39,16 +38,19 @@ export class User {
   static constructFromObject(data, obj) {
     if (data) {
       obj = obj || new User();
-      if (data.hasOwnProperty('id'))
-        obj.id = ApiClient.convertToType(data['id'], 'String');
-      if (data.hasOwnProperty('name'))
-        obj.name = ApiClient.convertToType(data['name'], 'String');
-      if (data.hasOwnProperty('password'))
-        obj.password = ApiClient.convertToType(data['password'], 'String');
-      if (data.hasOwnProperty('phoneNumber'))
-        obj.phoneNumber = ApiClient.convertToType(data['phoneNumber'], 'String');
-      if (data.hasOwnProperty('devices'))
-        obj.devices = ApiClient.convertToType(data['devices'], ['Number']);
+      if (data.hasOwnProperty("_id"))
+        obj.id = ApiClient.convertToType(data["_id"], "String");
+      if (data.hasOwnProperty("name"))
+        obj.name = ApiClient.convertToType(data["name"], "String");
+      if (data.hasOwnProperty("password"))
+        obj.password = ApiClient.convertToType(data["password"], "String");
+      if (data.hasOwnProperty("phoneNumber"))
+        obj.phoneNumber = ApiClient.convertToType(
+          data["phoneNumber"],
+          "String"
+        );
+      if (data.hasOwnProperty("devices"))
+        obj.devices = ApiClient.convertToType(data["devices"], ["Number"]);
     }
     return obj;
   }
@@ -78,5 +80,3 @@ User.prototype.phoneNumber = undefined;
  * @member {Array.<Number>} devices
  */
 User.prototype.devices = undefined;
-
-

@@ -128,7 +128,7 @@ class Device:
 
         #device["owner"] = current_user
         # Try Updating
-        cursor = coll.update_one({"imei": device["imei"]}, {"$set": device})
+        cursor = coll.update_one({"imei": imei}, {"$set": device})
 
         if not cursor.acknowledged:
             # return None, ValueError("Couldn't update the device object")

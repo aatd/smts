@@ -94,8 +94,8 @@ export default {
         username: "",
         tel: "",
         pwd: "",
-        pwdCheck: "",
-      },
+        pwdCheck: ""
+      }
     };
   },
   methods: {
@@ -132,16 +132,18 @@ export default {
       // Create User on Server
       apiInstance
         .createUser(userModel)
-        .then((data) => {
+        .then(data => {
           console.log("Registration successeded.");
           localStorage.setItem("username", data.name);
-          this.$router.push(`/users/${data.name}`);
+          localStorage.setItem("phonenumber", data.phoneNumber);
+          localStorage.setItem("id", data.id);
+          this.$router.push(`/users/${data.id}`);
         })
         .catch(() => {
           console.log("Registration failed");
         });
-    },
-  },
+    }
+  }
 };
 </script>
 
