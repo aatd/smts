@@ -142,15 +142,18 @@ export default {
 
       this.$bvModal.show("loading-modal");
 
+      //Fill in the required data for the LoginUser opration
       var userModel = new Client.User();
       userModel.name = this.form.name;
       userModel.password = this.form.pwd;
 
+      // Take requried API (This case the Users's)
       var apiInstance = new Client.UsersApi();
 
+      //Make some actions with it's methods (here loginUser(...))
       apiInstance
         .loginUser({ user: userModel })
-        .then(data => {
+        .then(data => { //Doing some stuff
           console.log(data);
           console.log("Login successeded");
           localStorage.setItem("username", data.name);
@@ -160,7 +163,7 @@ export default {
 
           this.$router.push(`/users/${data.id}`);
         })
-        .catch(error => {
+        .catch(error => { //Catch some errors!
           this.$bvModal.hide("loading-modal");
 
           if (error.response.status == 401) {
