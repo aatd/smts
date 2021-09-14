@@ -187,9 +187,6 @@ export default {
         apiInstance
           .devicesImeiLocationsGet(self.$route.params.id, opts)
           .then((data) => {
-            self.markers.positions = [];
-            self.markers.points = [];
-
             // Check if locations are empty
             if (data == null || data == undefined) {
               console.log("No new Locations found!");
