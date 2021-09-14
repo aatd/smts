@@ -81,7 +81,7 @@ bool batWarningSent = false;
 //-------------------Init-------------------//
 void setup() {
 
-    //Settiung Reset
+    //Setting Reset
     pinMode(FONA_RST, OUTPUT);
     digitalWrite(FONA_RST, HIGH); // Default state
     pinMode(LED, OUTPUT);
@@ -147,7 +147,7 @@ void loop() {
 
 //-------------------Helper-------------------//
 
-void initPin(){
+void initPin(){ //initialises the PIN, if not possible restarts the Device
     while(fona.unlockSIM(pin)!=1){
         Serial.println("Pin not accepted... Retry in 10 Seconds");
         fona.powerOn(FONA_PWRKEY); // Power on the module
@@ -159,7 +159,7 @@ void initPin(){
     Serial.println("Pin Accepted");
 }
 
-void initGPRS(){
+void initGPRS(){ //Iitialises Network connection
     while(!fona.enableGPRS(true)&&(GPRSFailCount<10)) {
         Serial.println("GPRS Faild, Retray in...");
         Serial.println("3...");

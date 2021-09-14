@@ -9,3 +9,11 @@ INSTALLATION:
 6. Open the MyThief.ino file.
 7. Comment in our out the configurations for your device.
 8. Upload the MyThief.ino to your device.
+
+
+ERROR CODES
+
+2 x fast, Status: Device is up and Running
+2 x slow, No Upload: could not upload to Backend
+4 x fast, upload Successfull
+6 x realy fast, no GPS Lock
