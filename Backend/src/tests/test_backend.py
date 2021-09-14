@@ -2,9 +2,11 @@ import pymongo
 from unittest import TestCase
 import unittest
 import os
-import sys
 import json
 import datetime
+import time
+
+from pymongo import response
 
 from main import app
 
@@ -555,74 +557,101 @@ class TestCase(TestCase):
     # not correct user, 405 Not allowed
     # no locations, 404 No locations
 
-    # def test_device_get_locations(self):
-    #     self.login_user()
-    #     device_response = self.add_device()
+    def test_device_get_locations(self):
+        self.login_user()
+        device_response = self.add_device()
 
-    #     # check empty locations
-    #     response = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(204, response.status_code)
-    #     self.assertIn(b'', response.data)
+        # check empty locations
+        response = self.tester.get(
+            f'/v1/devices/{device_response.json["imei"]}/locations')
+        self.assertEqual(204, response.status_code)
+        self.assertIn(b'', response.data)
 
-    #     # add loc and test ok
-    #     self.add_device_location(device_response.json["imei"])
-    #     self.add_device_location(device_response.json["imei"])
-    #     response2 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(200, response2.status_code)
-    #     self.assertIn("latitude", response2.json[0])
-    #     self.assertIn("longitude", response2.json[1])
+        # add loc and test ok
+        self.add_device_location(device_response.json["imei"])
+        self.add_device_location(device_response.json["imei"])
+        response2 = self.tester.get(
+            f'/v1/devices/{device_response.json["imei"]}/locations')
+        self.assertEqual(200, response2.status_code)
+        self.assertIn("latitude", response2.json[0])
+        self.assertIn("longitude", response2.json[0])
 
-    #     # logout and check 401, Login first
-    #     self.logout_user()
+        # logout and check 401, Login first
+        self.logout_user()
 
-    #     response3 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(401, response3.status_code)
-    #     self.assertIn(b'Login first', response3.data)
+        response3 = self.tester.get(
+            f'/v1/devices/{device_response.json["imei"]}/locations')
+        self.assertEqual(401, response3.status_code)
+        self.assertIn(b'Login first', response3.data)
 
-    #     # login wrong user, 405 Not allowed
-    #     self.login_user(self.user_cred_2)
-    #     response4 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(405, response4.status_code)
-    #     self.assertIn(b'Not allowed', response4.data)
+        # login wrong user, 405 Not allowed
+        self.login_user(self.user_cred_2)
+        response4 = self.tester.get(
+            f'/v1/devices/{device_response.json["imei"]}/locations')
+        self.assertEqual(405, response4.status_code)
+        self.assertIn(b'Not allowed', response4.data)
 
-    # def test_device_get_locations_time(self):
-    #     self.login_user()
-    #     dev_resp = self.add_device()
-    #     self.add_device_locations(dev_resp.json["imei"])
+    def test_device_get_locations_time(self):
+        self.login_user()
+        dev_resp = self.add_device()
+        self.add_device_locations(dev_resp.json["imei"])
 
-    #     start = (datetime.datetime.now() -
-    #              datetime.timedelta(hours=2))
-    #     end = (start + datetime.timedelta(hours=1))
+        # compute millis with defined timedelta should return the entries from now until x minutes before
+        minutes = 60
+        minutes_in_millis = minutes*60*1000
+        
+        end = int(time.time()*1000)
+        start = end-minutes_in_millis
 
-    #     start, end = int(start.timestamp()), int(end.timestamp())
 
-    #     response = self.tester.get(
-    #         f'/v1/devices/{dev_resp.json["imei"]}/locations?start={start}&end={end}')
-    #     print(len(response.json))
+        # ok, 200 status in json
+        response = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/locations?start={start}&end={end}')
+        
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(minutes, len(response.json))
 
-    # ok, 200 status in json
-    # not logged in, 401 Log in first
+        # test start but not end
+        response = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/locations?start={start}')
+        
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(minutes, len(response.json))
+        
+         # test end but not start
+        
+        response = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/locations?end={start}')
+        
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(minutes, len(response.json))
 
-    # def test_device_status(self):
-    #     self.login_user()
-    #     dev_resp = self.add_device()
+         # test timestamp out of range, 204
+        response = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/locations?end={end-start}')
+        
+        self.assertEqual(204, response.status_code)
+        
+        
 
-    #     # test status inactive, 200 "inactive"
-    #     response = self.tester.get(
-    #         f'/v1/devices/{dev_resp.json["imei"]}/status')
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertIn("inactive", response.json["status"])
 
-    #     self.add_device_location(dev_resp.json["imei"])
+    def test_device_status(self):
+        self.login_user()
+        dev_resp = self.add_device()
 
-    #     response1 = self.tester.get(
-    #         f'/v1/devices/{dev_resp.json["imei"]}/status')
-    #     self.assertEqual(200, response1.status_code)
-    #     self.assertIn("active", response1.json["status"])
+        # test status inactive, 200 "inactive"
+        response = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/status')
+        self.assertEqual(200, response.status_code)
+        
+        self.assertIn(b"inactive", response.data)
+
+        self.add_device_location(dev_resp.json["imei"])
+
+        response1 = self.tester.get(
+            f'/v1/devices/{dev_resp.json["imei"]}/status')
+        self.assertEqual(200, response1.status_code)
+        self.assertIn(b"active", response1.data)
 
     # delete positions, 200 "all positions deleted"
 
@@ -637,40 +666,9 @@ class TestCase(TestCase):
         # add 120 location entries and make sure they are correct
         response = self.tester.get(
             f'/v1/devices/{dev_resp.json["imei"]}/locations')
-  # def test_device_get_locations(self):
-    #     self.login_user()
-    #     device_response = self.add_device()
 
-    #     # check empty locations
-    #     response = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(204, response.status_code)
-    #     self.assertIn(b'', response.data)
 
-    #     # add loc and test ok
-    #     self.add_device_location(device_response.json["imei"])
-    #     self.add_device_location(device_response.json["imei"])
-    #     response2 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(200, response2.status_code)
-    #     self.assertIn("latitude", response2.json[0])
-    #     self.assertIn("longitude", response2.json[1])
-
-    #     # logout and check 401, Login first
-    #     self.logout_user()
-
-    #     response3 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(401, response3.status_code)
-    #     self.assertIn(b'Login first', response3.data)
-
-    #     # login wrong user, 405 Not allowed
-    #     self.login_user(self.user_cred_2)
-    #     response4 = self.tester.get(
-    #         f'/v1/devices/{device_response.json["imei"]}/locations')
-    #     self.assertEqual(405, response4.status_code)
-    #     self.assertIn(b'Not allowed', response4.data)        self.assertEqual(120, len(response.json))
-
+  
         # logout user, should give 401 Login first
         self.logout_user()
         response = self.tester.delete(

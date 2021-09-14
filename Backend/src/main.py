@@ -9,11 +9,11 @@ from flask_cors import CORS
 from models.device_model import Device
 from models.user_model import User
 
+# flask specific variables, enable CORS
+
 app = Flask(__name__)
 app.secret_key = "myThiefBackendSecretKey123"
-app.config[
-    "SESSION_COOKIE_HTTPONLY"
-] = False  # So the cookie is readable in browser. UNSAFE!
+app.config["SESSION_COOKIE_HTTPONLY"] = False
 CORS(app, supports_credentials=True)
 version = "/v1"
 
@@ -62,7 +62,8 @@ def is_server_alive():
     return "server is alive", 200
 
 
-# Users routes
+##############################################
+#  Users routes
 
 
 @app.route(f"{version}/users", methods=["POST"])
@@ -223,7 +224,7 @@ def get_user_devices(userID):
 
 
 ##############################################
-# devices
+# devices routes
 
 
 @app.route(f"{version}/devices", methods=["POST"])

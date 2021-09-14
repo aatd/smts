@@ -17,7 +17,7 @@ class Device:
         apnPassword: str,
         pin: str,
     ):
-        # Create device Object to write to DB
+        'Create device Object to write to DB'
         coll = db["devices"]
         device = {
             "_id": uuid.uuid4().hex,
@@ -63,7 +63,7 @@ class Device:
         velocity: float,
         battery: float,
     ):
-
+        'add a location to a device specified by its imei'
         coll = db["devices"]
         location = {}
 
@@ -98,6 +98,7 @@ class Device:
         return location, None
 
     def get_device(self, imei: str):
+        'get a device from the database'
         coll = db["devices"]
 
         device = coll.find_one({"imei": imei})
@@ -126,6 +127,9 @@ class Device:
         if not device_check or device_check["owner"] != current_user:
             return None, ValueError("Not allowed")
 
+        # add old locations as dont want to overwrite them
+        device["locations"] = device_check["locations"]
+
         #device["owner"] = current_user
         # Try Updating
         cursor = coll.update_one({"imei": imei}, {"$set": device})
@@ -144,6 +148,7 @@ class Device:
         return updated_device, None
 
     def delete_device(self, imei: str, user_id: str):
+        'delete a device from the database'
         devices_coll = db["devices"]
 
         # Get and check device
@@ -164,6 +169,7 @@ class Device:
         return True, None
 
     def get_device_status(self, imei: str, maxDeltaTime: datetime.timedelta):
+        'returns the status of a device. If locations where added since the maxDeltaTime, status is "active" otherwise "inactive"'
 
         coll = db["devices"]
 
@@ -175,8 +181,11 @@ class Device:
             return None, ValueError("Couldn't retrieve device data for status")
 
         locations = device.get("locations")
+        if len(locations) == 0:
+            return "inactive", None
+
         deltaTime = datetime.datetime.now(
-        ) - locations[len(locations) - 1]["time"]
+        ) - parser.parse(locations[len(locations) - 1]["time"])
         if deltaTime > maxDeltaTime:
             # return status active -> is being stolen or moved!
             return "active", None
@@ -185,6 +194,7 @@ class Device:
             return "inactive", None
 
     def get_device_locations(self, user_id, imei, start_time: datetime.datetime, end_time: datetime.datetime):
+        'returns the locations of a device, if no start and end are given only the last locations is returned. If either start or end or both are given, all locations in between this interval are returned'
 
         computed_start = None
         computed_end = None
@@ -243,13 +253,14 @@ class Device:
                 retLocations.append(locaction)
 
         # Check result again
-        if locations is None or len(locations) == 0:
+        if len(retLocations) == 0:
             return None, ValueError("No locations in device found for this set")
 
         # return locations
         return retLocations, None
 
     def delete_locations(self, imei: str, user_id: str):
+        'delete locations of a device'
 
         # Get/check device
         coll = db["devices"]
