@@ -248,7 +248,7 @@ void checkMovement(){
     moveLastChecked=millis();
 
 }
-
+//Upload Faild Signal
 void uploadFaildSignal(){
     digitalWrite(LED, HIGH);
     delay(1000);
@@ -258,7 +258,6 @@ void uploadFaildSignal(){
     delay(1000);
     digitalWrite(LED, LOW);
 }
-
 void uploadSuccessSignal(){
     digitalWrite(LED, HIGH);
     delay(200);
