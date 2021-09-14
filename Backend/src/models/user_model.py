@@ -7,6 +7,7 @@ from passlib.hash import pbkdf2_sha256
 class User:
 
     def create_user(self, name, pwd, tel):
+        'creates a user in the db, needs name, password and telephone number'
 
         # Check and prepare DB-Entry
         try:
@@ -36,6 +37,7 @@ class User:
             return None, err
 
     def user_auth(self, username, password):
+        'check if a username and password match, for login'
         coll = db["users"]
 
         user = coll.find_one({"name": username})
@@ -51,9 +53,7 @@ class User:
         # Get required information
         coll = db["users"]
         user = json
-        # delete userid and devicelist from json as they can not be updated here
-        #del user["id"]
-        #del user["devices"]
+
 
         # if user changes password, hash it
         user["password"] = pbkdf2_sha256.hash(user["password"])
@@ -75,7 +75,7 @@ class User:
         return updated_user, None
 
     def user_delete(self, username, id):
-        "Triy to delete User"
+        "Try to delete User"
 
         # Get all Users
         coll = db["users"]
@@ -89,6 +89,7 @@ class User:
         return True, None
 
     def user_get(self, id):
+        'retrieve user data from the database by id'
         coll = db["users"]
         user = coll.find_one({"_id": id})
 
@@ -100,10 +101,12 @@ class User:
         return user, None
 
     def user_get_data(self, name):
+        'retrieve user data from the database by name'
         coll = db["users"]
         return coll.find_one({"name": name})
 
     def user_get_devices(self, id):
+        'get a device list of the user specified by his/her id'
         coll = db["devices"]
 
         result = coll.find({"owner": id})
