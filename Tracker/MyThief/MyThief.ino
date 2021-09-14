@@ -67,15 +67,21 @@ uint8_t month,day,hour,minute;
 
 uint16_t lowWarn=10;
 
+int GPRSFailCount,GPSFailCount=0;
+
 unsigned long batLastChecked=millis();
 unsigned long moveLastChecked=millis();
-unsigned long movementInterval=300000;
+unsigned long movementInterval=60000;
+unsigned long stopInterval=600000;
+unsigned long trackingInterval=stopInterval;
+int movementCount=0;
+int stopCount=0;
 
 bool batWarningSent = false;
 //-------------------Init-------------------//
 void setup() {
 
-    //Settiung Reset
+    //Setting Reset
     pinMode(FONA_RST, OUTPUT);
     digitalWrite(FONA_RST, HIGH); // Default state
     pinMode(LED, OUTPUT);
@@ -131,7 +137,7 @@ void loop() {
     if((millis()-batLastChecked)>600000){
         checkBattery();
     }
-    if((millis()-moveLastChecked)>movementInterval){
+    if((millis()-moveLastChecked)>trackingInterval){
         checkMovement();
         status();
     }
@@ -141,7 +147,7 @@ void loop() {
 
 //-------------------Helper-------------------//
 
-void initPin(){
+void initPin(){ //initialises the PIN, if not possible restarts the Device
     while(fona.unlockSIM(pin)!=1){
         Serial.println("Pin not accepted... Retry in 10 Seconds");
         fona.powerOn(FONA_PWRKEY); // Power on the module
@@ -153,8 +159,8 @@ void initPin(){
     Serial.println("Pin Accepted");
 }
 
-void initGPRS(){
-    while(!fona.enableGPRS(true)) {
+void initGPRS(){ //Iitialises Network connection
+    while(!fona.enableGPRS(true)&&(GPRSFailCount<10)) {
         Serial.println("GPRS Faild, Retray in...");
         Serial.println("3...");
         delay(1000);
@@ -162,13 +168,20 @@ void initGPRS(){
         delay(1000);
         Serial.println("1...");
         delay(1000);
+        GPRSFailCount++;
+    }
+
+    if(GPRSFailCount>=10){
+        GPRSFailCount=0;
+        initPin();
     }
     Serial.println("gprs enabled");
 }
 
 void initGPS(){
-    while(!fona.enableGPS(true)){
+    while(!fona.enableGPS(true)&&(GPSFailCount<10)){
         initGPRS();
+        GPSFailCount++;
     }
     Serial.println("GPS Enabled");
 }
@@ -184,11 +197,7 @@ void checkBattery(){
 
     if(vbat<lowWarn&&!batWarningSent) sendBatWarning();
     if(batWarningSent&&vbat>lowWarn+5) batWarningSent=false;
-    if (! fona.getBattVoltage(&vbat)) {
-        Serial.println(F("Failed to read Batt"));
-    } else {
-        Serial.print(F("V = ")); Serial.print(vbat); Serial.println(F("%"));
-    }
+
 }
 
 void sendBatWarning(){
@@ -227,12 +236,19 @@ void checkMovement(){
     Serial.print (d);
     Serial.print(" metres");
 
-    if(d>10) uploadPosition();
+    if(d>10){
+        movementCount++;
+        stopCount=0;
+        trackingInterval = movementInterval;
+    }
+    if(movementCount>3) { uploadPosition(); }
 
+    if(d<2){ movementCount=0; stopCount++;}
+    if(stopCount>10)trackingInterval=stopInterval;
     moveLastChecked=millis();
 
 }
-
+//Upload Faild Signal
 void uploadFaildSignal(){
     digitalWrite(LED, HIGH);
     delay(1000);
@@ -242,7 +258,6 @@ void uploadFaildSignal(){
     delay(1000);
     digitalWrite(LED, LOW);
 }
-
 void uploadSuccessSignal(){
     digitalWrite(LED, HIGH);
     delay(200);
