@@ -56,15 +56,20 @@
 
       <!--Time interval selector-->
       <b-form-select v-model="timeInterval" class="mb-3">
-        <b-form-select-option value="0"
-          >Show only recent data</b-form-select-option
-        >
+        <b-form-select-option value="0">
+          Show only recent data
+        </b-form-select-option>
         <b-form-select-option value="10">10min</b-form-select-option>
         <b-form-select-option value="30">30min</b-form-select-option>
         <b-form-select-option value="60">60min</b-form-select-option>
         <b-form-select-option value="120">120min</b-form-select-option>
         <b-form-select-option value="180">180min</b-form-select-option>
+        <b-form-select-option value="360">last 6 Hours</b-form-select-option>
+        <b-form-select-option value="720">last 12 Hours</b-form-select-option>
+        <b-form-select-option value="1440">last 24Hours</b-form-select-option>
+        <b-form-select-option value="8640">last Month</b-form-select-option>
         <b-form-select-option value="6307200">Last Year</b-form-select-option>
+        <b-form-select-option value="-1">Empty</b-form-select-option>
       </b-form-select>
 
       <!--Device Location Map-->
@@ -83,20 +88,20 @@
       <b-button
         block
         v-if="mythief.status === '' || $IsDebug"
-        v-b-modal.updateConfigSMSModal
-        variant="warning"
-      >
-        Update My-Thief when already setup before<b-icon icon="pencil"></b-icon>
-      </b-button>
-
-      <!--Device Init Config Download-->
-      <b-button
-        block
-        v-if="mythief.status === '' || $IsDebug"
         v-b-modal.createConfigFileModal
         variant="warning"
       >
         Configuration for first use<b-icon icon="pencil"></b-icon>
+      </b-button>
+
+      <!--Delete Locations-->
+      <b-button
+        block
+        v-if="mythief.status === '' || $IsDebug"
+        v-b-modal.deleteLocations
+        variant="danger"
+      >
+        Delete saved Locations<b-icon icon="pencil"></b-icon>
       </b-button>
     </card>
 
@@ -112,17 +117,29 @@
         <!--Before calling Police advice Modal-->
         <p>Some advice when calling the police</p>
         <b-list-group>
-          <b-list-group-item variant="success">
-            Stay Calm! Even if you are not insured!
-          </b-list-group-item>
-          <b-list-group-item variant="danger">
-            Don't risk anything dangerous. People stealing Bikes or kinds may be
-            violent!</b-list-group-item
-          >
           <b-list-group-item variant="secondary">
-            Get all Information about your Bike. Like your Bike's frame number
-            and it's looks.</b-list-group-item
-          >
+            When compiling our Arduino sketch onto your tracking device for your
+            tracker put this "config.h"-File into the same directory. This file
+            is read by the ".ino" sktech and than sets all relevant data to the
+            tracker to work properly. Go to our
+            <a href="https://github.com/aatd/smts/Tracker"
+              >Github
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-github"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+              -Page
+            </a>
+            for further information! ;)
+          </b-list-group-item>
         </b-list-group>
         <b-card
           class="mt-3"
@@ -151,23 +168,19 @@
         </b-button>
       </b-modal>
 
-      <!--Update Config Modal by SMS-->
+      <!--DeleteLocations-->
       <b-modal
-        id="updateConfigSMSModal"
-        title="Update your 'My-Thief'-Device when is is already setup by SMS!"
+        id="deleteLocations"
+        title="Deleted Locations cant be resored. Only proceed if you found your vehicle. Do you really want to delete all Locations?"
         hide-footer
       >
         <!--Send Config sms-->
-        <b-button class="mt-3" variant="success" block @click="updateViaSMS">
-          Update
+        <b-button class="mt-3" variant="danger" block @click="deleteLocations">
+          Delete
         </b-button>
 
         <!--Close Modal-->
-        <b-button
-          class="mt-3"
-          block
-          @click="$bvModal.hide('updateConfigSMSModal')"
-        >
+        <b-button class="mt-3" block @click="$bvModal.hide('deleteLocations')">
           Cancel
         </b-button>
       </b-modal>
@@ -302,12 +315,7 @@ export default {
       #define APN      "${this.mythief.apn}"
       #define USER     "${this.mythief.apnUser}"
       #define PASSWORD "${this.mythief.apnPassword}"
-      #define PIN      {
-        '${this.mythief.pin[0]}',
-        '${this.mythief.pin[1]}',
-        '${this.mythief.pin[2]}',
-        '${this.mythief.pin[3]}'
-      }
+      #define PIN      {'${this.mythief.pin[0]}','${this.mythief.pin[1]}','${this.mythief.pin[2]}','${this.mythief.pin[3]}'}
       #define PHONE    ${this.mythief.deviceTel}"
       #define URL      "${apiInstance.basePath}"
       `;
@@ -347,6 +355,18 @@ export default {
      */
     updateViaSMS() {
       window.location.href = `sms:${this.mythief.deviceTel}?body=update`;
+    },
+
+    /**
+     *
+     */
+    deleteLocations() {
+      console.log("deleteLocations");
+      let apiInstance = new Client.DevicesApi();
+      apiInstance.devicesImeiLocationsDelete(this.$route.params.id).then(() => {
+        this.$bvModal.hide("deleteLocations");
+        this.timeInterval = "-1";
+      });
     },
   },
   mounted: function () {

@@ -39,7 +39,7 @@ const router = new VueRouter({
 //#endregion
 
 //#region Install Serive Worker
-//import './registerServiceWorker'
+import './registerServiceWorker'
 //#endregion
 
 //#region Install Leaflet Maps

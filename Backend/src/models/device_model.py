@@ -1,41 +1,7 @@
 import datetime
-import os
 import uuid
 from dateutil import parser
-
-
-import pymongo
-
-##############################################
-# Init DB
-try:
-
-    if os.environ.get("DATABASE_IP") is not None:
-        db_location = os.environ["DATABASE_IP"] + ":27017"
-    else:
-        db_location = "localhost:27017"
-
-    print("Trying to connect to Device-DB located at: " + db_location)
-    # mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
-    mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
-    db = mongo.smts
-    print("Trying to connect to DB located at: " + db_location + "...Successful")
-    print(db.last_status)
-
-except pymongo.errors.ConnectionFailure as err:
-
-    if os.environ.get("DATABASE_IP") is not None:
-        db_location = os.environ["DATABASE_IP"] + ":27017"
-    else:
-        db_location = "localhost:2017"
-
-    print(
-        "Trying to connect to Device-DB located at: "
-        + db_location
-        + "...Failed...Err: "
-        + err
-    )
-    exit(1)
+from models.db import db
 
 
 class Device:
@@ -51,7 +17,7 @@ class Device:
         apnPassword: str,
         pin: str,
     ):
-        # Create device Object to write to DB
+        'Create device Object to write to DB'
         coll = db["devices"]
         device = {
             "_id": uuid.uuid4().hex,
@@ -72,16 +38,17 @@ class Device:
         if coll.find_one({"name": device["name"]}):
             return None, ValueError("Device name already exists!")
 
-        # check if device name is available
+        # check if device number is available
         if coll.find_one({"devicePhoneNumber": device["devicePhoneNumber"]}):
             return None, ValueError("Device number already exists!")
 
-        # check if device name is available
+        # check if device imei is available
         if coll.find_one({"imei": device["imei"]}):
             return None, ValueError("Device imei already exists!")
 
         # Everything okey and new device can be inserted!
         result = coll.insert_one(device)
+
         if not result.acknowledged:
             return None, ValueError("New Device coulnd't be added to DB")
 
@@ -96,7 +63,7 @@ class Device:
         velocity: float,
         battery: float,
     ):
-
+        'add a location to a device specified by its imei'
         coll = db["devices"]
         location = {}
 
@@ -131,6 +98,7 @@ class Device:
         return location, None
 
     def get_device(self, imei: str):
+        'get a device from the database'
         coll = db["devices"]
 
         device = coll.find_one({"imei": imei})
@@ -153,44 +121,55 @@ class Device:
         del device["locations"]
         del device["battery"]
 
-        x = coll.find_one({"imei": imei})
+        device_check = coll.find_one({"imei": imei})
 
         # Check if device with specified id, belongs to current user
-        if not x or x["owner"] != current_user:
-            return ValueError("Device not updateable")
-            # return None, ValueError("Device not updateable")
+        if not device_check or device_check["owner"] != current_user:
+            return None, ValueError("Not allowed")
 
-        device["owner"] = current_user
+        # add old locations as dont want to overwrite them
+        device["locations"] = device_check["locations"]
+
+        #device["owner"] = current_user
         # Try Updating
-        cursor = coll.update_one({"imei": device["imei"]}, {"$set": device})
+        cursor = coll.update_one({"imei": imei}, {"$set": device})
+
         if not cursor.acknowledged:
             # return None, ValueError("Couldn't update the device object")
-            return ValueError("Couldn't update the device object")
+            return None, ValueError("DB couldn't update the device object")
 
         # Get new updated Object
         updated_device = coll.find_one({"imei": device["imei"]})
+
         if updated_device is None:
             # return None, ValueError("Couldn't get the new device object")
-            return ValueError("Couldn't get the new device object")
+            return None, ValueError("Couldn't get the new device object")
 
-        return updated_device
+        return updated_device, None
 
-    def delete_device(self, imei: str):
+    def delete_device(self, imei: str, user_id: str):
+        'delete a device from the database'
         devices_coll = db["devices"]
 
         # Get and check device
         device = devices_coll.find_one({"imei": imei})
+
+        if device["owner"] != user_id:
+            return False, ValueError("Not allowed")
+
         if device is None:
             return False, ValueError("Couldn't find devices to be deleted.")
 
         # Delete device object now. When not succeeding restore data in user
         deleted = devices_coll.delete_one({"imei": imei})
+
         if not deleted.acknowledged:
             return False, ValueError("Couldn't delete device. restored data in User")
 
         return True, None
 
     def get_device_status(self, imei: str, maxDeltaTime: datetime.timedelta):
+        'returns the status of a device. If locations where added since the maxDeltaTime, status is "active" otherwise "inactive"'
 
         coll = db["devices"]
 
@@ -202,8 +181,11 @@ class Device:
             return None, ValueError("Couldn't retrieve device data for status")
 
         locations = device.get("locations")
+        if len(locations) == 0:
+            return "inactive", None
+
         deltaTime = datetime.datetime.now(
-        ) - locations[len(locations) - 1]["time"]
+        ) - parser.parse(locations[len(locations) - 1]["time"])
         if deltaTime > maxDeltaTime:
             # return status active -> is being stolen or moved!
             return "active", None
@@ -211,7 +193,8 @@ class Device:
             # return status inactive -> tracker is not sending anything the past maxDelta time.
             return "inactive", None
 
-    def get_device_locations(self, imei, start_time: datetime.datetime, end_time: datetime.datetime):
+    def get_device_locations(self, user_id, imei, start_time: datetime.datetime, end_time: datetime.datetime):
+        'returns the locations of a device, if no start and end are given only the last locations is returned. If either start or end or both are given, all locations in between this interval are returned'
 
         computed_start = None
         computed_end = None
@@ -223,12 +206,15 @@ class Device:
 
         # Get/check device
         device = coll.find_one({"imei": imei})
+
         if device is None:
-            return None, ValueError("Deivce not found for getting any location(s)")
+            return None, ValueError("Device not found for getting any location(s)")
+        if device["owner"] != user_id:
+            return None, ValueError("Not allowed")
 
         # Get/check locations property
         locations = device.get("locations")
-        if locations is None or len(locations) == 0:
+        if len(locations) == 0:
             return None, ValueError("No locations in device found")
 
         # Compute all locations from start to now
@@ -267,19 +253,24 @@ class Device:
                 retLocations.append(locaction)
 
         # Check result again
-        if locations is None or len(locations) == 0:
+        if len(retLocations) == 0:
             return None, ValueError("No locations in device found for this set")
 
         # return locations
         return retLocations, None
 
-    def delete_locations(self, imei: str):
+    def delete_locations(self, imei: str, user_id: str):
+        'delete locations of a device'
 
         # Get/check device
         coll = db["devices"]
         device = coll.find_one({"imei": imei})
+
         if device is None:
             return False, ValueError("Couldn't retrieve device data from DB")
+
+        if device["owner"] != user_id:
+            return False, ValueError("Not allowed")
 
         # Update and check if it was successful
         updated = coll.update_one({"imei": imei}, {"$set": {"locations": []}})

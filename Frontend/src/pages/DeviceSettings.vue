@@ -375,7 +375,7 @@ export default {
         apnUser: this.form.apnUser,
         apnPassword: this.form.apnPassword,
         devicePhoneNumber: this.form.deviceTel,
-        owner: localStorage.getItem("username"),
+        owner: localStorage.getItem("id"),
         name: this.form.name,
         locations: [],
         ownerPhoneNumber: localStorage.getItem("phonenumber"),
@@ -383,12 +383,12 @@ export default {
       };
       apiInstance
         .updateDevice(this.$route.params.id, { device: device })
-        .then(() => {
+        .then(data => {
           console.log("update completed");
           console.log("data,imei ", this.$route.params.id);
           this.getCurrentDeviceData();
 
-          this.$router.push(`/devices/${this.$route.params.id}`);
+          this.$router.push(`/devices/${data.imei}`);
           this.$bvModal.hide("loading-modal");
         });
 

@@ -10,6 +10,7 @@
           :lat-lng.sync="marker.position"
           :icon="marker.icon"
           ref="marker"
+          @click="setAdress(marker)"
         >
           <l-popup ref="popup" :content="marker.tooltip" />
           <l-tooltip :content="marker.tooltip" />
@@ -60,9 +61,34 @@ export default {
         points: [],
       },
     };
-    this.deltaTime;
   },
   methods: {
+    setAdress(marker) {
+      console.log(marker);
+
+      var self = this;
+
+      var lat = marker.position.lat;
+      var lng = marker.position.lng;
+
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+      )
+        .then((res) => res.json())
+        .then((obj) => {
+          marker.tooltip = `
+            <b>Road: </b>${obj.address.road} ${
+            obj.address.house_number || ""
+          }<br />
+            <b>City: </b>${obj.address.city || ""}  <br />
+            <b>State: </b>${obj.address.state} <br />
+            <b>Postal: </b>${obj.address.postcode}`;
+          self.center = latLng(
+            marker.position.lat,
+            marker.position.lng - 0.001
+          );
+        });
+    },
     /**
      * Adds a Marker to the and fills the map-component.
      * After adding it to it this method looks up the
@@ -79,7 +105,7 @@ export default {
         position: { lat: latitude, lng: longitude },
         draggable: false,
         visible: true,
-        tooltip: "",
+        tooltip: null,
       };
 
       var self = this;
@@ -91,8 +117,10 @@ export default {
           .then((res) => res.json())
           .then((obj) => {
             newMarker.tooltip = `
-            <b>Road: </b>${obj.address.road} ${obj.address.house_number}<br />
-            <b>City: </b>${obj.address.city_district} <br />
+            <b>Road: </b>${obj.address.road} ${
+              obj.address.house_number || ""
+            }<br />
+            <b>City: </b>${obj.address.city} <br />
             <b>State: </b>${obj.address.state} <br />
             <b>Postal: </b>${obj.address.postcode}`;
             self.markers.positions.push(newMarker);
@@ -117,6 +145,9 @@ export default {
             }
           });
       } else {
+        newMarker.tooltip = `
+            <b>Lat: </b>${newMarker.position.lat}<br />
+            <b>Lng: </b>${newMarker.position.lng} <br />`;
         self.markers.positions.push(newMarker);
         self.markers.points.push(newMarker.position);
         self.center = latLng(
@@ -140,11 +171,11 @@ export default {
         if (this.deltaTime !== "0") {
           var startTime = new Date();
           startTime.setMinutes(startTime.getMinutes() - self.deltaTime);
-          startTime.setHours(startTime.getHours() + 2);
+          startTime.setHours(startTime.getHours());
           startTime = startTime.getTime();
 
           var endTime = new Date();
-          endTime.setHours(endTime.getHours() + 2);
+          endTime.setHours(endTime.getHours());
           endTime = endTime.getTime();
 
           opts = {
@@ -161,29 +192,6 @@ export default {
               console.log("No new Locations found!");
               return;
             }
-
-            // check wether last locations is the same as the location before
-            var last_location = data[data.length - 1];
-            let location = new Client.GPSPosition();
-            location.longitude = last_location.longitude;
-            location.latitude = last_location.latitude;
-
-            if (self.markers.positions.length !== 0 && self.deltaTime === "0") {
-              var isLastLat =
-                self.markers.positions[self.markers.positions.length - 1]
-                  .position.lat == location.latitude;
-              var isLastLng =
-                self.markers.positions[self.markers.positions.length - 1]
-                  .position.lng == location.longitude;
-
-              if (isLastLat && isLastLng) {
-                console.log("The server responed with the last known Location");
-                return;
-              }
-            }
-
-            self.markers.positions = [];
-            self.markers.points = [];
 
             for (let i = 0; i < data.length; i++) {
               const currente_location = data[i];
@@ -206,13 +214,10 @@ export default {
     },
   },
   mounted: function () {
-    var self = this;
-    self.receiveDevicePositions();
-    self.addMarkerCallback = window.setInterval(
-      function () {
-        self.receiveDevicePositions();
-      },
-      this.$IsDebug ? 5000 : 20000
+    this.receiveDevicePositions();
+    this.addMarkerCallback = window.setInterval(
+      this.receiveDevicePositions,
+      this.$IsDebug ? 1000 : 5000
     );
   },
   beforeDestroy() {
@@ -220,19 +225,19 @@ export default {
   },
   watch: {
     deltaTime: function (newVal, oldVal) {
-      var self = this;
       clearInterval(this.addMarkerCallback);
+      this.receiveDevicePositions();
 
-      if (oldVal === "0") {
-        clearInterval(this.addMarkerCallback);
-        this.addMarkerCallback = window.setInterval(
-          function () {
-            self.receiveDevicePositions();
-          },
-          this.$IsDebug ? 5000 : 20000
+      if (newVal === "0") {
+        this.addMarkerCallback = setInterval(
+          this.receiveDevicePositions,
+          this.$IsDebug ? 1000 : 5000
         );
-      } else {
-        this.receiveDevicePositions();
+      }
+
+      if (newVal === "-1") {
+        this.markers.positions = [];
+        this.markers.points = [];
       }
     },
   },

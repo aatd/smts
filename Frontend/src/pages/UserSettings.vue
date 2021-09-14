@@ -193,7 +193,9 @@ export default {
       userModel.password = this.form.pwdNew;
 
       apiInstance
-        .updateUser(localStorage.getItem("username"), { user: userModel })
+        .updateUser(localStorage.getItem("id"), {
+          user: userModel
+        })
         .then(data => {
           // get all old local stuff
           var oldUsername = localStorage.getItem("username");
@@ -259,7 +261,7 @@ export default {
       let self = this;
       let apiInstance = new Client.UsersApi();
       let username = localStorage.getItem("username");
-      apiInstance.getUserbyId(this.$route.params.id).then(data => {
+      apiInstance.getUserbyId(localStorage.getItem("id")).then(data => {
         console.log(data);
         self.form.username = data.name;
         self.form.tel = data.phoneNumber;

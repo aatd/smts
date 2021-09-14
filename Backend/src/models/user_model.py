@@ -1,50 +1,13 @@
-from socket import socket
 import uuid
-import os
+from models.db import db
 
-import pymongo
 from passlib.hash import pbkdf2_sha256
-
-##############################################
-# Init DB
-try:
-
-    if os.environ.get("DATABASE_IP") is not None:
-        db_location = os.environ["DATABASE_IP"] + ":27017"
-    else:
-        db_location = "localhost:27017"
-
-    print("Trying to connect to Device-DB located at: " +
-          db_location)
-    #mongo = pymongo.MongoClient(os.environ["DATABASE_IP"], 27017)
-    mongo = pymongo.MongoClient(db_location, serverSelectionTimeoutMS=1000)
-    db = mongo.smts
-    print(
-        "Trying to connect to DB located at: "
-        + db_location
-        + "...Successful"
-    )
-
-
-except pymongo.errors.ConnectionFailure as err:
-
-    if os.environ.get("DATABASE_IP") is not None:
-        db_location = os.environ["DATABASE_IP"] + ":27017"
-    else:
-        db_location = "localhost:2017"
-
-    print(
-        "Trying to connect to Device-DB located at: "
-        + db_location
-        + "...Failed...Err: "
-        + err
-    )
-    exit(1)
 
 
 class User:
 
     def create_user(self, name, pwd, tel):
+        'creates a user in the db, needs name, password and telephone number'
 
         # Check and prepare DB-Entry
         try:
@@ -58,12 +21,12 @@ class User:
             }
 
             # encrypt user password sha256
-            user["password"] = pbkdf2_sha256.encrypt(user["password"])
+            user["password"] = pbkdf2_sha256.hash(user["password"])
             coll = db["users"]
 
-            # check if username is available
-            if coll.find_one({"name": user["name"]}):
-                return None, ValueError("User already exists!")
+            # # check if username is available
+            # if coll.find_one({"name": user["name"]}):
+            #     return None, ValueError("User already exists!")
 
             # Everything okey and new User can be inserted!
             coll.insert_one(user)
@@ -74,6 +37,7 @@ class User:
             return None, err
 
     def user_auth(self, username, password):
+        'check if a username and password match, for login'
         coll = db["users"]
 
         user = coll.find_one({"name": username})
@@ -89,15 +53,14 @@ class User:
         # Get required information
         coll = db["users"]
         user = json
-        # delete userid and devicelist from json as they can not be updated here
-        del user["id"]
-        del user["devices"]
+
 
         # if user changes password, hash it
-        user["password"] = pbkdf2_sha256.encrypt(user["password"])
+        user["password"] = pbkdf2_sha256.hash(user["password"])
 
         # Try Updating
         cursor = coll.update_one({"_id": userID}, {"$set": user})
+
         if not cursor.acknowledged:
             return None, ValueError("Couldn't rewrite the UserObject")
 
@@ -112,7 +75,7 @@ class User:
         return updated_user, None
 
     def user_delete(self, username, id):
-        "Triy to delete User"
+        "Try to delete User"
 
         # Get all Users
         coll = db["users"]
@@ -125,11 +88,12 @@ class User:
         # Everything went well
         return True, None
 
-    def user_get(self, id, username):
+    def user_get(self, id):
+        'retrieve user data from the database by id'
         coll = db["users"]
         user = coll.find_one({"_id": id})
 
-        if user["name"] != username:
+        if user == None:
             return None, ValueError("DB Error: Couldn't find entry")
 
         del user["password"]
@@ -137,13 +101,16 @@ class User:
         return user, None
 
     def user_get_data(self, name):
+        'retrieve user data from the database by name'
         coll = db["users"]
         return coll.find_one({"name": name})
 
     def user_get_devices(self, id):
+        'get a device list of the user specified by his/her id'
         coll = db["devices"]
 
         result = coll.find({"owner": id})
+
         if result is None:
             return None, ValueError("No devices found")
 
